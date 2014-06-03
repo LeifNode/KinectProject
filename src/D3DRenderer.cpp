@@ -18,7 +18,8 @@ D3DRenderer::D3DRenderer()
 	mDepthStencilBuffer(NULL),
 	mRenderTarget(NULL),
 	mDepthStencilView(NULL),
-	mPerFrameBuffer(NULL)
+	mPerFrameBuffer(NULL),
+	mPerObjectBuffer(NULL)
 {
 	mClearColor[0] = 0.0f;
 	mClearColor[1] = 0.125f;
@@ -38,6 +39,7 @@ D3DRenderer::~D3DRenderer()
 
 	ReleaseCOM(mSamplerState);
 	ReleaseCOM(mPerFrameBuffer);
+	ReleaseCOM(mPerObjectBuffer);
 	ReleaseCOM(mRenderTarget);
 	ReleaseCOM(mDepthStencilView);
 	ReleaseCOM(mSwapChain);
@@ -231,6 +233,7 @@ bool D3DRenderer::initialize()
 
 	ReleaseCOM(rasterState);
 
+	//Per frame buffer
 	D3D11_BUFFER_DESC bd;
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(CBPerFrame);
@@ -240,6 +243,11 @@ bool D3DRenderer::initialize()
 	bd.StructureByteStride = 0;
 
 	md3dDevice->CreateBuffer(&bd, NULL, &mPerFrameBuffer);
+
+	//Per object buffer
+	bd.ByteWidth = sizeof(CBPerObject);
+
+	md3dDevice->CreateBuffer(&bd, NULL, &mPerObjectBuffer);
 
 	D3D11_SAMPLER_DESC sampDesc;
     ZeroMemory( &sampDesc, sizeof(sampDesc) );
@@ -455,6 +463,18 @@ void D3DRenderer::setConstantBuffer(int index, ID3D11Buffer* buffer)
 		if (mpActiveShader->hasComputeShader())
 			md3dImmediateContext->CSSetConstantBuffers(index, 1, &buffer);
 	}
+}
+
+void D3DRenderer::setPerFrameBuffer(CBPerFrame& buffer)
+{
+	md3dImmediateContext->UpdateSubresource(mPerFrameBuffer, 0, NULL, &buffer, 0, 0);
+	setConstantBuffer(0, mPerFrameBuffer);
+}
+
+void D3DRenderer::setPerObjectBuffer(CBPerObject& buffer)
+{
+	md3dImmediateContext->UpdateSubresource(mPerObjectBuffer, 0, NULL, &buffer, 0, 0);
+	setConstantBuffer(1, mPerObjectBuffer);
 }
 
 void D3DRenderer::setShader(Shader* shader)

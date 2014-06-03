@@ -1,8 +1,13 @@
 #pragma once
 
 #include "d3dApp.h"
+#include "ConstantBuffers.h"
 
 class Shader;
+
+template <class T>
+class MeshRenderer;
+struct Vertex;
 
 class KinectApplication : public D3DApp
 {
@@ -29,10 +34,13 @@ public:
 
 private:
 	Shader* mpMainShader;
+	MeshRenderer<Vertex>* mpMeshRenderer;
 
 	float mTheta, mPhi, mRadius;
 
 	POINT mLastMousePos;
 
 	float currentRot;
+
+	CBPerFrame mPerFrameData;
 };

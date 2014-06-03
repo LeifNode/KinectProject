@@ -2,6 +2,7 @@
 
 #include "d3dStd.h"
 #include "Shader.h"
+#include "ConstantBuffers.h"
 
 class D3DApp;
 class Texture;
@@ -22,6 +23,8 @@ public:
 
 	void setTextureResource(int index, Texture*);
 	void setConstantBuffer(int index, ID3D11Buffer*);
+	void setPerFrameBuffer(CBPerFrame& buffer);
+	void setPerObjectBuffer(CBPerObject& buffer);
 
 	void setShader(Shader* shader);
 	void setShader(const std::string& name);
@@ -50,6 +53,7 @@ private:
 	D3D_DRIVER_TYPE md3dDriverType;
 
 	ID3D11Buffer* mPerFrameBuffer;
+	ID3D11Buffer* mPerObjectBuffer;
 	ID3D11SamplerState* mSamplerState;
 
 	bool mEnable4xMsaa;

@@ -1,34 +1,11 @@
 #include "LightingHelper.fx"
+#include "ConstantBuffers.fx"
 
 Texture2D textureDiffuse : register( t0 );
 Texture2D textureNormal  : register( t1 );
 Texture2D textureSpecular: register( t2 );
 
 SamplerState mainSampler : register( s0 );
-
-cbuffer cbPerObject : register( b0 )
-{
-	float4x4 gWorld;
-	float4x4 gWorldViewProj;
-	float4x4 gWorldInvTranspose;
-	float4x4 gTextureTransform;
-	Material gMaterial;
-};
-
-cbuffer cbPerFrame : register( b1 )
-{
-	float4x4 View;
-	float4x4 Projection;
-
-	float3 gEyePosition;
-	float pad;
-	float3 gEyeDirection;
-	float pad2;
-
-	DirectionalLight gDirectionalLight;
-	PointLight gPointLight;
-	SpotLight gSpotLight;
-};
 
 struct VertexIn
 {
@@ -72,11 +49,13 @@ float4 PS(VertexOut pin) : SV_Target
 
 	float3 toEye = normalize(gEyePosition - pin.PosW);
 
-	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 ambient = float4(0.05f, 0.05f, 0.05f, 1.0f);
+	float4 diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	float4 A, D, S;
+	diffuse *= dot(pin.Normal, normalize(float3(0.5f, 1.0f, 1.0f)));
+
+	/*float4 A, D, S;
 
 	ComputeDirectionalLight(gMaterial, gDirectionalLight, pin.Normal, toEye, A, D, S);
 	ambient += A;
@@ -91,9 +70,10 @@ float4 PS(VertexOut pin) : SV_Target
 	ComputeSpotLight(gMaterial, gSpotLight, pin.PosW, pin.Normal, toEye, A, D, S);
 	ambient += A;
 	diffuse += D;
-	specular += S;
+	specular += S;*/
 
 	//float4 color = textureDiffuse.Sample(mainSampler, pin.Tex) * (ambient + diffuse) + specular;
+
 	float4 color = ambient + diffuse + specular;
 
 	color.a = gMaterial.Diffuse.a;

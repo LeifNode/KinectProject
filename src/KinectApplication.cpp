@@ -8,7 +8,7 @@
 #include "..\3rdParty\include\FastDelegate\FastDelegate.h"
 #include "TextureManager.h"
 #include "Geometry.h"
-#include "ConstantBuffers.h"
+#include "MeshRenderer.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -38,6 +38,9 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	mTheta(1.5f*MathHelper::Pi), mPhi(0.25f*MathHelper::Pi), mRadius(150.0f), currentRot(0.0f)
 {
 	mMainWndCaption = L"Test App";
+
+	mpMeshRenderer = new MeshRenderer<Vertex>();
+	ZeroMemory(&mPerFrameData, sizeof(CBPerFrame));
 
 	mLastMousePos.x = 0;
 	mLastMousePos.y = 0;
@@ -70,16 +73,14 @@ bool KinectApplication::Initialize()
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	mpMainShader = mpRenderer->loadShader(L"Shaders/color.fx", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, vertexDescription, 5); 
+	mpMainShader = mpRenderer->loadShader(L"Shaders/color.fx", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, vertexDescription, ARRAYSIZE(vertexDescription)); 
 
 	hookInputEvents();
 
 	Mesh sphere;
-	GeometryGenerator::CreateBox(0.5f, 1.8288f, 0.2f, sphere);
+	GeometryGenerator::CreateBox(1.0f, 1.0f, 1.0f, sphere);
 
-	
-
-	//mpTextureManager->getTexture("textures\\rock.dds");
+	mpMeshRenderer->Initialize(sphere.Vertices, sphere.Indices, mpRenderer);
 
 	return true;
 }
@@ -104,10 +105,9 @@ void KinectApplication::onResize()
 {
 	D3DApp::onResize();
 	
-	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f*MathHelper::Pi, aspectRatio(), 1.0f, 1000.0f);
-	//P = XMMatrixOrthographicLH(20.0f, 20.0f, 1.0f, 1000.0f);
-	//P = XMMatrixTranspose(P);
-	//XMStoreFloat4x4(&mProj, P);
+	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f*MathHelper::Pi, aspectRatio(), 1.0f, 10000.0f);
+
+	mPerFrameData.Projection = P;
 }
 
 void KinectApplication::Update(float dt)
@@ -118,29 +118,37 @@ void KinectApplication::Update(float dt)
 
 	XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
 
-	CBPerFrame frameData;
-
-	XMStoreFloat3(&frameData.EyePosition, pos);
+	XMStoreFloat3(&mPerFrameData.EyePosition, pos);
 	XMVECTOR direction = XMVectorMultiply(pos, XMLoadFloat3(&XMFLOAT3(-1.0f, -1.0f, -1.0f)));
-	XMStoreFloat3(&frameData.EyeDirection, XMVector3Normalize(direction));
+	XMStoreFloat3(&mPerFrameData.EyeDirection, XMVector3Normalize(direction));
+
 
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
-	//XMStoreFloat4x4(&mView, view);
+
+	mPerFrameData.View = view;
 
 	mpInputSystem->Update();
 }
 
 void KinectApplication::Draw()
 {
-	//mpRenderer->PSSetTextureResource(0, mpTextureManager->getTexture("textures\\rock.dds"));
-
 	mpRenderer->preRender();
 	mpRenderer->setShader(mpMainShader);
-	
+	mpRenderer->setPerFrameBuffer(mPerFrameData);
 
+	CBPerObject perObject;
+
+	perObject.World = XMMatrixIdentity();
+	perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
+	perObject.WorldViewProj = mPerFrameData.View * mPerFrameData.Projection;
+	perObject.TextureTransform = XMMatrixIdentity();
+
+	mpRenderer->setPerObjectBuffer(perObject);
+
+	mpMeshRenderer->Render(mpRenderer);
 
 	mpRenderer->postRender();
 }

@@ -22,6 +22,7 @@
 #include <string>
 #include <algorithm>
 #include "dxerr.h"
+#include <NuiApi.h> //Kinect API
 
 using namespace DirectX;
 
