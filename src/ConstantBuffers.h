@@ -15,7 +15,12 @@ struct CBPerObject
 struct CBPerFrame
 {
 	XMMATRIX View;
+	XMMATRIX ViewInv;
 	XMMATRIX Projection;
+	XMMATRIX ProjectionInv;
+
+	XMMATRIX ViewProj;
+	XMMATRIX ViewProjInv;
 
 	XMFLOAT3 EyePosition;
 	float pad;

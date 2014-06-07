@@ -18,8 +18,6 @@ class InputSystem
 	static InputSystem* mpInstance;
 
 public:
-	bool initialize();
-
 	void Update();
 
 	const MouseState* getMouseState() const { return &mMouseState; }

@@ -4,6 +4,8 @@
 #include "ConstantBuffers.h"
 
 class Shader;
+class Camera;
+class HydraManager;
 
 template <class T>
 class MeshRenderer;
@@ -36,11 +38,9 @@ private:
 	Shader* mpMainShader;
 	MeshRenderer<Vertex>* mpMeshRenderer;
 
-	float mTheta, mPhi, mRadius;
+	HydraManager* mpHydraManager;
 
-	POINT mLastMousePos;
-
-	float currentRot;
+	Camera* mpCamera;
 
 	CBPerFrame mPerFrameData;
 };

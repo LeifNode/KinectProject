@@ -11,6 +11,10 @@
 #include <map>
 #include "..\3rdParty\include\FastDelegate\FastDelegate.h"
 
+#ifndef EVENT_CAST
+#define EVENT_CAST(type, ptr) static_pointer_cast<type>(ptr)
+#endif
+
 class IEventData;
 
 typedef unsigned long EventType;

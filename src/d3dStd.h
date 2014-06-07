@@ -36,7 +36,12 @@ using std::dynamic_pointer_cast;
 //#define _XM_NO_INTRINSICS_
 //#endif
 
+#ifndef ReleaseCOM
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
+#endif
+#ifndef SAFE_DELETE
+#define SAFE_DELETE(x) delete x; x = 0;
+#endif
 
 #if defined(DEBUG) | defined(_DEBUG)
 	#ifndef HR

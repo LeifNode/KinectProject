@@ -9,6 +9,8 @@
 #include "TextureManager.h"
 #include "Geometry.h"
 #include "MeshRenderer.h"
+#include "Camera.h"
+#include "HydraManager.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -34,21 +36,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 KinectApplication::KinectApplication(HINSTANCE hInstance)
 	:
 	D3DApp(hInstance),
-	mpMainShader(nullptr),
-	mTheta(1.5f*MathHelper::Pi), mPhi(0.25f*MathHelper::Pi), mRadius(150.0f), currentRot(0.0f)
+	mpMainShader(nullptr)
 {
 	mMainWndCaption = L"Test App";
 
 	mpMeshRenderer = new MeshRenderer<Vertex>();
 	ZeroMemory(&mPerFrameData, sizeof(CBPerFrame));
 
-	mLastMousePos.x = 0;
-	mLastMousePos.y = 0;
+	mpCamera = new Camera(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	mpHydraManager = new HydraManager();
 }
 
 KinectApplication::~KinectApplication()
 {
 	unhookInputEvents();
+
+	SAFE_DELETE(mpMeshRenderer);
+	SAFE_DELETE(mpCamera);
+	SAFE_DELETE(mpHydraManager);
 }
 
 bool KinectApplication::Initialize()
@@ -78,9 +83,11 @@ bool KinectApplication::Initialize()
 	hookInputEvents();
 
 	Mesh sphere;
-	GeometryGenerator::CreateBox(1.0f, 1.0f, 1.0f, sphere);
+	GeometryGenerator::CreateBox(10.0f, 10.0f, 10.0f, sphere);
 
 	mpMeshRenderer->Initialize(sphere.Vertices, sphere.Indices, mpRenderer);
+
+	mpHydraManager->Initialize();
 
 	return true;
 }
@@ -104,31 +111,26 @@ void KinectApplication::unhookInputEvents()
 void KinectApplication::onResize()
 {
 	D3DApp::onResize();
-	
-	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f*MathHelper::Pi, aspectRatio(), 1.0f, 10000.0f);
+	mpCamera->OnResize(mClientWidth, mClientHeight);
 
-	mPerFrameData.Projection = P;
+	mPerFrameData.Projection = mpCamera->getProj();
+	mPerFrameData.ProjectionInv = XMMatrixInverse(NULL, mpCamera->getProj());
 }
 
 void KinectApplication::Update(float dt)
 {
-	float x = mRadius*sinf(mPhi)*cosf(mTheta);
-	float z = mRadius*sinf(mPhi)*sinf(mTheta);
-	float y = mRadius*cosf(mPhi);
+	mpHydraManager->Update(dt);
+	mpCamera->Update(dt);
 
-	XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
-
-	XMStoreFloat3(&mPerFrameData.EyePosition, pos);
-	XMVECTOR direction = XMVectorMultiply(pos, XMLoadFloat3(&XMFLOAT3(-1.0f, -1.0f, -1.0f)));
-	XMStoreFloat3(&mPerFrameData.EyeDirection, XMVector3Normalize(direction));
-
-
-	XMVECTOR target = XMVectorZero();
-	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
+	XMMATRIX view = mpCamera->getView();
 
 	mPerFrameData.View = view;
+	mPerFrameData.ViewInv = XMMatrixInverse(NULL, view);
+	mPerFrameData.ViewProj = view * mPerFrameData.Projection;
+	mPerFrameData.ViewProjInv = XMMatrixInverse(NULL, mPerFrameData.ViewProj);
+
+	mPerFrameData.EyePosition = mpCamera->getPosition();
+	mPerFrameData.EyeDirection = mpCamera->getDirection();
 
 	mpInputSystem->Update();
 }
@@ -139,11 +141,13 @@ void KinectApplication::Draw()
 	mpRenderer->setShader(mpMainShader);
 	mpRenderer->setPerFrameBuffer(mPerFrameData);
 
+	mpHydraManager->Render(mpRenderer);
+
 	CBPerObject perObject;
 
 	perObject.World = XMMatrixIdentity();
 	perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
-	perObject.WorldViewProj = mPerFrameData.View * mPerFrameData.Projection;
+	perObject.WorldViewProj = mPerFrameData.ViewProj;
 	perObject.TextureTransform = XMMatrixIdentity();
 
 	mpRenderer->setPerObjectBuffer(perObject);
@@ -155,7 +159,7 @@ void KinectApplication::Draw()
 
 void KinectApplication::onKeyDown(IEventDataPtr eventData)
 {
-	shared_ptr<EventData_KeyboardDown> dataPtr = static_pointer_cast<EventData_KeyboardDown>(eventData);
+	auto dataPtr = static_pointer_cast<EventData_KeyboardDown>(eventData);
 
 	if (dataPtr->getKey() == KEY_ESC)
 	{
@@ -165,51 +169,36 @@ void KinectApplication::onKeyDown(IEventDataPtr eventData)
 
 void KinectApplication::onMouseDown(IEventDataPtr eventData)
 {
-	shared_ptr<EventData_MouseDown> dataPtr = static_pointer_cast<EventData_MouseDown>(eventData);
-
-	mLastMousePos.x = dataPtr->getX();
-	mLastMousePos.y = dataPtr->getY();
+	auto dataPtr = static_pointer_cast<EventData_MouseDown>(eventData);
 
 	SetCapture(mhWnd);
 	ShowCursor(FALSE);
+
+	mpCamera->OnMouseDown(dataPtr->getButton());
 }
 
 void KinectApplication::onMouseUp(IEventDataPtr eventData)
 {
+	auto dataPtr = static_pointer_cast<EventData_MouseUp>(eventData);
+
 	ReleaseCapture();
 	ShowCursor(TRUE);
+
+	mpCamera->OnMouseUp(dataPtr->getButton());
 }
 
 void KinectApplication::onMouseMove(IEventDataPtr eventData)
 {
+	auto dataPtr = EVENT_CAST(EventData_MouseMove, eventData);
 	const MouseState* state = InputSystem::get()->getMouseState();
+
+	mpCamera->OnMouseMove(state->getX(), state->getY());
 
 	if( state->getLeft() )
 	{
-		// Make each pixel correspond to a quarter of a degree.
-		float dx = XMConvertToRadians(0.25f*static_cast<float>(state->getX() - mLastMousePos.x));
-		float dy = XMConvertToRadians(0.25f*static_cast<float>(state->getY() - mLastMousePos.y));
-
-		// Update angles based on input to orbit camera around box.
-		mTheta += dx;
-		mPhi   += dy;
-
-		// Restrict the angle mPhi.
-		mPhi = MathHelper::Clamp(mPhi, 0.1f, MathHelper::Pi-0.1f);
+		POINT newPos = { mClientWidth / 2, mClientHeight / 2 };
+	
+		ClientToScreen(mhWnd, &newPos);
+		//SetCursorPos(newPos.x, newPos.y);
 	}
-	else if( state->getRight() )
-	{
-		// Make each pixel correspond to 0.005 unit in the scene.
-		float dx = 0.005f*static_cast<float>(state->getX() - mLastMousePos.x);
-		float dy = 0.005f*static_cast<float>(state->getY() - mLastMousePos.y);
-
-		// Update the camera radius based on input.
-		mRadius += dx - 20.0f * dy;
-
-		// Restrict the radius.
-		mRadius = MathHelper::Clamp(mRadius, 3.0f, 300.0f);
-	}
-
-	mLastMousePos.x = state->getX();
-	mLastMousePos.y = state->getY();
 }

@@ -1,7 +1,12 @@
 cbuffer cbPerFrame : register( b0 )
 {
 	float4x4 View;
+	float4x4 ViewInv;
 	float4x4 Projection;
+	float4x4 ProjectionInv;
+
+	float4x4 ViewProj;
+	float4x4 ViewProjInv;
 
 	float3 gEyePosition;
 	float pad;
