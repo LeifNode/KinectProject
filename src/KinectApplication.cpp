@@ -43,7 +43,7 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	mpMeshRenderer = new MeshRenderer<Vertex>();
 	ZeroMemory(&mPerFrameData, sizeof(CBPerFrame));
 
-	mpCamera = new Camera(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	mpCamera = new Camera(XMFLOAT3(0.0f, 1.0f, 0.0f));
 	mpHydraManager = new HydraManager();
 }
 
@@ -83,7 +83,7 @@ bool KinectApplication::Initialize()
 	hookInputEvents();
 
 	Mesh sphere;
-	GeometryGenerator::CreateBox(10.0f, 10.0f, 10.0f, sphere);
+	GeometryGenerator::CreateGrid(10.0f, 10.0f, 10, 10, sphere);
 
 	mpMeshRenderer->Initialize(sphere.Vertices, sphere.Indices, mpRenderer);
 

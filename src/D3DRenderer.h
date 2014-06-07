@@ -26,6 +26,8 @@ public:
 	void setPerFrameBuffer(CBPerFrame& buffer);
 	void setPerObjectBuffer(CBPerObject& buffer);
 
+	const CBPerFrame* getPerFrameBuffer() const { return &mPerFrameData; }
+
 	void setShader(Shader* shader);
 	void setShader(const std::string& name);
 	Shader* getShader(const std::string& name);
@@ -53,6 +55,7 @@ private:
 	D3D_DRIVER_TYPE md3dDriverType;
 
 	ID3D11Buffer* mPerFrameBuffer;
+	CBPerFrame mPerFrameData;
 	ID3D11Buffer* mPerObjectBuffer;
 	ID3D11SamplerState* mSamplerState;
 

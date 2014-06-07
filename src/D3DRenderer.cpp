@@ -224,7 +224,7 @@ bool D3DRenderer::initialize()
 	ZeroMemory(&rasterDesc, sizeof(D3D11_RASTERIZER_DESC));
 
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
 
 	ID3D11RasterizerState* rasterState;
 
@@ -469,6 +469,7 @@ void D3DRenderer::setPerFrameBuffer(CBPerFrame& buffer)
 {
 	md3dImmediateContext->UpdateSubresource(mPerFrameBuffer, 0, NULL, &buffer, 0, 0);
 	setConstantBuffer(0, mPerFrameBuffer);
+	mPerFrameData = buffer;
 }
 
 void D3DRenderer::setPerObjectBuffer(CBPerObject& buffer)

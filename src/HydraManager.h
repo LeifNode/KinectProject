@@ -9,6 +9,9 @@
 #include <sixense_utils/controller_manager/controller_manager.hpp>
 
 class D3DRenderer;
+template <class T>
+class MeshRenderer;
+struct Vertex;
 
 class HydraManager
 {
@@ -22,4 +25,6 @@ public:
 	void Render(D3DRenderer* renderer);
 
 private:
+	MeshRenderer<Vertex>* mpPointerRenderer;
+	MeshRenderer<Vertex>* mpRootRenderer;
 };

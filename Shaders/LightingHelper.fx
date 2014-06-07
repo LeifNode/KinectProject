@@ -3,7 +3,7 @@ struct Material
 	float4 Ambient;
 	float4 Diffuse;
 	float4 Specular; // w is the specular power
-	float4 Reflect;
+	//float4 Reflect;
 };
 
 struct DirectionalLight

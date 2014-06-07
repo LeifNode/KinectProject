@@ -9,7 +9,7 @@ struct Material
 	XMFLOAT4 Ambient;
 	XMFLOAT4 Diffuse;
 	XMFLOAT4 Specular;
-	XMFLOAT4 Reflect;
+	//XMFLOAT4 Reflect;
 };
 
 struct DirectionalLight
