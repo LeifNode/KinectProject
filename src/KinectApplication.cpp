@@ -1,4 +1,3 @@
-
 #include "KinectApplication.h"
 #include "MathHelper.h"
 #include "D3DRenderer.h"
@@ -11,6 +10,7 @@
 #include "MeshRenderer.h"
 #include "Camera.h"
 #include "HydraManager.h"
+#include "OVRRenderer.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -43,7 +43,8 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	mpMeshRenderer = new MeshRenderer<Vertex>();
 	ZeroMemory(&mPerFrameData, sizeof(CBPerFrame));
 
-	mpCamera = new Camera(XMFLOAT3(0.0f, 1.0f, 0.0f));
+	mpOVRRenderer = new OVRRenderer();
+	mpCamera = new Camera(XMFLOAT3(0.0f, 1.0f, -2.0f));
 	mpHydraManager = new HydraManager();
 }
 
@@ -54,6 +55,7 @@ KinectApplication::~KinectApplication()
 	SAFE_DELETE(mpMeshRenderer);
 	SAFE_DELETE(mpCamera);
 	SAFE_DELETE(mpHydraManager);
+	SAFE_DELETE(mpOVRRenderer);
 }
 
 bool KinectApplication::Initialize()
@@ -79,6 +81,8 @@ bool KinectApplication::Initialize()
 	};
 
 	mpMainShader = mpRenderer->loadShader(L"Shaders/color.fx", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, vertexDescription, ARRAYSIZE(vertexDescription)); 
+
+	mpOVRRenderer->Initialize();
 
 	hookInputEvents();
 

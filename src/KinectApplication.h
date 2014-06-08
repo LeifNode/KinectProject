@@ -3,6 +3,7 @@
 #include "d3dApp.h"
 #include "ConstantBuffers.h"
 
+class OVRRenderer;
 class Shader;
 class Camera;
 class HydraManager;
@@ -35,6 +36,8 @@ public:
 	void onMouseMove(IEventDataPtr eventData);
 
 private:
+	OVRRenderer* mpOVRRenderer;
+
 	Shader* mpMainShader;
 	MeshRenderer<Vertex>* mpMeshRenderer;
 

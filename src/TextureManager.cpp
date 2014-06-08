@@ -23,8 +23,9 @@ Texture* TextureManager::loadTexture(const std::string& filePath)
 	
 	D3DRenderer* renderer = gpApplication->getRenderer();
 
+	ID3D11Resource* texture;
 	ID3D11ShaderResourceView* textureResource;
-	HRESULT result = CreateDDSTextureFromFile(renderer->device(), std::wstring(filePath.begin(), filePath.end()).c_str(), NULL, &textureResource);
+	HRESULT result = CreateDDSTextureFromFile(renderer->device(), std::wstring(filePath.begin(), filePath.end()).c_str(), &texture, &textureResource);
 
 	if (result != S_OK)
 	{
@@ -33,7 +34,9 @@ Texture* TextureManager::loadTexture(const std::string& filePath)
 		return NULL;
 	}
 
-	newTexture->mpTexture = textureResource;
+	//newTexture->mpTexture = texture;
+	newTexture->mpResourceView = textureResource;
+	
 
 	mTextureMap[filePath] = newTexture;
 	return newTexture;
@@ -43,7 +46,6 @@ void TextureManager::unloadAll()
 {
 	for (auto it = mTextureMap.begin(); it != mTextureMap.end(); ++it)
 	{
-		it->second->mpTexture->Release();
 		delete it->second;
 	}
 
@@ -56,7 +58,6 @@ void TextureManager::unloadTexture(const std::string& filePath)
 
 	if (it != mTextureMap.end())
 	{
-		it->second->mpTexture->Release();
 		delete it->second;
 		mTextureMap.erase(it);
 	}

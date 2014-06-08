@@ -14,6 +14,7 @@ HydraManager::~HydraManager()
 	sixenseExit();
 
 	SAFE_DELETE(mpPointerRenderer);
+	SAFE_DELETE(mpRootRenderer);
 }
 
 void controlManagerSetupCallback(sixenseUtils::ControllerManager::setup_step step)

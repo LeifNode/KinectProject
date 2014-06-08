@@ -71,7 +71,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(KINECTSDK10_DIR)\inc;$(ProjectDir)\3rdParty\Include\sixense;$(ProjectDir)\3rdParty\Include\FastDelegate;$(IncludePath)</IncludePath>
+    <IncludePath>$(KINECTSDK10_DIR)\inc;$(ProjectDir)\3rdParty\Include\;$(ProjectDir)\3rdParty\Include\sixense;$(ProjectDir)\3rdParty\Include\FastDelegate;$(IncludePath)</IncludePath>
     <LibraryPath>$(KINECTSDK10_DIR)\lib\x86;$(ProjectDir)\3rdParty\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -79,7 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(KINECTSDK10_DIR)\inc;$(ProjectDir)\3rdParty\Include\sixense;$(ProjectDir)\3rdParty\Include\FastDelegate;$(IncludePath)</IncludePath>
+    <IncludePath>$(KINECTSDK10_DIR)\inc;$(ProjectDir)\3rdParty\Include\;$(ProjectDir)\3rdParty\Include\sixense;$(ProjectDir)\3rdParty\Include\FastDelegate;$(IncludePath)</IncludePath>
     <LibraryPath>$(KINECTSDK10_DIR)\lib\x86;$(ProjectDir)\3rdParty\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -108,7 +108,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sixensed_x64.lib;sixense_utilsd_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sixensed_x64.lib;sixense_utilsd_x64.lib;libovr64d.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -145,7 +145,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>sixense_x64.lib;sixense_utils_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sixense_x64.lib;sixense_utils_x64.lib;libovr64.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -172,7 +172,9 @@
     <ClInclude Include="src\MathHelper.h" />
     <ClInclude Include="src\MeshRenderer.h" />
     <ClInclude Include="src\MouseState.h" />
+    <ClInclude Include="src\OVRRenderer.h" />
     <ClInclude Include="src\Quaternion.h" />
+    <ClInclude Include="src\RenderTarget.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\StringUtils.h" />
     <ClInclude Include="src\Texture.h" />
@@ -197,9 +199,12 @@
     <ClCompile Include="src\MathHelper.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\MouseState.cpp" />
+    <ClCompile Include="src\OVRRenderer.cpp" />
     <ClCompile Include="src\Quaternion.cpp" />
+    <ClCompile Include="src\RenderTarget.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\StringUtils.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>

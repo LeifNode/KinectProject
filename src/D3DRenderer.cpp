@@ -2,7 +2,6 @@
 #include "d3dApp.h"
 #include "Geometry.h"
 #include "ConstantBuffers.h"
-#include "Texture.h"
 
 extern D3DApp* gpApplication;
 
@@ -82,7 +81,8 @@ void D3DRenderer::onResize()
 	depthStencilDesc.Height    = gpApplication->getClientHeight();
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.Format    = DXGI_FORMAT_D32_FLOAT;
 
 	// Use 4X MSAA? --must match swap chain MSAA values.
 	if( mEnable4xMsaa )
@@ -398,55 +398,18 @@ Shader* D3DRenderer::loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRI
 	return newShader;
 }
 
-void D3DRenderer::setCameraParameters(XMFLOAT3& cameraPosition, XMFLOAT3& cameraDirection)
-{
-	CBPerFrame cb;
-	cb.EyePosition = cameraPosition;
-	cb.EyeDirection = cameraDirection;
-
-	cb.DirectionalLight.Ambient = XMFLOAT4(0.01f, 0.01f, 0.01f, 1.0f);
-	cb.DirectionalLight.Diffuse = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-	cb.DirectionalLight.Direction = XMFLOAT3(1.0f, -1.0f, 1.0f);
-
-	PointLight point;
-
-	point.Position = XMFLOAT3(20.0f, 80.0f, 20.0f);
-	point.Diffuse = XMFLOAT4(0.2f, 0.0f, 0.0f, 1.0f);
-	point.Range = 1000.0f;
-	point.Ambient = XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f);
-	point.Att = XMFLOAT3(0.0f, 0.01f, 0.000001f);
-
-	cb.PointLight = point;
-
-	SpotLight spotLight;
-	spotLight.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	spotLight.Diffuse = XMFLOAT4(0.0, 0.45f, 0.0f, 1.0f);
-	spotLight.Direction = XMFLOAT3(0.1f, -1.0f, 0.9f);
-	spotLight.Position = XMFLOAT3(10.0f, 20.0f, 10.0f);
-	spotLight.Att = XMFLOAT3(0.0f, 0.0f, 0.001f);
-	spotLight.Range =1000.0f;
-	spotLight.Spot = 2.1f;
-
-	cb.SpotLight = spotLight;
-
-	md3dImmediateContext->UpdateSubresource(mPerFrameBuffer, 0, NULL, &cb, 0, 0);
-	
-	md3dImmediateContext->VSSetConstantBuffers(1, 1, &mPerFrameBuffer);
-	md3dImmediateContext->PSSetConstantBuffers(1, 1, &mPerFrameBuffer);
-}
-
 void D3DRenderer::setTextureResource(int index, Texture* texture)
 {
 	if (mpActiveShader)
 	{
 		if (mpActiveShader->hasVertexShader())
-			md3dImmediateContext->VSSetShaderResources(index, 1, &texture->mpTexture);
+			md3dImmediateContext->VSSetShaderResources(index, 1, &texture->mpResourceView);
 		if (mpActiveShader->hasPixelShader())
-			md3dImmediateContext->PSSetShaderResources(index, 1, &texture->mpTexture);
+			md3dImmediateContext->PSSetShaderResources(index, 1, &texture->mpResourceView);
 		if (mpActiveShader->hasGeometryShader())
-			md3dImmediateContext->GSSetShaderResources(index, 1, &texture->mpTexture);
+			md3dImmediateContext->GSSetShaderResources(index, 1, &texture->mpResourceView);
 		if (mpActiveShader->hasComputeShader())
-			md3dImmediateContext->CSSetShaderResources(index, 1, &texture->mpTexture);
+			md3dImmediateContext->CSSetShaderResources(index, 1, &texture->mpResourceView);
 	}
 }
 
@@ -476,6 +439,118 @@ void D3DRenderer::setPerObjectBuffer(CBPerObject& buffer)
 {
 	md3dImmediateContext->UpdateSubresource(mPerObjectBuffer, 0, NULL, &buffer, 0, 0);
 	setConstantBuffer(1, mPerObjectBuffer);
+}
+
+Texture* D3DRenderer::createTexture(UINT format, int width, int height)
+{
+	DXGI_FORMAT d3dformat;
+
+	if (format & Texture_RGBA)
+		d3dformat = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	else if (format & Texture_Depth)
+		d3dformat = DXGI_FORMAT_D32_FLOAT;
+	else 
+		return NULL;
+
+	Texture* newTexture = new Texture();
+
+
+	D3D11_TEXTURE2D_DESC textureDesc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+
+	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+
+	textureDesc.Width = width;
+	textureDesc.Height = height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = d3dformat;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	if (format & Texture_RenderTarget)
+	{
+		if ((format & Texture_TypeMask) == Texture_Depth)
+			textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		else
+			textureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+	}
+
+	HRESULT result = md3dDevice->CreateTexture2D(&textureDesc, NULL, &newTexture->mpTexture);
+	if (FAILED(result))
+	{
+		delete newTexture;
+		return NULL;
+	}
+
+	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	if (textureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
+	{
+		result = md3dDevice->CreateShaderResourceView(newTexture->mpTexture, &shaderResourceViewDesc, &newTexture->mpResourceView);
+		if (FAILED(result))
+		{
+			delete newTexture;
+			return NULL;
+		}
+	}
+
+	return newTexture;
+}
+
+RenderTarget* D3DRenderer::createRenderTarget(int width, int height, bool useDepthBuffer)
+{
+	RenderTarget* newRenderTarget = new RenderTarget();
+	newRenderTarget->mpRenderTargetTexture = createTexture(Texture_RenderTarget | Texture_RGBA, width, height);
+
+	if (useDepthBuffer)
+		newRenderTarget->mpDepthTexture = createTexture(Texture_RenderTarget | Texture_Depth, width, height);
+
+	newRenderTarget->mWidth = width;
+	newRenderTarget->mHeight = height;
+	
+	HRESULT result;
+
+	D3D11_RENDER_TARGET_VIEW_DESC renderViewDesc;
+
+	renderViewDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	renderViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderViewDesc.Texture2D.MipSlice = 0;
+
+	result = md3dDevice->CreateRenderTargetView(newRenderTarget->mpRenderTargetTexture->mpTexture, &renderViewDesc, &newRenderTarget->mpRenderTargetView);
+	if (FAILED(result))
+	{
+		delete newRenderTarget;
+		return NULL;
+	}
+
+	if (useDepthBuffer)
+	{
+		D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc;
+		depthViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		depthViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		depthViewDesc.Texture2D.MipSlice = 0;
+
+		result = md3dDevice->CreateDepthStencilView(newRenderTarget->mpDepthTexture->mpTexture, NULL, &newRenderTarget->mpDepthView);
+		if (FAILED(result))
+		{
+			delete newRenderTarget;
+			return NULL;
+		}
+	}
+
+	return newRenderTarget;
+}
+
+void D3DRenderer::setRenderTarget(RenderTarget* target)
+{
+	//md3dImmediateContext->OMSetRenderTargets(1, &target->mpRenderTargetView, 
 }
 
 void D3DRenderer::setShader(Shader* shader)

@@ -43,7 +43,7 @@ void MeshRenderer<T>::Initialize(std::vector<T>& vertices, std::vector<UINT>& in
 	ReleaseCOM(mpVB);
 	ReleaseCOM(mpIB);
 
-	mIndexCount = indices.size();
+	mIndexCount = (int)indices.size();
 
 	//Vertex Buffer
 	D3D11_BUFFER_DESC bd;

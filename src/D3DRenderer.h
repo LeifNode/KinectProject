@@ -3,12 +3,15 @@
 #include "d3dStd.h"
 #include "Shader.h"
 #include "ConstantBuffers.h"
+#include "Texture.h"
+#include "RenderTarget.h"
 
 class D3DApp;
-class Texture;
 
 class D3DRenderer
 {
+	friend class OVRRenderer;
+
 public:
 	D3DRenderer();
 	~D3DRenderer();
@@ -19,12 +22,14 @@ public:
 	ID3D11Device* device() const { return md3dDevice; }
 	ID3D11DeviceContext* context() const { return md3dImmediateContext; }
 
-	void setCameraParameters(XMFLOAT3& cameraPosition, XMFLOAT3& cameraDirection);
-
 	void setTextureResource(int index, Texture*);
 	void setConstantBuffer(int index, ID3D11Buffer*);
 	void setPerFrameBuffer(CBPerFrame& buffer);
 	void setPerObjectBuffer(CBPerObject& buffer);
+
+	Texture* createTexture(UINT format, int width, int height);
+	RenderTarget* createRenderTarget(int width, int height, bool useDepthBuffer = true);
+	void setRenderTarget(RenderTarget* target);
 
 	const CBPerFrame* getPerFrameBuffer() const { return &mPerFrameData; }
 
