@@ -10,7 +10,7 @@ public:
 	Camera(const XMFLOAT3& position);
 	~Camera();
 
-	XMMATRIX getView();
+	XMMATRIX getView(const XMVECTOR& offset, const XMVECTOR& rotationQuat);
 	XMMATRIX getProj() const { return mProjection; }
 
 	__declspec(property(get = getPosition, put = setPosition)) XMFLOAT3 position;

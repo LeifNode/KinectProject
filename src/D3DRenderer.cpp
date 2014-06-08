@@ -81,8 +81,8 @@ void D3DRenderer::onResize()
 	depthStencilDesc.Height    = gpApplication->getClientHeight();
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
-	//depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.Format    = DXGI_FORMAT_D32_FLOAT;
+	depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//depthStencilDesc.Format    = DXGI_FORMAT_D32_FLOAT;
 
 	// Use 4X MSAA? --must match swap chain MSAA values.
 	if( mEnable4xMsaa )
@@ -113,14 +113,7 @@ void D3DRenderer::onResize()
 
 	// Set the viewport transform.
 
-	mScreenViewport.TopLeftX = 0;
-	mScreenViewport.TopLeftY = 0;
-	mScreenViewport.Width    = static_cast<float>(gpApplication->getClientWidth());
-	mScreenViewport.Height   = static_cast<float>(gpApplication->getClientHeight());
-	mScreenViewport.MinDepth = 0.0f;
-	mScreenViewport.MaxDepth = 1.0f;
-
-	md3dImmediateContext->RSSetViewports(1, &mScreenViewport);
+	setViewport(gpApplication->getClientWidth(), gpApplication->getClientHeight(), 0, 0);
 }
 
 bool D3DRenderer::initialize()
@@ -192,9 +185,9 @@ bool D3DRenderer::initialize()
 	sd.BufferUsage  = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount  = 1;
 	sd.OutputWindow = gpApplication->mainWnd();
-	sd.Windowed     = true;
-	sd.SwapEffect   = DXGI_SWAP_EFFECT_DISCARD;
-	sd.Flags        = 0;
+	sd.Windowed     = false;
+	//sd.SwapEffect   = DXGI_SWAP_EFFECT_DISCARD;
+	sd.Flags        = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	// To correctly create the swap chain, we must use the IDXGIFactory that was
 	// used to create the device.  If we tried to use a different IDXGIFactory instance
@@ -448,7 +441,7 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 	if (format & Texture_RGBA)
 		d3dformat = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	else if (format & Texture_Depth)
-		d3dformat = DXGI_FORMAT_D32_FLOAT;
+		d3dformat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	else 
 		return NULL;
 
@@ -550,7 +543,19 @@ RenderTarget* D3DRenderer::createRenderTarget(int width, int height, bool useDep
 
 void D3DRenderer::setRenderTarget(RenderTarget* target)
 {
-	//md3dImmediateContext->OMSetRenderTargets(1, &target->mpRenderTargetView, 
+	md3dImmediateContext->OMSetRenderTargets(1, &target->mpRenderTargetView, target->mpDepthView);
+}
+
+void D3DRenderer::setViewport(int width, int height, int x, int y)
+{
+	mScreenViewport.TopLeftX = (float)x;
+	mScreenViewport.TopLeftY = (float)y;
+	mScreenViewport.Width    = (float)width;
+	mScreenViewport.Height   = (float)height;
+	mScreenViewport.MinDepth = 0.0f;
+	mScreenViewport.MaxDepth = 1.0f;
+
+	md3dImmediateContext->RSSetViewports(1, &mScreenViewport);
 }
 
 void D3DRenderer::setShader(Shader* shader)
@@ -581,6 +586,12 @@ Shader* D3DRenderer::getShader(const std::string& name)
 	return nullptr;
 }
 
+void D3DRenderer::clear(RenderTarget* target)
+{
+	md3dImmediateContext->ClearRenderTargetView(target->mpRenderTargetView, mClearColor);
+	md3dImmediateContext->ClearDepthStencilView(target->mpDepthView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+}
+
 void D3DRenderer::preRender()
 {
 	md3dImmediateContext->ClearRenderTargetView(mRenderTarget, mClearColor);
@@ -591,5 +602,6 @@ void D3DRenderer::preRender()
 
 void D3DRenderer::postRender()
 {
-	mSwapChain->Present(0, 0);
+	//mSwapChain->Present(0, 0);
+	md3dImmediateContext->OMSetRenderTargets(1, &mRenderTarget, mDepthStencilView);
 }

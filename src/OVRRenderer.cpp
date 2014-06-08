@@ -78,15 +78,64 @@ void OVRRenderer::Initialize()
                                ovrHmdCap_LatencyTest);
 
 	ovrHmd_StartSensor(mHMD, ovrSensorCap_Orientation | ovrSensorCap_YawCorrection | ovrSensorCap_Position, 0);
+}
 
+void OVRRenderer::OnResize()
+{
+	//SAFE_DELETE(mpRenderTarget);
+
+	//ovrHmd_Destroy(mHMD);
+	//ovr_Shutdown();
+
+	//Initialize();
+}
+
+XMMATRIX OVRRenderer::getProjection(int eyeIndex)
+{
+	return XMMatrixTranspose(XMLoadFloat4x4(&XMFLOAT4X4(&ovrMatrix4f_Projection(mEyeRenderDesc[mHMDDesc.EyeRenderOrder[eyeIndex]].Fov, 0.01f, 10000.0f, false).M[0][0])));
 }
 
 void OVRRenderer::Update(float dt)
 {
+	mTimer = ovrHmd_BeginFrame(mHMD, 0);
+	gpApplication->getRenderer()->clear(mpRenderTarget);
+}
+
+void OVRRenderer::PreRender(int eyeIndex)
+{ 
+	ovrEyeType eye = mHMDDesc.EyeRenderOrder[eyeIndex];
+	D3DRenderer* renderer = gpApplication->getRenderer();
+	CBPerFrame perFrame = *renderer->getPerFrameBuffer();
+
+	mEyeRenderPose = ovrHmd_BeginEyeRender(mHMD, eye);
+
+	OVR::Recti viewport = mEyeRenderViewport[eye];
+
+	renderer->setRenderTarget(mpRenderTarget);
+	
+	renderer->setViewport(viewport.w, viewport.h, viewport.x, viewport.y);
+
+	//perFrame.Projection = XMMatrixTranspose(XMLoadFloat4x4(&XMFLOAT4X4(&ovrMatrix4f_Projection(mEyeRenderDesc[eye].Fov, 0.01f, 10000.0f, false).M[0][0])));
+	//perFrame.ProjectionInv = XMMatrixInverse(NULL, perFrame.Projection);
+	//perFrame.ViewProj = perFrame.View * perFrame.Projection;
+
+	//renderer->setPerFrameBuffer(perFrame);
+
 
 }
 
 void OVRRenderer::Render(D3DRenderer* renderer)
 {
 
+}
+
+void OVRRenderer::PostRender(int eyeIndex)
+{
+	ovrEyeType eye = mHMDDesc.EyeRenderOrder[eyeIndex];
+	ovrHmd_EndEyeRender(mHMD, eye, mEyeRenderPose, &mEyeTextures[eye].Texture);
+}
+
+void OVRRenderer::EndFrame()
+{
+	ovrHmd_EndFrame(mHMD);
 }

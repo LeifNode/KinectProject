@@ -31,6 +31,8 @@ public:
 	RenderTarget* createRenderTarget(int width, int height, bool useDepthBuffer = true);
 	void setRenderTarget(RenderTarget* target);
 
+	void setViewport(int width, int height, int x, int y);
+
 	const CBPerFrame* getPerFrameBuffer() const { return &mPerFrameData; }
 
 	void setShader(Shader* shader);
@@ -39,6 +41,8 @@ public:
 	Shader* getActiveShader() const { return mpActiveShader; }
 
 	Shader* loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize);
+
+	void clear(RenderTarget* target);
 
 	void preRender();
 	void postRender();

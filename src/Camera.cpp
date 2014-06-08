@@ -21,11 +21,13 @@ Camera::~Camera()
 
 }
 
-XMMATRIX Camera::getView()
+XMMATRIX Camera::getView(const XMVECTOR& offset, const XMVECTOR& rotationQuat)
 {
 	XMVECTOR pos = XMLoadFloat3(&mPosition);
+	XMVECTOR up = XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotationQuat);
+	XMVECTOR forward = XMVector3Rotate(XMLoadFloat3(&mDirection), rotationQuat);
 
-	return XMMatrixLookAtLH(pos, pos + XMLoadFloat3(&mDirection), mUp);
+	return XMMatrixLookAtLH(pos + offset, pos + offset + forward, up);
 }
 
 void Camera::OnMouseMove(int x, int y)
@@ -41,7 +43,8 @@ void Camera::OnMouseMove(int x, int y)
 		XMVECTOR direction = XMLoadFloat3(&mDirection);
 		XMVECTOR right = XMVector3Normalize(XMVector3Cross(direction, mUp));
 
-		XMVECTOR rotationQuat =  XMQuaternionMultiply(XMQuaternionRotationAxis(mUp, -dx), XMQuaternionRotationAxis(right, dy));
+		//XMVECTOR rotationQuat =  XMQuaternionMultiply(XMQuaternionRotationAxis(mUp, -dx), XMQuaternionRotationAxis(right, dy));
+		XMVECTOR rotationQuat =  XMQuaternionRotationAxis(right, dy);
 
 		mRotation = XMQuaternionNormalize(XMQuaternionMultiply(mRotation, rotationQuat));
 

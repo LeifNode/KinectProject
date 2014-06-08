@@ -44,7 +44,7 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	ZeroMemory(&mPerFrameData, sizeof(CBPerFrame));
 
 	mpOVRRenderer = new OVRRenderer();
-	mpCamera = new Camera(XMFLOAT3(0.0f, 1.0f, -2.0f));
+	mpCamera = new Camera(XMFLOAT3(0.0f, 1.66f, -2.0f));
 	mpHydraManager = new HydraManager();
 }
 
@@ -114,8 +114,13 @@ void KinectApplication::unhookInputEvents()
 
 void KinectApplication::onResize()
 {
+	//delete mpOVRRenderer;
 	D3DApp::onResize();
 	mpCamera->OnResize(mClientWidth, mClientHeight);
+	mpOVRRenderer->OnResize();
+	
+	//mpOVRRenderer = new OVRRenderer();
+	//mpOVRRenderer->Initialize();
 
 	mPerFrameData.Projection = mpCamera->getProj();
 	mPerFrameData.ProjectionInv = XMMatrixInverse(NULL, mpCamera->getProj());
@@ -125,17 +130,8 @@ void KinectApplication::Update(float dt)
 {
 	mpHydraManager->Update(dt);
 	mpCamera->Update(dt);
-
-	XMMATRIX view = mpCamera->getView();
-
-	mPerFrameData.View = view;
-	mPerFrameData.ViewInv = XMMatrixInverse(NULL, view);
-	mPerFrameData.ViewProj = view * mPerFrameData.Projection;
-	mPerFrameData.ViewProjInv = XMMatrixInverse(NULL, mPerFrameData.ViewProj);
-
-	mPerFrameData.EyePosition = mpCamera->getPosition();
-	mPerFrameData.EyeDirection = mpCamera->getDirection();
-
+	mpOVRRenderer->Update(dt);
+	
 	mpInputSystem->Update();
 }
 
@@ -144,21 +140,67 @@ void KinectApplication::Draw()
 	mpRenderer->preRender();
 	mpRenderer->setShader(mpMainShader);
 	mpRenderer->setPerFrameBuffer(mPerFrameData);
+	
+	for (int i = 0; i < 2; i++)
+	{
+		mpOVRRenderer->PreRender(i);
 
-	mpHydraManager->Render(mpRenderer);
+		//Per frame buffer update
 
-	CBPerObject perObject;
+		//Convert quaterinon to correct axis
+		XMVECTOR rotQuat = XMLoadFloat4(&XMFLOAT4(mpOVRRenderer->mEyeRenderPose.Orientation.x,
+												  mpOVRRenderer->mEyeRenderPose.Orientation.y,
+												  mpOVRRenderer->mEyeRenderPose.Orientation.z,
+												  mpOVRRenderer->mEyeRenderPose.Orientation.w));
+		
+		XMVECTOR axis;
+		float angle;
 
-	perObject.World = XMMatrixIdentity();
-	perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
-	perObject.WorldViewProj = mPerFrameData.ViewProj;
-	perObject.TextureTransform = XMMatrixIdentity();
+		XMQuaternionToAxisAngle(&axis, &angle, rotQuat);
 
-	mpRenderer->setPerObjectBuffer(perObject);
+		axis = XMVectorSet(XMVectorGetX(axis), XMVectorGetY(axis), -XMVectorGetZ(axis), 0.0f);
 
-	mpMeshRenderer->Render(mpRenderer);
+		rotQuat = XMQuaternionRotationAxis(axis, -angle);
+
+		XMVECTOR offset = XMVectorSet(mpOVRRenderer->mEyeRenderPose.Position.x, 
+									  mpOVRRenderer->mEyeRenderPose.Position.y, 
+									  mpOVRRenderer->mEyeRenderPose.Position.z,
+									  0.0f);
+
+		XMMATRIX view = mpCamera->getView(offset, rotQuat);
+
+		mPerFrameData.Projection = mpOVRRenderer->getProjection(i);
+		mPerFrameData.ProjectionInv = XMMatrixInverse(NULL, mPerFrameData.Projection);
+		mPerFrameData.View = view;
+		mPerFrameData.ViewInv = XMMatrixInverse(NULL, view);
+		mPerFrameData.ViewProj = view * mPerFrameData.Projection;
+		mPerFrameData.ViewProjInv = XMMatrixInverse(NULL, mPerFrameData.ViewProj);
+
+		mPerFrameData.EyePosition = mpCamera->getPosition();
+		mPerFrameData.EyeDirection = mpCamera->getDirection();
+
+		mpRenderer->setPerFrameBuffer(mPerFrameData);
+		
+		//Per object for the plane mesh
+		CBPerObject perObject;
+
+		perObject.World = XMMatrixIdentity();
+		perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
+		perObject.WorldViewProj = mpRenderer->getPerFrameBuffer()->ViewProj;
+		perObject.TextureTransform = XMMatrixIdentity();
+
+		mpRenderer->setPerObjectBuffer(perObject);
+
+		mpMeshRenderer->Render(mpRenderer);
+
+		mpHydraManager->Render(mpRenderer);
+		
+		
+		mpOVRRenderer->PostRender(i);
+	}
 
 	mpRenderer->postRender();
+	mpOVRRenderer->EndFrame();
 }
 
 void KinectApplication::onKeyDown(IEventDataPtr eventData)

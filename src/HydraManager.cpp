@@ -86,7 +86,7 @@ void HydraManager::Render(D3DRenderer* renderer)
 							  //XMMatrixTranslation(0.0f, 0.0f, 0.07f) *
 							  XMMatrixTranslation(0.0f, 0.0f, 0.25f) *
 							  XMMatrixRotationQuaternion(rotationQuat) *
-							  XMMatrixTranslation(acd.controllers[controller].pos[0] / 1000.0f, acd.controllers[controller].pos[1] / 1000.0f, -acd.controllers[controller].pos[2] / 1000.0f);
+							  XMMatrixTranslation(acd.controllers[controller].pos[0] / 1000.0f, acd.controllers[controller].pos[1] / 1000.0f + 0.9f, -acd.controllers[controller].pos[2] / 1000.0f);
 			perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
 			perObject.WorldViewProj = perObject.World * renderer->getPerFrameBuffer()->ViewProj;
 
@@ -97,7 +97,7 @@ void HydraManager::Render(D3DRenderer* renderer)
 			//Render root trackers
 			perObject.World = XMMatrixRotationQuaternion(XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(1.0f, 0.0f, 0.0f)), XMConvertToRadians(90.0f))) *
 							  XMMatrixRotationQuaternion(rotationQuat) * 
-							  XMMatrixTranslation(acd.controllers[controller].pos[0] / 1000.0f, acd.controllers[controller].pos[1] / 1000.0f, -acd.controllers[controller].pos[2] / 1000.0f);
+							  XMMatrixTranslation(acd.controllers[controller].pos[0] / 1000.0f, acd.controllers[controller].pos[1] / 1000.0f + 0.9f, -acd.controllers[controller].pos[2] / 1000.0f);
 			perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
 			perObject.WorldViewProj = perObject.World * renderer->getPerFrameBuffer()->ViewProj;
 

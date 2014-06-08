@@ -19,9 +19,18 @@ public:
 	~OVRRenderer();
 
 	void Initialize();
+	void OnResize();
 
 	void Update(float dt);
+
+	void PreRender(int eyeIndex);
 	void Render(D3DRenderer* renderer);
+	void PostRender(int eyeIndex);
+
+	void EndFrame();
+
+	ovrPosef mEyeRenderPose;
+	XMMATRIX getProjection(int eyeIndex);
 
 private:
 	ovrHmd mHMD;
@@ -30,4 +39,6 @@ private:
 	ovrD3D11Texture mEyeTextures[2];
 	ovrRecti mEyeRenderViewport[2];
 	RenderTarget* mpRenderTarget;
+	
+	ovrFrameTiming mTimer;
 };
