@@ -185,7 +185,11 @@ bool D3DRenderer::initialize()
 	sd.BufferUsage  = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount  = 1;
 	sd.OutputWindow = gpApplication->mainWnd();
+#if USE_RIFT
 	sd.Windowed     = false;
+#else
+	sd.Windowed     = true;
+#endif
 	//sd.SwapEffect   = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags        = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
@@ -330,7 +334,7 @@ Shader* D3DRenderer::loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRI
 			}
 
 			//Create the input layout
-			md3dDevice->CreateInputLayout(vertexDescription, vertexDescriptionSize, shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &newShader->mpInputLayout);
+			hr = md3dDevice->CreateInputLayout(vertexDescription, vertexDescriptionSize, shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &newShader->mpInputLayout);
 			break;
 		case SHADER_TYPE_PIXEL:
 			hr = compileShaderFromFile(filePath, shaderInfo[i].entrypoint, "ps_5_0", &shaderBlob);
@@ -438,8 +442,12 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 {
 	DXGI_FORMAT d3dformat;
 
-	if (format & Texture_RGBA)
+	if (format & Texture_RGBA && format & Texture_KinectDynamic)
+		d3dformat = DXGI_FORMAT_B8G8R8A8_UNORM;
+	else if (format & Texture_RGBA)
 		d3dformat = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	else if (format & Texture_Depth && format & Texture_KinectDynamic)
+		d3dformat = DXGI_FORMAT_R16_SINT;
 	else if (format & Texture_Depth)
 		d3dformat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	else 
@@ -463,6 +471,12 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
+
+	if (format & Texture_KinectDynamic)
+	{
+		textureDesc.Usage = D3D11_USAGE_DYNAMIC;
+		textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	}
 
 	if (format & Texture_RenderTarget)
 	{
@@ -598,10 +612,14 @@ void D3DRenderer::preRender()
 	md3dImmediateContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 	md3dImmediateContext->VSSetSamplers(0, 1, &mSamplerState);
 	md3dImmediateContext->PSSetSamplers(0, 1, &mSamplerState);
+	md3dImmediateContext->GSSetSamplers(0, 1, &mSamplerState);
 }
 
 void D3DRenderer::postRender()
 {
-	//mSwapChain->Present(0, 0);
+#if !USE_RIFT
+	mSwapChain->Present(0, 0);
+#endif
+
 	md3dImmediateContext->OMSetRenderTargets(1, &mRenderTarget, mDepthStencilView);
 }

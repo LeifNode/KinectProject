@@ -1,3 +1,5 @@
+#include "LightingHelper.fx"
+
 cbuffer cbPerFrame : register( b0 )
 {
 	float4x4 View;

@@ -43,8 +43,11 @@ void Camera::OnMouseMove(int x, int y)
 		XMVECTOR direction = XMLoadFloat3(&mDirection);
 		XMVECTOR right = XMVector3Normalize(XMVector3Cross(direction, mUp));
 
-		//XMVECTOR rotationQuat =  XMQuaternionMultiply(XMQuaternionRotationAxis(mUp, -dx), XMQuaternionRotationAxis(right, dy));
-		XMVECTOR rotationQuat =  XMQuaternionRotationAxis(right, dy);
+#if !USE_RIFT
+		XMVECTOR rotationQuat =  XMQuaternionMultiply(XMQuaternionRotationAxis(mUp, -dx), XMQuaternionRotationAxis(right, dy));
+#else
+		XMVECTOR rotationQuat =  XMQuaternionRotationAxis(mUp, -dx);
+#endif
 
 		mRotation = XMQuaternionNormalize(XMQuaternionMultiply(mRotation, rotationQuat));
 

@@ -11,14 +11,17 @@ OVRRenderer::OVRRenderer()
 
 OVRRenderer::~OVRRenderer()
 {
+#if USE_RIFT
 	SAFE_DELETE(mpRenderTarget);
 
 	ovrHmd_Destroy(mHMD);
 	ovr_Shutdown();
+#endif
 }
 
 void OVRRenderer::Initialize()
 {
+#if USE_RIFT
 	D3DRenderer* renderer = gpApplication->getRenderer();
 
 	ovr_Initialize();
@@ -75,9 +78,11 @@ void OVRRenderer::Initialize()
 								   eyeFov, mEyeRenderDesc)) return;
 
 	ovrHmd_SetEnabledCaps(mHMD, ovrHmdCap_LowPersistence |
-                               ovrHmdCap_LatencyTest);
+                               ovrHmdCap_LatencyTest |
+							   ovrHmdCap_NoVSync);
 
 	ovrHmd_StartSensor(mHMD, ovrSensorCap_Orientation | ovrSensorCap_YawCorrection | ovrSensorCap_Position, 0);
+#endif
 }
 
 void OVRRenderer::OnResize()
@@ -97,12 +102,15 @@ XMMATRIX OVRRenderer::getProjection(int eyeIndex)
 
 void OVRRenderer::Update(float dt)
 {
+#if USE_RIFT
 	mTimer = ovrHmd_BeginFrame(mHMD, 0);
 	gpApplication->getRenderer()->clear(mpRenderTarget);
+#endif
 }
 
 void OVRRenderer::PreRender(int eyeIndex)
 { 
+#if USE_RIFT
 	ovrEyeType eye = mHMDDesc.EyeRenderOrder[eyeIndex];
 	D3DRenderer* renderer = gpApplication->getRenderer();
 	CBPerFrame perFrame = *renderer->getPerFrameBuffer();
@@ -114,14 +122,7 @@ void OVRRenderer::PreRender(int eyeIndex)
 	renderer->setRenderTarget(mpRenderTarget);
 	
 	renderer->setViewport(viewport.w, viewport.h, viewport.x, viewport.y);
-
-	//perFrame.Projection = XMMatrixTranspose(XMLoadFloat4x4(&XMFLOAT4X4(&ovrMatrix4f_Projection(mEyeRenderDesc[eye].Fov, 0.01f, 10000.0f, false).M[0][0])));
-	//perFrame.ProjectionInv = XMMatrixInverse(NULL, perFrame.Projection);
-	//perFrame.ViewProj = perFrame.View * perFrame.Projection;
-
-	//renderer->setPerFrameBuffer(perFrame);
-
-
+#endif
 }
 
 void OVRRenderer::Render(D3DRenderer* renderer)
@@ -131,11 +132,15 @@ void OVRRenderer::Render(D3DRenderer* renderer)
 
 void OVRRenderer::PostRender(int eyeIndex)
 {
+#if USE_RIFT
 	ovrEyeType eye = mHMDDesc.EyeRenderOrder[eyeIndex];
 	ovrHmd_EndEyeRender(mHMD, eye, mEyeRenderPose, &mEyeTextures[eye].Texture);
+#endif
 }
 
 void OVRRenderer::EndFrame()
 {
+#if USE_RIFT
 	ovrHmd_EndFrame(mHMD);
+#endif
 }

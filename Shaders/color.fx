@@ -1,4 +1,3 @@
-#include "LightingHelper.fx"
 #include "ConstantBuffers.fx"
 
 Texture2D textureDiffuse : register( t0 );

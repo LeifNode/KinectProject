@@ -19,6 +19,7 @@ enum TextureFormat
 	Texture_RenderTarget    = 0x10000,
 	Texture_SampleDepth		= 0x20000,
     Texture_GenMipmaps      = 0x40000,
+	Texture_KinectDynamic   = 0x80000,
 };
 
 class Texture
@@ -28,14 +29,17 @@ class Texture
 	friend class RenderTarget;
 	friend class OVRRenderer;
 
-private:
-	Texture();
+public:
 	~Texture();
 
 	int getWidth() const { return mWidth; }
 	int getHeight() const { return mHeight; }
 
-	//D3D11_RESOURCE_DIMENSION getType() const;
+	ID3D11Texture2D* getD3DTexture() const { return mpTexture; }
+	ID3D11ShaderResourceView* getResourceView() const { return mpResourceView; }
+
+private:
+	Texture();
 
 private:
 	int mWidth;

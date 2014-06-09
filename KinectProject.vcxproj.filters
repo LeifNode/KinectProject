@@ -225,5 +225,17 @@
     <FxCompile Include="Shaders\ConstantBuffers.fx">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\kinect.fx">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\kinect_VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\kinect_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\kinect_GS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

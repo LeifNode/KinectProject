@@ -40,8 +40,8 @@ void HydraManager::Initialize()
 	mpRootRenderer->Initialize(rootMesh.Vertices, rootMesh.Indices, gpApplication->getRenderer());
 
 	Mesh pointerMesh;
-	//GeometryGenerator::CreateCylinder(0.02f, 0.0f, 0.12f, 30, 10, pointerMesh);
-	GeometryGenerator::CreateCylinder(0.02f, 0.02f, 0.5f, 30, 10, pointerMesh);
+	GeometryGenerator::CreateCylinder(0.02f, 0.0f, 0.12f, 30, 10, pointerMesh);
+	//GeometryGenerator::CreateCylinder(0.02f, 0.02f, 0.5f, 30, 10, pointerMesh);
 
 	mpPointerRenderer->Initialize(pointerMesh.Vertices, pointerMesh.Indices, gpApplication->getRenderer());
 }
@@ -83,8 +83,8 @@ void HydraManager::Render(D3DRenderer* renderer)
 			XMVECTOR rotationQuat = XMQuaternionRotationAxis(axis, -angle);
 
 			perObject.World = XMMatrixRotationQuaternion(XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(1.0f, 0.0f, 0.0f)), XMConvertToRadians(90.0f))) *
-							  //XMMatrixTranslation(0.0f, 0.0f, 0.07f) *
-							  XMMatrixTranslation(0.0f, 0.0f, 0.25f) *
+							  XMMatrixTranslation(0.0f, 0.0f, 0.07f) *
+							  //XMMatrixTranslation(0.0f, 0.0f, 0.25f) *
 							  XMMatrixRotationQuaternion(rotationQuat) *
 							  XMMatrixTranslation(acd.controllers[controller].pos[0] / 1000.0f, acd.controllers[controller].pos[1] / 1000.0f + 0.9f, -acd.controllers[controller].pos[2] / 1000.0f);
 			perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));

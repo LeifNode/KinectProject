@@ -4,6 +4,7 @@
 #include "ConstantBuffers.h"
 
 class OVRRenderer;
+class KinectRenderer;
 class Shader;
 class Camera;
 class HydraManager;
@@ -36,10 +37,13 @@ public:
 	void onMouseMove(IEventDataPtr eventData);
 
 private:
+
 	OVRRenderer* mpOVRRenderer;
 
 	Shader* mpMainShader;
 	MeshRenderer<Vertex>* mpMeshRenderer;
+
+	KinectRenderer* mpKinectRenderer;
 
 	HydraManager* mpHydraManager;
 

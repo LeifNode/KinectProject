@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "HydraManager.h"
 #include "OVRRenderer.h"
+#include "KinectRenderer.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -44,6 +45,8 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	ZeroMemory(&mPerFrameData, sizeof(CBPerFrame));
 
 	mpOVRRenderer = new OVRRenderer();
+	mpKinectRenderer = new KinectRenderer();
+
 	mpCamera = new Camera(XMFLOAT3(0.0f, 1.66f, -2.0f));
 	mpHydraManager = new HydraManager();
 }
@@ -56,6 +59,7 @@ KinectApplication::~KinectApplication()
 	SAFE_DELETE(mpCamera);
 	SAFE_DELETE(mpHydraManager);
 	SAFE_DELETE(mpOVRRenderer);
+	SAFE_DELETE(mpKinectRenderer);
 }
 
 bool KinectApplication::Initialize()
@@ -83,6 +87,8 @@ bool KinectApplication::Initialize()
 	mpMainShader = mpRenderer->loadShader(L"Shaders/color.fx", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, vertexDescription, ARRAYSIZE(vertexDescription)); 
 
 	mpOVRRenderer->Initialize();
+
+	mpKinectRenderer->Initialize();
 
 	hookInputEvents();
 
@@ -117,6 +123,7 @@ void KinectApplication::onResize()
 	//delete mpOVRRenderer;
 	D3DApp::onResize();
 	mpCamera->OnResize(mClientWidth, mClientHeight);
+
 	mpOVRRenderer->OnResize();
 	
 	//mpOVRRenderer = new OVRRenderer();
@@ -130,8 +137,11 @@ void KinectApplication::Update(float dt)
 {
 	mpHydraManager->Update(dt);
 	mpCamera->Update(dt);
+
+	mpKinectRenderer->Update(dt);
+
 	mpOVRRenderer->Update(dt);
-	
+
 	mpInputSystem->Update();
 }
 
@@ -141,6 +151,7 @@ void KinectApplication::Draw()
 	mpRenderer->setShader(mpMainShader);
 	mpRenderer->setPerFrameBuffer(mPerFrameData);
 	
+#if USE_RIFT
 	for (int i = 0; i < 2; i++)
 	{
 		mpOVRRenderer->PreRender(i);
@@ -162,8 +173,8 @@ void KinectApplication::Draw()
 
 		rotQuat = XMQuaternionRotationAxis(axis, -angle);
 
-		XMVECTOR offset = XMVectorSet(mpOVRRenderer->mEyeRenderPose.Position.x, 
-									  mpOVRRenderer->mEyeRenderPose.Position.y, 
+		XMVECTOR offset = XMVectorSet(mpOVRRenderer->mEyeRenderPose.Position.x,
+									  mpOVRRenderer->mEyeRenderPose.Position.y,
 									  mpOVRRenderer->mEyeRenderPose.Position.z,
 									  0.0f);
 
@@ -171,6 +182,10 @@ void KinectApplication::Draw()
 
 		mPerFrameData.Projection = mpOVRRenderer->getProjection(i);
 		mPerFrameData.ProjectionInv = XMMatrixInverse(NULL, mPerFrameData.Projection);
+#else
+		XMMATRIX view = mpCamera->getView(XMVectorZero(), XMQuaternionIdentity());
+#endif
+		
 		mPerFrameData.View = view;
 		mPerFrameData.ViewInv = XMMatrixInverse(NULL, view);
 		mPerFrameData.ViewProj = view * mPerFrameData.Projection;
@@ -191,13 +206,16 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		mpMeshRenderer->Render(mpRenderer);
+		//mpMeshRenderer->Render(mpRenderer);
 
 		mpHydraManager->Render(mpRenderer);
+
+		mpKinectRenderer->Render(mpRenderer);
 		
-		
+#if USE_RIFT
 		mpOVRRenderer->PostRender(i);
 	}
+#endif
 
 	mpRenderer->postRender();
 	mpOVRRenderer->EndFrame();
