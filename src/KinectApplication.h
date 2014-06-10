@@ -2,12 +2,13 @@
 
 #include "d3dApp.h"
 #include "ConstantBuffers.h"
+#include "TransformTool.h"
 
 class OVRRenderer;
 class KinectRenderer;
 class Shader;
 class Camera;
-class HydraManager;
+class HydraRenderer;
 
 template <class T>
 class MeshRenderer;
@@ -37,15 +38,18 @@ public:
 	void onMouseMove(IEventDataPtr eventData);
 
 private:
+	TransformTool mRotationTool;
+	Transform mCubeRotation;
 
 	OVRRenderer* mpOVRRenderer;
 
 	Shader* mpMainShader;
-	MeshRenderer<Vertex>* mpMeshRenderer;
+	MeshRenderer<Vertex>* mpPlaneRenderer;
+	MeshRenderer<Vertex>* mpCubeRenderer;
 
 	KinectRenderer* mpKinectRenderer;
 
-	HydraManager* mpHydraManager;
+	HydraRenderer* mpHydraRenderer;
 
 	Camera* mpCamera;
 

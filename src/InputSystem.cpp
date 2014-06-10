@@ -9,12 +9,13 @@ InputSystem* InputSystem::mpInstance = NULL;
 
 InputSystem::InputSystem()
 {
-
+	mpHydraManager = new HydraManager();
+	mpHydraManager->Initialize();
 }
 
 InputSystem::~InputSystem()
 {
-
+	delete mpHydraManager;
 }
 
 InputSystem* InputSystem::get()
@@ -25,8 +26,9 @@ InputSystem* InputSystem::get()
 		return mpInstance = new InputSystem();
 }
 
-void InputSystem::Update()
+void InputSystem::Update(float dt)
 {
+	mpHydraManager->Update(dt);
 	mPreviousKeyboardState = mKeyboardState;
 	mPreviousMouseState = mMouseState;
 }

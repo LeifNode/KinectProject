@@ -8,6 +8,7 @@
 #include "EventSystem.h"
 #include "KeyboardState.h"
 #include "MouseState.h"
+#include "HydraManager.h"
 
 class D2DApp;
 
@@ -18,12 +19,14 @@ class InputSystem
 	static InputSystem* mpInstance;
 
 public:
-	void Update();
+	void Update(float dt);
 
 	const MouseState* getMouseState() const { return &mMouseState; }
 	const MouseState* getPreviousMouseState() const { return &mPreviousMouseState; }
 	const KeyboardState* getKeyboardState() const { return &mKeyboardState; }
 	const KeyboardState* getPreviousKeyboardState() const { return &mPreviousKeyboardState; }
+
+	HydraManager* getHydra() const { return mpHydraManager; }
 
 	static InputSystem* get();
 
@@ -40,6 +43,8 @@ private:
 	void enqueueEvent(IEventDataPtr);
 
 private:
+	HydraManager* mpHydraManager;
+
 	MouseState mPreviousMouseState;
 	MouseState mMouseState;
 

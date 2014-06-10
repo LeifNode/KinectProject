@@ -3,6 +3,7 @@
 #include "d3dStd.h"
 #include <NuiApi.h>
 #include "Texture.h"
+#include "Transform.h"
 
 class D3DRenderer;
 class Shader;
@@ -25,6 +26,8 @@ public:
 
 	void Update(float dt);
 	void Render(D3DRenderer* renderer);
+
+	Transform mTransform;
 
 private:
 	HRESULT ProcessDepth();

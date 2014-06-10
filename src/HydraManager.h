@@ -9,9 +9,6 @@
 #include <sixense_utils/controller_manager/controller_manager.hpp>
 
 class D3DRenderer;
-template <class T>
-class MeshRenderer;
-struct Vertex;
 
 class HydraManager
 {
@@ -22,9 +19,24 @@ public:
 	void Initialize();
 
 	void Update(float dt);
-	void Render(D3DRenderer* renderer);
+	//void Render(D3DRenderer* renderer);
+
+	XMVECTOR getPosition(int controllerIndex) const;
+	XMVECTOR getRotation(int controllerIndex) const;
+
+	XMVECTOR getPointerPosition(int controllerIndex) const;
+
+	unsigned int getButtons(int controllerIndex) const;
+
+	float getTrigger(int controllerIndex) const;
+
+	XMFLOAT2 getJoystick(int controllerIndex) const;
+
+	bool isDocked(int controllerIndex) const;
 
 private:
-	MeshRenderer<Vertex>* mpPointerRenderer;
-	MeshRenderer<Vertex>* mpRootRenderer;
+	sixenseAllControllerData mAcd;
+
+	//MeshRenderer<Vertex>* mpPointerRenderer;
+	//MeshRenderer<Vertex>* mpRootRenderer;
 };

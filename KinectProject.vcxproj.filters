@@ -39,6 +39,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{34be9d6a-6898-48a8-97de-08ea10b45448}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utils\Hydra Tools">
+      <UniqueIdentifier>{6d0ed670-bf8f-439c-a2bb-dda9032362f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -131,6 +134,15 @@
     <ClInclude Include="src\RenderTarget.h">
       <Filter>Source Files\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\Transform.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TransformTool.h">
+      <Filter>Source Files\Utils\Hydra Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HydraRenderer.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp">
@@ -207,6 +219,15 @@
     </ClCompile>
     <ClCompile Include="src\Texture.cpp">
       <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Transform.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HydraRenderer.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TransformTool.cpp">
+      <Filter>Source Files\Utils\Hydra Tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

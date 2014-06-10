@@ -186,7 +186,7 @@ bool D3DRenderer::initialize()
 	sd.BufferCount  = 1;
 	sd.OutputWindow = gpApplication->mainWnd();
 #if USE_RIFT
-	sd.Windowed     = false;
+	sd.Windowed     = true;
 #else
 	sd.Windowed     = true;
 #endif

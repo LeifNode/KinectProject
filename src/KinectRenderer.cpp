@@ -267,7 +267,7 @@ HRESULT KinectRenderer::MapColorToDepth()
 		for (LONG x = 0; x < mColorWidth; ++x)
         {
             // calculate index into depth array
-			int depthIndex = (mDepthWidth - x / colorToDepthDivisor) + (y/colorToDepthDivisor + 1) * mDepthWidth - 1;
+			int depthIndex = (mDepthWidth - x / colorToDepthDivisor) + (y/colorToDepthDivisor + 1) * mDepthWidth - 1;//Flip color buffer
 			//int depthIndex = x / colorToDepthDivisor + y/colorToDepthDivisor * mDepthWidth;
 
             // retrieve the depth to color mapping for the current depth pixel
@@ -347,7 +347,7 @@ void KinectRenderer::Render(D3DRenderer* renderer)
 	renderer->setPerFrameBuffer(perframe);
 
 	CBPerObject perObject;
-	perObject.World = XMMatrixIdentity();
+	perObject.World = XMMatrixTranslation(0.0f, 1.0f, 0.0f) * mTransform.getTransform();
 	perObject.WorldInvTranspose = XMMatrixTranspose(perObject.World);
 	perObject.WorldViewProj = renderer->getPerFrameBuffer()->ViewProj;
 

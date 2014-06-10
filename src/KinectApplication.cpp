@@ -9,9 +9,9 @@
 #include "Geometry.h"
 #include "MeshRenderer.h"
 #include "Camera.h"
-#include "HydraManager.h"
 #include "OVRRenderer.h"
 #include "KinectRenderer.h"
+#include "HydraRenderer.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -41,23 +41,25 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 {
 	mMainWndCaption = L"Test App";
 
-	mpMeshRenderer = new MeshRenderer<Vertex>();
+	mpPlaneRenderer = new MeshRenderer<Vertex>();
+	mpCubeRenderer = new MeshRenderer<Vertex>();
 	ZeroMemory(&mPerFrameData, sizeof(CBPerFrame));
 
 	mpOVRRenderer = new OVRRenderer();
 	mpKinectRenderer = new KinectRenderer();
 
 	mpCamera = new Camera(XMFLOAT3(0.0f, 1.66f, -2.0f));
-	mpHydraManager = new HydraManager();
+	mpHydraRenderer = new HydraRenderer();
 }
 
 KinectApplication::~KinectApplication()
 {
 	unhookInputEvents();
 
-	SAFE_DELETE(mpMeshRenderer);
+	SAFE_DELETE(mpPlaneRenderer);
+	SAFE_DELETE(mpCubeRenderer);
 	SAFE_DELETE(mpCamera);
-	SAFE_DELETE(mpHydraManager);
+	SAFE_DELETE(mpHydraRenderer);
 	SAFE_DELETE(mpOVRRenderer);
 	SAFE_DELETE(mpKinectRenderer);
 }
@@ -92,12 +94,18 @@ bool KinectApplication::Initialize()
 
 	hookInputEvents();
 
-	Mesh sphere;
-	GeometryGenerator::CreateGrid(10.0f, 10.0f, 10, 10, sphere);
+	Mesh mesh;
+	GeometryGenerator::CreateGrid(10.0f, 10.0f, 10, 10, mesh);
 
-	mpMeshRenderer->Initialize(sphere.Vertices, sphere.Indices, mpRenderer);
+	mpPlaneRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
 
-	mpHydraManager->Initialize();
+	GeometryGenerator::CreateBox(1.0f, 1.0f, 1.0f, mesh);
+
+	mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
+
+	mRotationTool.setTargetTransform(&mCubeRotation);
+
+	mpHydraRenderer->Initialize();
 
 	return true;
 }
@@ -135,14 +143,15 @@ void KinectApplication::onResize()
 
 void KinectApplication::Update(float dt)
 {
-	mpHydraManager->Update(dt);
 	mpCamera->Update(dt);
 
 	mpKinectRenderer->Update(dt);
 
 	mpOVRRenderer->Update(dt);
 
-	mpInputSystem->Update();
+	mRotationTool.Update(dt);
+
+	mpInputSystem->Update(dt);
 }
 
 void KinectApplication::Draw()
@@ -206,11 +215,21 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		//mpMeshRenderer->Render(mpRenderer);
+		mpPlaneRenderer->Render(mpRenderer);
 
-		mpHydraManager->Render(mpRenderer);
+		//Render cube
+		perObject.World = mCubeRotation.getTransform();
+		perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
+		perObject.WorldViewProj = perObject.World * mpRenderer->getPerFrameBuffer()->ViewProj;
+		perObject.TextureTransform = XMMatrixIdentity();
 
-		mpKinectRenderer->Render(mpRenderer);
+		mpRenderer->setPerObjectBuffer(perObject);
+
+		mpCubeRenderer->Render(mpRenderer);
+
+		mpHydraRenderer->Render(mpRenderer);
+
+		//mpKinectRenderer->Render(mpRenderer);
 		
 #if USE_RIFT
 		mpOVRRenderer->PostRender(i);

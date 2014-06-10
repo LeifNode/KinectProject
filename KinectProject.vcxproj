@@ -164,6 +164,7 @@
     <ClInclude Include="src\GameTimer.h" />
     <ClInclude Include="src\Geometry.h" />
     <ClInclude Include="src\HydraManager.h" />
+    <ClInclude Include="src\HydraRenderer.h" />
     <ClInclude Include="src\InputSystem.h" />
     <ClInclude Include="src\KeyboardState.h" />
     <ClInclude Include="src\KinectApplication.h" />
@@ -179,6 +180,8 @@
     <ClInclude Include="src\StringUtils.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\TextureManager.h" />
+    <ClInclude Include="src\Transform.h" />
+    <ClInclude Include="src\TransformTool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp" />
@@ -192,6 +195,7 @@
     <ClCompile Include="src\GameTimer.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\HydraManager.cpp" />
+    <ClCompile Include="src\HydraRenderer.cpp" />
     <ClCompile Include="src\InputSystem.cpp" />
     <ClCompile Include="src\KeyboardState.cpp" />
     <ClCompile Include="src\KinectApplication.cpp" />
@@ -206,6 +210,8 @@
     <ClCompile Include="src\StringUtils.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\TextureManager.cpp" />
+    <ClCompile Include="src\Transform.cpp" />
+    <ClCompile Include="src\TransformTool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\color.fx">
@@ -245,6 +251,7 @@
     </FxCompile>
     <FxCompile Include="Shaders\kinect.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Shaders\kinect_GS.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">GS</EntryPointName>

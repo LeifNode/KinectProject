@@ -44,9 +44,9 @@ void Camera::OnMouseMove(int x, int y)
 		XMVECTOR right = XMVector3Normalize(XMVector3Cross(direction, mUp));
 
 #if !USE_RIFT
-		XMVECTOR rotationQuat =  XMQuaternionMultiply(XMQuaternionRotationAxis(mUp, -dx), XMQuaternionRotationAxis(right, dy));
+		XMVECTOR rotationQuat =  XMQuaternionMultiply(XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), -dx), XMQuaternionRotationAxis(right, dy));
 #else
-		XMVECTOR rotationQuat =  XMQuaternionRotationAxis(mUp, -dx);
+		XMVECTOR rotationQuat =  XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), -dx);
 #endif
 
 		mRotation = XMQuaternionNormalize(XMQuaternionMultiply(mRotation, rotationQuat));
@@ -86,6 +86,7 @@ void Camera::Update(float dt)
 void Camera::updatePosition(float dt)
 {
 	InputSystem* inputSystem = InputSystem::get();
+	HydraManager* hydra = inputSystem->getHydra();
 
 	XMVECTOR forwardOffset = XMLoadFloat3(&getDirection()) * mVelocity * dt;
 	XMVECTOR sidewaysOffset = XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&getDirection()), mUp)) * mVelocity * dt;
@@ -110,14 +111,23 @@ void Camera::updatePosition(float dt)
 		{
 			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) + forwardOffset);
 		}
+		else
+		{
+			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) + forwardOffset * hydra->getJoystick(0).y);
+		}
+
 		if (inputSystem->getKeyboardState()->isKeyPressed(KEY_S))
 		{
 			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) - forwardOffset);
 		}
+
 		if (inputSystem->getKeyboardState()->isKeyPressed(KEY_A))
 		{
 			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) + sidewaysOffset);
 		}
+		else
+			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) - sidewaysOffset * hydra->getJoystick(0).x);
+
 		if (inputSystem->getKeyboardState()->isKeyPressed(KEY_D))
 		{
 			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) - sidewaysOffset);
@@ -128,6 +138,24 @@ void Camera::updatePosition(float dt)
 void Camera::updateOrientation(float dt)
 {
 	InputSystem* inputSystem = InputSystem::get();
+	HydraManager* hydra = inputSystem->getHydra();
+
+
+	float dx = hydra->getJoystick(1).x * (MathHelper::Pi / 180.0f) * 0.2f;
+	float dy = hydra->getJoystick(1).y * (MathHelper::Pi / 180.0f) * 0.2f;
+
+	XMVECTOR direction = XMLoadFloat3(&mDirection);
+	XMVECTOR right = XMVector3Normalize(XMVector3Cross(direction, mUp));
+
+#if !USE_RIFT
+	XMVECTOR rotationQuat =  XMQuaternionMultiply(XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx), XMQuaternionRotationAxis(right, dy));
+#else
+	XMVECTOR rotationQuat =  XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx);
+#endif
+
+	mRotation = XMQuaternionNormalize(XMQuaternionMultiply(mRotation, rotationQuat));
+
+	XMStoreFloat3(&mDirection, XMVector3Normalize(XMVector3Rotate(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, 1.0f)), mRotation)));
 
 	if (!mFreeRoam)
 	{

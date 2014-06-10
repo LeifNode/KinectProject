@@ -96,6 +96,8 @@ void GS(point GS_INPUT particles[1], uint primID : SV_PrimitiveID, inout Triangl
     WorldPos.z = realDepth;
     WorldPos.w = 1.0;
 
+	WorldPos = mul(gWorld, WorldPos);
+
     // convert to camera space
     float4 ViewPos = mul(WorldPos, View);
 
