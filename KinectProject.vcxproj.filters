@@ -42,6 +42,9 @@
     <Filter Include="Source Files\Utils\Hydra Tools">
       <UniqueIdentifier>{6d0ed670-bf8f-439c-a2bb-dda9032362f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utils\Math">
+      <UniqueIdentifier>{658e661e-12c0-4429-970b-51f589a315ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -54,9 +57,6 @@
       <Filter>Source Files\3rdParty\FastDelegate</Filter>
     </ClInclude>
     <ClInclude Include="src\GameTimer.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MathHelper.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\StringUtils.h">
@@ -110,9 +110,6 @@
     <ClInclude Include="src\Lights.h">
       <Filter>Source Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\Quaternion.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\Camera.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
@@ -134,14 +131,20 @@
     <ClInclude Include="src\RenderTarget.h">
       <Filter>Source Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\Transform.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\TransformTool.h">
       <Filter>Source Files\Utils\Hydra Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\HydraRenderer.h">
       <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MathHelper.h">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Quaternion.h">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Transform.h">
+      <Filter>Source Files\Utils\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -149,9 +152,6 @@
       <Filter>Source Files\3rdParty\tinyxml2</Filter>
     </ClCompile>
     <ClCompile Include="src\GameTimer.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MathHelper.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\StringUtils.cpp">
@@ -193,9 +193,6 @@
     <ClCompile Include="src\Geometry.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\Quaternion.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="src\Camera.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
@@ -220,14 +217,20 @@
     <ClCompile Include="src\Texture.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\Transform.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="src\HydraRenderer.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\TransformTool.cpp">
       <Filter>Source Files\Utils\Hydra Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MathHelper.cpp">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Quaternion.cpp">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Transform.cpp">
+      <Filter>Source Files\Utils\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

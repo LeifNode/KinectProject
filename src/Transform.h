@@ -6,10 +6,12 @@ class Transform
 {
 public:
 	Transform();
-	//Transform(const XMMATRIX& transform, const XMVECTOR& rotationQuaternion);
 	~Transform();
 
 	void rotate(const XMVECTOR& rotationQuaternion);
+
+	XMVECTOR getRotation() const { return mRotationQuat; }
+	void setRotation(const XMVECTOR& rotation) { mRotationQuat = rotation; }
 	
 	void scale(float scale);
 	void scale(float x, float y, float z);
@@ -17,7 +19,11 @@ public:
 
 	void translate(const XMVECTOR& offset);
 
+	void setTranslation(const XMVECTOR& translation) { mTranslation = translation; }
+	XMVECTOR getTranslation() const { return mTranslation; }
+
 	XMMATRIX getTransform();
+
 private:
 	XMMATRIX mTransformation;
 	XMVECTOR mRotationQuat;

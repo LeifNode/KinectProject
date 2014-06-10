@@ -103,7 +103,7 @@ bool KinectApplication::Initialize()
 
 	mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
 
-	mRotationTool.setTargetTransform(&mCubeRotation);
+	mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
 
 	mpHydraRenderer->Initialize();
 
@@ -225,11 +225,11 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		mpCubeRenderer->Render(mpRenderer);
+		//mpCubeRenderer->Render(mpRenderer);
 
 		mpHydraRenderer->Render(mpRenderer);
 
-		//mpKinectRenderer->Render(mpRenderer);
+		mpKinectRenderer->Render(mpRenderer);
 		
 #if USE_RIFT
 		mpOVRRenderer->PostRender(i);

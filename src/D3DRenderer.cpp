@@ -450,6 +450,7 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 		d3dformat = DXGI_FORMAT_R16_SINT;
 	else if (format & Texture_Depth)
 		d3dformat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		//d3dformat = DXGI_FORMAT_D32_FLOAT;
 	else 
 		return NULL;
 

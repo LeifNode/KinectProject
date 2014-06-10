@@ -19,7 +19,9 @@ public:
 	void Initialize();
 
 	void Update(float dt);
-	//void Render(D3DRenderer* renderer);
+
+	float getPointerDistance() const { return mPointerDistance; }
+	void setPointerDistance(float distance) { mPointerDistance = distance; }
 
 	XMVECTOR getPosition(int controllerIndex) const;
 	XMVECTOR getRotation(int controllerIndex) const;
@@ -37,6 +39,6 @@ public:
 private:
 	sixenseAllControllerData mAcd;
 
-	//MeshRenderer<Vertex>* mpPointerRenderer;
-	//MeshRenderer<Vertex>* mpRootRenderer;
+
+	float mPointerDistance;
 };

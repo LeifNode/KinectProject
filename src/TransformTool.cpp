@@ -18,8 +18,10 @@ void TransformTool::Update(float dt)
 	mPreviousHydraPositions[0] = mHydraPositions[0];
 	mPreviousHydraPositions[1] = mHydraPositions[1];
 
-	mHydraPositions[0] = hydra->getPosition(0);
-	mHydraPositions[1] = hydra->getPosition(1);
+	mHydraPositions[0] = hydra->getPointerPosition(0);
+	mHydraPositions[1] = hydra->getPointerPosition(1);
+
+	XMVECTOR hydraAveragePosition = (mHydraPositions[0] + mHydraPositions[1]) * 0.5f;
 
 	if (mpTargetTransform != NULL && hydra->getTrigger(0) > 0.2f && hydra->getTrigger(1) > 0.2f)
 	{
@@ -30,18 +32,28 @@ void TransformTool::Update(float dt)
 		{
 			XMVECTOR rotationAxis = XMVector3Normalize(XMVector3Cross(oldOrientationVector, orientationVector));
 			float rotationAmount = XMVectorGetX(XMVector3Dot(oldOrientationVector, orientationVector));
-			if (rotationAmount > 1.0) {
+
+			//Avoid undefined values from acosf
+			if (rotationAmount > 1.0) 
+			{
 				rotationAmount = 1.0;
 			}
-			else if (rotationAmount < -1.0) {
+			else if (rotationAmount < -1.0)
+			{
 				rotationAmount = -1.0;
 			}
+
 			rotationAmount = acosf(rotationAmount);
+			
+			XMVECTOR rotationQuaternion = XMQuaternionRotationAxis(rotationAxis, rotationAmount);
 
-			mpTargetTransform->rotate(XMQuaternionRotationAxis(rotationAxis, rotationAmount));
+			//Handle rotations around the grab point
+			XMVECTOR newTranslation = mpTargetTransform->getTranslation();
+			XMVECTOR translationOffset = newTranslation - hydraAveragePosition;//From point between two controllers to origin of translation
+			newTranslation = hydraAveragePosition + XMVector3Rotate(translationOffset, rotationQuaternion); 
 
-			//std::cout << XMVectorGetX(rotationAxis) << ", " << XMVectorGetY(rotationAxis) << ", " << XMVectorGetZ(rotationAxis) << std::endl;
-			//std::cout << rotationAmount << std::endl;
+			mpTargetTransform->setTranslation(newTranslation);
+			mpTargetTransform->rotate(rotationQuaternion);
 		}
 	}
 	else if (mpTargetTransform != NULL && hydra->getTrigger(1) > 0.2f)
@@ -57,6 +69,11 @@ void TransformTool::Update(float dt)
 
 		float ratio =  newDistance / oldDistance;
 
+		XMVECTOR newTranslation = mpTargetTransform->getTranslation();
+		XMVECTOR translationOffset = newTranslation - hydraAveragePosition;//From point between two controllers to origin of translation
+		newTranslation = hydraAveragePosition + translationOffset * ratio;
+
+		mpTargetTransform->setTranslation(newTranslation);
 		mpTargetTransform->scale(ratio);
 	}
 }

@@ -43,17 +43,10 @@ void HydraRenderer::Render(D3DRenderer* renderer)
 	{
 		if (sixenseIsControllerEnabled(controller))
 		{
-			XMVECTOR axis;
-			float angle;
-
-			XMQuaternionToAxisAngle(&axis, &angle, hydra->getRotation(controller));
-
-			axis = XMVectorSet(XMVectorGetX(axis), XMVectorGetY(axis), -XMVectorGetZ(axis), 0.0f);
-
-			XMVECTOR rotationQuat = XMQuaternionRotationAxis(axis, -angle);
+			XMVECTOR rotationQuat = hydra->getRotation(controller);
 			XMVECTOR position = hydra->getPosition(controller);
 			//XMVectorSetZ(position, -XMVectorGetZ(position));//Flip Z axis
-			position += XMVectorSet(0.0f, 0.9f, 0.0f, 0.0f);//Offset for table height
+			//position += XMVectorSet(0.0f, 0.9f, 0.0f, 0.0f);//Offset for table height
 
 			perObject.World = XMMatrixRotationQuaternion(XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(1.0f, 0.0f, 0.0f)), XMConvertToRadians(90.0f))) *
 							  XMMatrixTranslation(0.0f, 0.0f, 0.07f) *
