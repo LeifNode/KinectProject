@@ -2,18 +2,18 @@
 
 cbuffer cbPerFrame : register( b0 )
 {
-	float4x4 View;
-	float4x4 ViewInv;
-	float4x4 Projection;
-	float4x4 ProjectionInv;
+	float4x4 gView;
+	float4x4 gViewInv;
+	float4x4 gProjection;
+	float4x4 gProjectionInv;
 
-	float4x4 ViewProj;
-	float4x4 ViewProjInv;
+	float4x4 gViewProj;
+	float4x4 gViewProjInv;
 
 	float3 gEyePosition;
-	float pad;
+	float gpad;
 	float3 gEyeDirection;
-	float pad2;
+	float gpad2;
 
 	DirectionalLight gDirectionalLight;
 	PointLight gPointLight;

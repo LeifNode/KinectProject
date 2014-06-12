@@ -23,11 +23,13 @@ public:
 	ID3D11DeviceContext* context() const { return md3dImmediateContext; }
 
 	void setTextureResource(int index, Texture*);
+	void setSampler(int index, ID3D11SamplerState* samplerState);
 	void setConstantBuffer(int index, ID3D11Buffer*);
 	void setPerFrameBuffer(CBPerFrame& buffer);
 	void setPerObjectBuffer(CBPerObject& buffer);
 
 	Texture* createTexture(UINT format, int width, int height);
+	Texture* createTexture(D3D11_TEXTURE2D_DESC* textureDescription);
 	RenderTarget* createRenderTarget(int width, int height, bool useDepthBuffer = true);
 	void setRenderTarget(RenderTarget* target);
 

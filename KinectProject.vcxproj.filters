@@ -45,6 +45,21 @@
     <Filter Include="Source Files\Utils\Math">
       <UniqueIdentifier>{658e661e-12c0-4429-970b-51f589a315ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Lines">
+      <UniqueIdentifier>{7d3991c3-72a2-4004-8342-11008d83a1e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Kinect">
+      <UniqueIdentifier>{efe59893-807e-4603-9412-066bbc95bb48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Utils">
+      <UniqueIdentifier>{ae0fe6e8-76ae-4b82-8b1b-0889982d3635}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Text">
+      <UniqueIdentifier>{739118f4-d1d5-4d20-9a3d-d952550240db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Text">
+      <UniqueIdentifier>{28375f37-02c5-4c01-b3f1-db3b82a27676}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -146,6 +161,15 @@
     <ClInclude Include="src\Transform.h">
       <Filter>Source Files\Utils\Math</Filter>
     </ClInclude>
+    <ClInclude Include="src\FontManager.h">
+      <Filter>Source Files\Resource Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Bitmap.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TextRenderer.h">
+      <Filter>Source Files\Graphics\Text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp">
@@ -232,6 +256,15 @@
     <ClCompile Include="src\Transform.cpp">
       <Filter>Source Files\Utils\Math</Filter>
     </ClCompile>
+    <ClCompile Include="src\FontManager.cpp">
+      <Filter>Source Files\Resource Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Bitmap.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextRenderer.cpp">
+      <Filter>Source Files\Graphics\Text</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\color.fx">
@@ -243,23 +276,35 @@
     <FxCompile Include="Shaders\color_VS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\LightingHelper.fx">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\ConstantBuffers.fx">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\kinect.fx">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\kinect_VS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\kinect_PS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\Kinect</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\kinect_GS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\Kinect</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\kinect_PS.hlsl">
+      <Filter>Shaders\Kinect</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\kinect_VS.hlsl">
+      <Filter>Shaders\Kinect</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\ConstantBuffers.fx">
+      <Filter>Shaders\Utils</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LightingHelper.fx">
+      <Filter>Shaders\Utils</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\text.fx">
+      <Filter>Shaders\Text</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\text_VS.hlsl">
+      <Filter>Shaders\Text</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\text_GS.hlsl">
+      <Filter>Shaders\Text</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\text_PS.hlsl">
+      <Filter>Shaders\Text</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

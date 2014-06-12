@@ -13,6 +13,7 @@ class HydraRenderer;
 template <class T>
 class MeshRenderer;
 struct Vertex;
+class TextRenderer;
 
 class KinectApplication : public D3DApp
 {
@@ -50,6 +51,8 @@ private:
 	KinectRenderer* mpKinectRenderer;
 
 	HydraRenderer* mpHydraRenderer;
+
+	TextRenderer* mpText;
 
 	Camera* mpCamera;
 

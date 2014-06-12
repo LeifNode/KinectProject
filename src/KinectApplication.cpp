@@ -12,6 +12,8 @@
 #include "OVRRenderer.h"
 #include "KinectRenderer.h"
 #include "HydraRenderer.h"
+#include "FontManager.h"
+#include "TextRenderer.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -50,6 +52,7 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 
 	mpCamera = new Camera(XMFLOAT3(0.0f, 1.66f, -2.0f));
 	mpHydraRenderer = new HydraRenderer();
+	mpText = new TextRenderer();
 }
 
 KinectApplication::~KinectApplication()
@@ -62,6 +65,7 @@ KinectApplication::~KinectApplication()
 	SAFE_DELETE(mpHydraRenderer);
 	SAFE_DELETE(mpOVRRenderer);
 	SAFE_DELETE(mpKinectRenderer);
+	SAFE_DELETE(mpText);
 }
 
 bool KinectApplication::Initialize()
@@ -103,9 +107,16 @@ bool KinectApplication::Initialize()
 
 	mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
 
-	mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
+	//mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
+	mRotationTool.setTargetTransform(&mCubeRotation);
 
 	mpHydraRenderer->Initialize();
+
+	mpFontManager->loadFont("Fonts/times.ttf");
+	mpFontManager->loadCharacter('L', 50);
+
+	mpText->setText("L");
+	mpText->Initialize();
 
 	return true;
 }
@@ -215,7 +226,7 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		mpPlaneRenderer->Render(mpRenderer);
+		//mpPlaneRenderer->Render(mpRenderer);
 
 		//Render cube
 		perObject.World = mCubeRotation.getTransform();
@@ -225,11 +236,17 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		//mpCubeRenderer->Render(mpRenderer);
+		mpCubeRenderer->Render(mpRenderer);
+
+		std::cout << XMVectorGetX(mCubeRotation.getTranslation()) << std::endl;
 
 		mpHydraRenderer->Render(mpRenderer);
 
 		mpKinectRenderer->Render(mpRenderer);
+
+		mpFontManager->bindRender(mpRenderer);
+
+		mpText->Render(mpRenderer);
 		
 #if USE_RIFT
 		mpOVRRenderer->PostRender(i);

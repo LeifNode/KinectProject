@@ -186,7 +186,7 @@ bool D3DRenderer::initialize()
 	sd.BufferCount  = 1;
 	sd.OutputWindow = gpApplication->mainWnd();
 #if USE_RIFT
-	sd.Windowed     = true;
+	sd.Windowed     = false;
 #else
 	sd.Windowed     = true;
 #endif
@@ -410,6 +410,21 @@ void D3DRenderer::setTextureResource(int index, Texture* texture)
 	}
 }
 
+void D3DRenderer::setSampler(int index, ID3D11SamplerState* samplerState)
+{
+	if (mpActiveShader)
+	{
+		if (mpActiveShader->hasVertexShader())
+			md3dImmediateContext->VSSetSamplers(index, 1, &samplerState);
+		if (mpActiveShader->hasPixelShader())
+			md3dImmediateContext->PSSetSamplers(index, 1, &samplerState);
+		if (mpActiveShader->hasGeometryShader())
+			md3dImmediateContext->GSSetSamplers(index, 1, &samplerState);
+		if (mpActiveShader->hasComputeShader())
+			md3dImmediateContext->CSSetSamplers(index, 1, &samplerState);
+	}
+}
+
 void D3DRenderer::setConstantBuffer(int index, ID3D11Buffer* buffer)
 {
 	if (mpActiveShader)
@@ -507,6 +522,33 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 			delete newTexture;
 			return NULL;
 		}
+	}
+
+	return newTexture;
+}
+
+Texture* D3DRenderer::createTexture(D3D11_TEXTURE2D_DESC* textureDescription)
+{
+	Texture* newTexture = new Texture();
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+
+	shaderResourceViewDesc.Format = textureDescription->Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = textureDescription->MipLevels;
+
+	HRESULT result = md3dDevice->CreateTexture2D(textureDescription, NULL, &newTexture->mpTexture);
+	if (FAILED(result))
+	{
+		delete newTexture;
+		return NULL;
+	}
+
+	result = md3dDevice->CreateShaderResourceView(newTexture->mpTexture, &shaderResourceViewDesc, &newTexture->mpResourceView);
+	if (FAILED(result))
+	{
+		delete newTexture;
+		return NULL;
 	}
 
 	return newTexture;

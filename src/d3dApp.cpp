@@ -2,6 +2,7 @@
 #include <windowsx.h>
 #include "D3DRenderer.h"
 #include "TextureManager.h"
+#include "FontManager.h"
 
 #pragma comment(lib, "d3d11")
 #pragma comment(lib, "d3dcompiler")
@@ -39,6 +40,7 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 	mpRenderer = new D3DRenderer();
 	mpInputSystem = InputSystem::get();
 	mpTextureManager = new TextureManager();
+	mpFontManager = new FontManager();
 
 	EventSystem::get();
 }
@@ -97,6 +99,8 @@ bool D3DApp::Initialize()
 
 	if (!mpRenderer->initialize())
 		return false;
+
+	mpFontManager->Initialize();
 
 	return true;
 }

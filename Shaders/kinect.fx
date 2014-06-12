@@ -99,7 +99,7 @@ void GS(point GS_INPUT particles[1], uint primID : SV_PrimitiveID, inout Triangl
 	WorldPos = mul(gWorld, WorldPos);
 
     // convert to camera space
-    float4 ViewPos = mul(WorldPos, View);
+    float4 ViewPos = mul(WorldPos, gView);
 
     // base color texture sample lookup coords, in [0,1]
     float2 colorTextureCoords = baseLookupCoords.xy/ColorWidthHeight;
@@ -116,7 +116,7 @@ void GS(point GS_INPUT particles[1], uint primID : SV_PrimitiveID, inout Triangl
         float4 ViewPosExpanded = ViewPos + quadOffsets[c] * quadOffsetScalingFactorInViewspace;
      
         // then project it
-        output.Pos = mul(ViewPosExpanded, Projection);
+        output.Pos = mul(ViewPosExpanded, gProjection);
 
         // sample the color texture for the corner we're at
         output.Col = textureColor.SampleLevel(mainSampler, colorTextureCoords + texOffsets4Samples[c], 0);
