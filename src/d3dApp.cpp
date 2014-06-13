@@ -48,6 +48,7 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 D3DApp::~D3DApp()
 {
 	delete mpRenderer;
+	delete mpFontManager;
 }
 
 float D3DApp::aspectRatio() const

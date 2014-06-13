@@ -34,7 +34,7 @@ void TextRenderer::Initialize()
 	memset(pVertArray, 0, sizeof(TextQuadVert) * mMaxCharCount);//Clear array
 
 	pVertArray[0].Enabled = true;
-	pVertArray[0].Dimensions = XMFLOAT2(3.0f, 3.0f);
+	pVertArray[0].Dimensions = XMFLOAT2(2.0f, 2.0f);
 	pVertArray[0].TexTL = XMFLOAT2(0.0f, 0.0f);
 	pVertArray[0].TexBR = XMFLOAT2(1.0f, 1.0f);
 	
@@ -53,8 +53,8 @@ void TextRenderer::Render(D3DRenderer* renderer)
 {
 	CBPerObject perObject;
 
-	perObject.World = XMMatrixIdentity();
-	perObject.WorldInvTranspose = XMMatrixTranspose(perObject.World);
+	perObject.World = mTransform.getTransform();
+	perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
 	perObject.WorldViewProj = perObject.World * renderer->getPerFrameBuffer()->ViewProj;
 
 	renderer->setPerObjectBuffer(perObject);

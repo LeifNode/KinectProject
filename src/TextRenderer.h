@@ -1,6 +1,7 @@
 #pragma once
 
 #include "d3dStd.h"
+#include "Transform.h"
 
 class D3DRenderer;
 
@@ -25,6 +26,9 @@ public:
 
 	void setText(const std::string& text);
 	std::string getText() const { return mText; }
+
+public:
+	Transform mTransform;
 
 private:
 	int mMaxCharCount;

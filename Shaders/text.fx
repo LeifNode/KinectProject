@@ -73,7 +73,7 @@ void GS(point GS_INPUT input[1], uint primId : SV_PrimitiveID, inout TriangleStr
 
 float4 PS(PS_INPUT input) : SV_Target
 {
-	float4 color = float4(textAtlus.Sample(textSampler, input.TexUV).r, 0.0f, 0.0f, 1.0f);
+	float4 color = float2(textAtlus.Sample(textSampler, input.TexUV).r, 1.0f).xxxy;
 
 	clip(color.r < 0.1f ? -1:0);//Handle transparency
 

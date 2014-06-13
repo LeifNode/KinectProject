@@ -176,6 +176,7 @@
     <ClInclude Include="src\MouseState.h" />
     <ClInclude Include="src\OVRRenderer.h" />
     <ClInclude Include="src\Quaternion.h" />
+    <ClInclude Include="src\RectangleBinPacker.h" />
     <ClInclude Include="src\RenderTarget.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\StringUtils.h" />
@@ -209,6 +210,7 @@
     <ClCompile Include="src\MouseState.cpp" />
     <ClCompile Include="src\OVRRenderer.cpp" />
     <ClCompile Include="src\Quaternion.cpp" />
+    <ClCompile Include="src\RectangleBinPacker.cpp" />
     <ClCompile Include="src\RenderTarget.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\StringUtils.cpp" />
@@ -289,6 +291,7 @@
     </FxCompile>
     <FxCompile Include="Shaders\text.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Shaders\text_GS.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">GS</EntryPointName>

@@ -5,19 +5,22 @@
 
 FontManager::FontManager()
 	:mpFontTexture(NULL),
-	mpSampler(NULL)
+	mpSampler(NULL),
+	mFace(NULL)
 {
 
 }
 
 FontManager::~FontManager()
 {
+	FT_Done_Face(mFace);
 	FT_Error error = FT_Done_FreeType(mftLibrary);
 
 	if (error)
 		std::cout << "Failed to unload freetype.\n";
 
 	SAFE_DELETE(mpFontTexture);
+	
 	ReleaseCOM(mpSampler);
 }
 
@@ -34,6 +37,8 @@ void FontManager::Initialize()
 	initializeTexture();
 	initializeSampler();
 	initializeShader();
+
+	mBinPacker.Initialize(2048, 2048);
 }
 
 void FontManager::initializeTexture()
@@ -45,15 +50,15 @@ void FontManager::initializeTexture()
 	ZeroMemory(&textureDesc, sizeof(textureDesc));
 
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.Width = 1024;
-	textureDesc.Height = 1024;
-	textureDesc.MipLevels = 1; //2^10 =1024
+	textureDesc.Width = 2048;
+	textureDesc.Height = 2048;
+	textureDesc.MipLevels = 11; //2^10 =1024
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_R8_UNORM;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	textureDesc.CPUAccessFlags = 0;
-	textureDesc.MiscFlags = 0;
+	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 	mpFontTexture = renderer->createTexture(&textureDesc);
 
@@ -107,6 +112,8 @@ void FontManager::initializeShader()
 
 void FontManager::loadFont(const std::string fontPath)
 {
+	if (mFace)
+		FT_Done_Face(mFace);
 	FT_Error error = FT_New_Face(mftLibrary, fontPath.c_str(), 0, &mFace);
 
 	if (error == FT_Err_Unknown_File_Format)
@@ -121,7 +128,7 @@ void FontManager::loadFont(const std::string fontPath)
 
 void FontManager::loadCharacter(char ch, int pointSize)
 {
-	FT_Error error = FT_Set_Char_Size(mFace, 0, pointSize, 30000, 30000);
+	FT_Error error = FT_Set_Char_Size(mFace, 0, pointSize * 64, 300, 300);
 	assert(error == 0);
 
 	int glyphIndex = FT_Get_Char_Index(mFace, ch);
@@ -136,20 +143,40 @@ void FontManager::loadCharacter(char ch, int pointSize)
 	FT_Bitmap* bitmap = &mFace->glyph->bitmap;
 	assert(bitmap);
 
-	int width = mFace->glyph->metrics.width;
-	int height = mFace->glyph->metrics.height;
+	int width = bitmap->width;
+	int height = bitmap->rows;
 
-	D3DRenderer* renderer = gpApplication->getRenderer();
+	if (height == 0 || width == 0)
+		return;
 
-	D3D11_BOX box;
-	box.left = 0;
-	box.right = bitmap->width;
-	box.top = 0;
-	box.bottom = bitmap->rows;
-	box.front = 0;
-	box.back = 1;
+	auto node = mBinPacker.insert(width + 2, height + 2);
 
-	renderer->context()->UpdateSubresource(mpFontTexture->getD3DTexture(), D3D11CalcSubresource(0, 0, 1), &box, &bitmap->buffer[0], bitmap->pitch, 0);
+	if (node != NULL)
+	{
+		D3DRenderer* renderer = gpApplication->getRenderer();
+
+		D3D11_BOX box;
+		box.left = node->x + 1;
+		box.right = box.left + width;
+		box.top = node->y + 1;
+		box.bottom = box.top + height;
+		box.front = 0;
+		box.back = 1;
+
+		renderer->context()->UpdateSubresource(mpFontTexture->getD3DTexture(), D3D11CalcSubresource(0, 0, 11), &box, bitmap->buffer, bitmap->pitch, 0); 
+	}
+}
+
+void FontManager::loadGlyphs(int ptSize)
+{
+	for (int i = 33; i < 127; i++)
+	{
+		loadCharacter((char)i, ptSize);
+	}
+
+	gpApplication->getRenderer()->context()->GenerateMips(mpFontTexture->getResourceView());
+
+	std::cout << "Used space: " << mBinPacker.getFillPercent() << "%\n";
 }
 
 void FontManager::bindRender(D3DRenderer* renderer)

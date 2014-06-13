@@ -108,12 +108,24 @@ bool KinectApplication::Initialize()
 	mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
 
 	//mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
-	mRotationTool.setTargetTransform(&mCubeRotation);
+	//mRotationTool.setTargetTransform(&mCubeRotation);
+	mRotationTool.setTargetTransform(&mpText->mTransform);
 
 	mpHydraRenderer->Initialize();
 
 	mpFontManager->loadFont("Fonts/times.ttf");
-	mpFontManager->loadCharacter('L', 50);
+	for(int i = 25; i > 0; i--)
+		mpFontManager->loadGlyphs(i);
+
+	mpFontManager->loadFont("Fonts/ITCEDSCR.TTF");
+
+	for(int i = 16; i > 4; i--)
+		mpFontManager->loadGlyphs(i);
+
+	mpFontManager->loadFont("Fonts/arial.TTF");
+
+	for(int i = 10; i > 0; i--)
+		mpFontManager->loadGlyphs(i);
 
 	mpText->setText("L");
 	mpText->Initialize();
@@ -226,7 +238,7 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		//mpPlaneRenderer->Render(mpRenderer);
+		mpPlaneRenderer->Render(mpRenderer);
 
 		//Render cube
 		perObject.World = mCubeRotation.getTransform();
@@ -236,13 +248,11 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		mpCubeRenderer->Render(mpRenderer);
-
-		std::cout << XMVectorGetX(mCubeRotation.getTranslation()) << std::endl;
+		//mpCubeRenderer->Render(mpRenderer);
 
 		mpHydraRenderer->Render(mpRenderer);
 
-		mpKinectRenderer->Render(mpRenderer);
+		//mpKinectRenderer->Render(mpRenderer);
 
 		mpFontManager->bindRender(mpRenderer);
 
