@@ -33,6 +33,8 @@ public:
 	RenderTarget* createRenderTarget(int width, int height, bool useDepthBuffer = true);
 	void setRenderTarget(RenderTarget* target);
 
+	void setBlendState(bool blendingEnabled);
+
 	void setViewport(int width, int height, int x, int y);
 
 	const CBPerFrame* getPerFrameBuffer() const { return &mPerFrameData; }
@@ -69,6 +71,8 @@ private:
 	CBPerFrame mPerFrameData;
 	ID3D11Buffer* mPerObjectBuffer;
 	ID3D11SamplerState* mSamplerState;
+	ID3D11BlendState* mBlendStateAlpha;
+	ID3D11BlendState* mBlendStateOpaque;
 
 	bool mEnable4xMsaa;
 

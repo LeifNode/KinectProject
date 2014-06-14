@@ -36,7 +36,7 @@ using std::dynamic_pointer_cast;
 //#define _XM_NO_INTRINSICS_
 //#endif
 
-#define USE_RIFT 0
+#define USE_RIFT 1
 
 #ifndef ReleaseCOM
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }

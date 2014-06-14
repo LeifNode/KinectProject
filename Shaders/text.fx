@@ -43,22 +43,38 @@ void GS(point GS_INPUT input[1], uint primId : SV_PrimitiveID, inout TriangleStr
 {
 	PS_INPUT output;
 
-	float2 texCoords[4] =
+	/*float2 texCoords[4] =
 	{
 		float2(input[0].TexBR.x, input[0].TexTL.y),
 		float2(input[0].TexBR.x, input[0].TexBR.y),
 		float2(input[0].TexTL.x, input[0].TexTL.y),
 		float2(input[0].TexTL.x, input[0].TexBR.y)
+	};*/
+
+	float2 texCoords[4] =
+	{
+		float2(input[0].TexTL.x, input[0].TexTL.y),
+		float2(input[0].TexTL.x, input[0].TexBR.y),
+		float2(input[0].TexBR.x, input[0].TexTL.y),
+		float2(input[0].TexBR.x, input[0].TexBR.y),
 	};
 
-	float2 halfDimensions = input[0].Dimensions * 0.5f;
+	float2 dimensions = input[0].Dimensions;
+
+	/*float3 offsets[4] = 
+	{
+		float3(0.0f, dimensions.y, 0.0f),
+		float3(0.0f, 0.0f, 0.0f),
+		float3(dimensions.x, dimensions.y, 0.0f),
+		float3(dimensions.x, 0.0f, 0.0f),
+	};*/
 
 	float3 offsets[4] = 
 	{
-		float3(-halfDimensions.x, halfDimensions.y, 0.0f),
-		float3(-halfDimensions.x, -halfDimensions.y, 0.0f),
-		float3(halfDimensions.x, halfDimensions.y, 0.0f),
-		float3(halfDimensions.x, -halfDimensions.y, 0.0f),
+		float3(0.0f, dimensions.y, 0.0f),
+		float3(0.0f, 0.0f, 0.0f),
+		float3(-dimensions.x, dimensions.y, 0.0f),
+		float3(-dimensions.x, 0.0f, 0.0f),
 	};
 
 	[unroll]
@@ -73,9 +89,9 @@ void GS(point GS_INPUT input[1], uint primId : SV_PrimitiveID, inout TriangleStr
 
 float4 PS(PS_INPUT input) : SV_Target
 {
-	float4 color = float2(textAtlus.Sample(textSampler, input.TexUV).r, 1.0f).xxxy;
+	float4 color = float2(1.0f, textAtlus.Sample(textSampler, input.TexUV).r).xxxy;
 
-	clip(color.r < 0.1f ? -1:0);//Handle transparency
+	clip(color.r - 0.1f);//Handle transparency
 
 	return color;
 }

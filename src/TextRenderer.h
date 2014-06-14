@@ -11,7 +11,6 @@ struct TextQuadVert
 	XMFLOAT2 TexTL;
 	XMFLOAT2 TexBR;
 	XMFLOAT2 Dimensions;
-	bool Enabled;
 };
 
 class TextRenderer
@@ -26,6 +25,9 @@ public:
 
 	void setText(const std::string& text);
 	std::string getText() const { return mText; }
+
+private:
+	void updateVertexBuffer();
 
 public:
 	Transform mTransform;

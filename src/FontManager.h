@@ -12,6 +12,19 @@ class D3DRenderer;
 class FontManager
 {
 public:
+	struct Glyph
+	{
+		char character;
+		int pointSize;
+		int left;
+		int top;
+		int width;
+		int height;
+		int advance;
+		int bearing;
+	};
+
+public:
 	FontManager();
 	~FontManager();
 
@@ -20,16 +33,22 @@ public:
 	void loadFont(const std::string fontPath);
 	void loadGlyphs(int ptSize = 12);
 
+	const Glyph* getGlyph(char ch, int pointSize);
+
 	void bindRender(D3DRenderer* renderer);
 
 private:
 	void initializeTexture();
 	void initializeSampler();
 	void initializeShader();
-
+	void initializeBlendState();
+	
 	void loadCharacter(char ch, int pointSize);
 
 private:
+	//Character and point size
+	std::map<std::pair<char, int>, Glyph*> mGlyphMap;
+
 	RectangleBinPacker mBinPacker;
 
 	FT_Library mftLibrary;

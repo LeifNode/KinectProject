@@ -18,7 +18,9 @@ D3DRenderer::D3DRenderer()
 	mRenderTarget(NULL),
 	mDepthStencilView(NULL),
 	mPerFrameBuffer(NULL),
-	mPerObjectBuffer(NULL)
+	mPerObjectBuffer(NULL),
+	mBlendStateAlpha(NULL),
+	mBlendStateOpaque(NULL)
 {
 	mClearColor[0] = 0.0f;
 	mClearColor[1] = 0.125f;
@@ -36,6 +38,8 @@ D3DRenderer::~D3DRenderer()
 	}
 	mLoadedShaders.clear();
 
+	ReleaseCOM(mBlendStateAlpha);
+	ReleaseCOM(mBlendStateOpaque);
 	ReleaseCOM(mSamplerState);
 	ReleaseCOM(mPerFrameBuffer);
 	ReleaseCOM(mPerObjectBuffer);
@@ -221,7 +225,7 @@ bool D3DRenderer::initialize()
 	ZeroMemory(&rasterDesc, sizeof(D3D11_RASTERIZER_DESC));
 
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.CullMode = D3D11_CULL_NONE;
 
 	ID3D11RasterizerState* rasterState;
 
@@ -229,6 +233,28 @@ bool D3DRenderer::initialize()
 	md3dImmediateContext->RSSetState(rasterState);
 
 	ReleaseCOM(rasterState);
+
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
+	blendDesc.RenderTarget[0].BlendEnable = FALSE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	gpApplication->getRenderer()->device()->CreateBlendState(&blendDesc, &mBlendStateAlpha);
+
+	blendDesc.RenderTarget[0].BlendEnable = FALSE;
+
+	gpApplication->getRenderer()->device()->CreateBlendState(&blendDesc, &mBlendStateOpaque);
+
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask   = 0xffffffff;
+
+	context()->OMSetBlendState(mBlendStateOpaque, blendFactor, sampleMask);
 
 	//Per frame buffer
 	D3D11_BUFFER_DESC bd;
@@ -603,6 +629,17 @@ void D3DRenderer::setRenderTarget(RenderTarget* target)
 	md3dImmediateContext->OMSetRenderTargets(1, &target->mpRenderTargetView, target->mpDepthView);
 }
 
+void D3DRenderer::setBlendState(bool blendingEnabled)
+{
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask   = 0xffffffff;
+
+	if (blendingEnabled)
+		context()->OMSetBlendState(mBlendStateAlpha, blendFactor, sampleMask);
+	else
+		context()->OMSetBlendState(mBlendStateOpaque, blendFactor, sampleMask);
+}
+
 void D3DRenderer::setViewport(int width, int height, int x, int y)
 {
 	mScreenViewport.TopLeftX = (float)x;
@@ -656,6 +693,11 @@ void D3DRenderer::preRender()
 	md3dImmediateContext->VSSetSamplers(0, 1, &mSamplerState);
 	md3dImmediateContext->PSSetSamplers(0, 1, &mSamplerState);
 	md3dImmediateContext->GSSetSamplers(0, 1, &mSamplerState);
+
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask   = 0xffffffff;
+
+	setBlendState(false);
 }
 
 void D3DRenderer::postRender()

@@ -22,6 +22,13 @@ FontManager::~FontManager()
 	SAFE_DELETE(mpFontTexture);
 	
 	ReleaseCOM(mpSampler);
+
+	for (auto it = mGlyphMap.begin(); it != mGlyphMap.end(); ++it)
+	{
+		delete it->second;
+	}
+
+	mGlyphMap.clear();
 }
 
 void FontManager::Initialize()
@@ -37,6 +44,7 @@ void FontManager::Initialize()
 	initializeTexture();
 	initializeSampler();
 	initializeShader();
+	initializeBlendState();
 
 	mBinPacker.Initialize(2048, 2048);
 }
@@ -110,6 +118,29 @@ void FontManager::initializeShader()
 	mpTextRenderShader = gpApplication->getRenderer()->loadShader(L"Shaders/text.fx", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_POINTLIST, vertexDescription, ARRAYSIZE(vertexDescription)); 
 }
 
+void FontManager::initializeBlendState()
+{
+	mpBlendState = NULL;
+
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	gpApplication->getRenderer()->device()->CreateBlendState(&blendDesc, &mpBlendState);
+
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask   = 0xffffffff;
+
+	gpApplication->getRenderer()->context()->OMSetBlendState(mpBlendState, blendFactor, sampleMask);
+}
+
 void FontManager::loadFont(const std::string fontPath)
 {
 	if (mFace)
@@ -128,6 +159,12 @@ void FontManager::loadFont(const std::string fontPath)
 
 void FontManager::loadCharacter(char ch, int pointSize)
 {
+	if (mGlyphMap.find(std::make_pair(ch, pointSize)) != mGlyphMap.end())
+	{
+		std::cout << "Character '" << ch << "' is already loaded\n";
+		return;
+	}
+
 	FT_Error error = FT_Set_Char_Size(mFace, 0, pointSize * 64, 300, 300);
 	assert(error == 0);
 
@@ -146,37 +183,63 @@ void FontManager::loadCharacter(char ch, int pointSize)
 	int width = bitmap->width;
 	int height = bitmap->rows;
 
-	if (height == 0 || width == 0)
-		return;
-
-	auto node = mBinPacker.insert(width + 2, height + 2);
+	auto node = mBinPacker.insert(width + 4, height + 4);
 
 	if (node != NULL)
 	{
+		//Render to texture
 		D3DRenderer* renderer = gpApplication->getRenderer();
 
 		D3D11_BOX box;
-		box.left = node->x + 1;
+		box.left = node->x + 2;
 		box.right = box.left + width;
-		box.top = node->y + 1;
+		box.top = node->y + 2;
 		box.bottom = box.top + height;
 		box.front = 0;
 		box.back = 1;
 
-		renderer->context()->UpdateSubresource(mpFontTexture->getD3DTexture(), D3D11CalcSubresource(0, 0, 11), &box, bitmap->buffer, bitmap->pitch, 0); 
+		if (width > 0 && height > 0)
+			renderer->context()->UpdateSubresource(mpFontTexture->getD3DTexture(), D3D11CalcSubresource(0, 0, 11), &box, bitmap->buffer, bitmap->pitch, 0); 
+
+		//Cache to map
+		Glyph* newGlyph = new Glyph;
+
+		newGlyph->character = ch;
+		newGlyph->pointSize = pointSize;
+		newGlyph->left = box.left;
+		newGlyph->top = box.top;
+		newGlyph->width = width;
+		newGlyph->height = height;
+		newGlyph->advance = mFace->glyph->advance.x / 64;
+		newGlyph->bearing = mFace->glyph->metrics.horiBearingY / 64;
+		
+
+		mGlyphMap.insert(std::make_pair(std::make_pair(ch, pointSize), newGlyph));
 	}
+	else
+		std::cout << "Failed to pack character " << (char)ch << ".\n";
 }
 
 void FontManager::loadGlyphs(int ptSize)
 {
-	for (int i = 33; i < 127; i++)
+	for (int i = 32; i < 127; i++)
 	{
 		loadCharacter((char)i, ptSize);
 	}
 
 	gpApplication->getRenderer()->context()->GenerateMips(mpFontTexture->getResourceView());
 
-	std::cout << "Used space: " << mBinPacker.getFillPercent() << "%\n";
+	//std::cout << "Used space: " << mBinPacker.getFillPercent() << "%\n";
+}
+
+const FontManager::Glyph* FontManager::getGlyph(char ch, int pointSize)
+{
+	auto it = mGlyphMap.find(std::make_pair(ch, pointSize));
+
+	if (it != mGlyphMap.end())
+		return it->second;
+	else
+		return NULL;
 }
 
 void FontManager::bindRender(D3DRenderer* renderer)
@@ -184,4 +247,9 @@ void FontManager::bindRender(D3DRenderer* renderer)
 	renderer->setShader(mpTextRenderShader);
 	renderer->setTextureResource(0, mpFontTexture);
 	renderer->setSampler(0, mpSampler);
+
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask   = 0xffffffff;
+
+	gpApplication->getRenderer()->context()->OMSetBlendState(mpBlendState, blendFactor, sampleMask);
 }
