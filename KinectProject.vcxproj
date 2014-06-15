@@ -171,10 +171,13 @@
     <ClInclude Include="src\KinectApplication.h" />
     <ClInclude Include="src\KinectRenderer.h" />
     <ClInclude Include="src\Lights.h" />
+    <ClInclude Include="src\LineRenderer.h" />
+    <ClInclude Include="src\LineSegment.h" />
     <ClInclude Include="src\MathHelper.h" />
     <ClInclude Include="src\MeshRenderer.h" />
     <ClInclude Include="src\MouseState.h" />
     <ClInclude Include="src\OVRRenderer.h" />
+    <ClInclude Include="src\PointList.h" />
     <ClInclude Include="src\Quaternion.h" />
     <ClInclude Include="src\RectangleBinPacker.h" />
     <ClInclude Include="src\RenderTarget.h" />
@@ -205,10 +208,13 @@
     <ClCompile Include="src\KeyboardState.cpp" />
     <ClCompile Include="src\KinectApplication.cpp" />
     <ClCompile Include="src\KinectRenderer.cpp" />
+    <ClCompile Include="src\LineRenderer.cpp" />
+    <ClCompile Include="src\LineSegment.cpp" />
     <ClCompile Include="src\MathHelper.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\MouseState.cpp" />
     <ClCompile Include="src\OVRRenderer.cpp" />
+    <ClCompile Include="src\PointList.cpp" />
     <ClCompile Include="src\Quaternion.cpp" />
     <ClCompile Include="src\RectangleBinPacker.cpp" />
     <ClCompile Include="src\RenderTarget.cpp" />
@@ -288,6 +294,34 @@
     <FxCompile Include="Shaders\LightingHelper.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Shaders\line.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Shaders\line_GS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">GS</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">GS</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="Shaders\line_PS.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\line_VS.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\text.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

@@ -41,7 +41,6 @@ private:
 	void initializeTexture();
 	void initializeSampler();
 	void initializeShader();
-	void initializeBlendState();
 	
 	void loadCharacter(char ch, int pointSize);
 
@@ -57,5 +56,4 @@ private:
 	Shader* mpTextRenderShader;
 	Texture* mpFontTexture;
 	ID3D11SamplerState* mpSampler;
-	ID3D11BlendState* mpBlendState;
 };

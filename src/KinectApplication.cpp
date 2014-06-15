@@ -14,6 +14,7 @@
 #include "HydraRenderer.h"
 #include "FontManager.h"
 #include "TextRenderer.h"
+#include "LineRenderer.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -53,6 +54,7 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	mpCamera = new Camera(XMFLOAT3(0.0f, 1.66f, -2.0f));
 	mpHydraRenderer = new HydraRenderer();
 	mpText = new TextRenderer(140000);
+	mpLineRenderer = new LineRenderer();
 }
 
 KinectApplication::~KinectApplication()
@@ -66,6 +68,7 @@ KinectApplication::~KinectApplication()
 	SAFE_DELETE(mpOVRRenderer);
 	SAFE_DELETE(mpKinectRenderer);
 	SAFE_DELETE(mpText);
+	SAFE_DELETE(mpLineRenderer);
 }
 
 bool KinectApplication::Initialize()
@@ -109,7 +112,7 @@ bool KinectApplication::Initialize()
 
 	//mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
 	//mRotationTool.setTargetTransform(&mCubeRotation);
-	mRotationTool.setTargetTransform(&mpText->mTransform);
+	//mRotationTool.setTargetTransform(&mpText->mTransform);
 
 	mpHydraRenderer->Initialize();
 
@@ -188,6 +191,16 @@ void KinectApplication::Update(float dt)
 	mRotationTool.Update(dt);
 
 	mpInputSystem->Update(dt);
+
+	//mpLineRenderer->Points.clear();
+	//mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(0));
+	if (mpInputSystem->getHydra()->getTrigger(1) > 0.8f)
+	{
+		mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
+		if (mpLineRenderer->Points.List.size() > 1)
+			mpLineRenderer->Points.addPoint(mpLineRenderer->Points.List[mpLineRenderer->Points.List.size() - 1]);
+		mpLineRenderer->reloadPoints();
+	}
 }
 
 void KinectApplication::Draw()
@@ -227,8 +240,10 @@ void KinectApplication::Draw()
 
 		mPerFrameData.Projection = mpOVRRenderer->getProjection(i);
 		mPerFrameData.ProjectionInv = XMMatrixInverse(NULL, mPerFrameData.Projection);
+		XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position) + offset);
 #else
 		XMMATRIX view = mpCamera->getView(XMVectorZero(), XMQuaternionIdentity());
+		mPerFrameData.EyePosition = mpCamera->getPosition();
 #endif
 		
 		mPerFrameData.View = view;
@@ -236,7 +251,6 @@ void KinectApplication::Draw()
 		mPerFrameData.ViewProj = view * mPerFrameData.Projection;
 		mPerFrameData.ViewProjInv = XMMatrixInverse(NULL, mPerFrameData.ViewProj);
 
-		mPerFrameData.EyePosition = mpCamera->getPosition();
 		mPerFrameData.EyeDirection = mpCamera->getDirection();
 
 		mpRenderer->setPerFrameBuffer(mPerFrameData);
@@ -269,7 +283,9 @@ void KinectApplication::Draw()
 
 		mpFontManager->bindRender(mpRenderer);
 
-		mpText->Render(mpRenderer);
+		//mpText->Render(mpRenderer);
+
+		mpLineRenderer->Render(mpRenderer);
 
 		mpRenderer->setShader(mpMainShader);
 		mpRenderer->setBlendState(false);

@@ -42,15 +42,6 @@ GS_INPUT VS(VS_INPUT input)
 void GS(point GS_INPUT input[1], uint primId : SV_PrimitiveID, inout TriangleStream<PS_INPUT> triStream)
 {
 	PS_INPUT output;
-
-	/*float2 texCoords[4] =
-	{
-		float2(input[0].TexBR.x, input[0].TexTL.y),
-		float2(input[0].TexBR.x, input[0].TexBR.y),
-		float2(input[0].TexTL.x, input[0].TexTL.y),
-		float2(input[0].TexTL.x, input[0].TexBR.y)
-	};*/
-
 	float2 texCoords[4] =
 	{
 		float2(input[0].TexTL.x, input[0].TexTL.y),
@@ -60,14 +51,6 @@ void GS(point GS_INPUT input[1], uint primId : SV_PrimitiveID, inout TriangleStr
 	};
 
 	float2 dimensions = input[0].Dimensions;
-
-	/*float3 offsets[4] = 
-	{
-		float3(0.0f, dimensions.y, 0.0f),
-		float3(0.0f, 0.0f, 0.0f),
-		float3(dimensions.x, dimensions.y, 0.0f),
-		float3(dimensions.x, 0.0f, 0.0f),
-	};*/
 
 	float3 offsets[4] = 
 	{

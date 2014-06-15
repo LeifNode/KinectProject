@@ -78,7 +78,7 @@ void TextRenderer::updateVertexBuffer()
 			if (lineCount > 450)
 			{
 				textOffset = 0;
-				heightOffset -= 0.015f;
+				heightOffset -= 0.018f;
 				lineCount = 0;
 			}
 			
@@ -121,7 +121,8 @@ void TextRenderer::Render(D3DRenderer* renderer)
 
 	CBPerObject perObject;
 
-	perObject.World = mTransform.getTransform() * XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	//perObject.World =  XMMatrixScaling(-1.0f, 1.0f, 1.0f) * mTransform.getTransform();
+	perObject.World = XMMatrixScaling(-1.0f, 1.0f, 1.0f) * mTransform.getTransform() * XMMatrixTranslation(0.0f, 0.0f, 0.4f) * XMMatrixTranslationFromVector(XMLoadFloat3(&renderer->getPerFrameBuffer()->EyePosition));
 	perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
 	perObject.WorldViewProj = perObject.World * renderer->getPerFrameBuffer()->ViewProj;
 	//perObject.WorldViewProj = perObject.World * XMMatrixOrthographicLH(1.0f, 0.5625f, 0.0f, 1.0f);
@@ -129,9 +130,10 @@ void TextRenderer::Render(D3DRenderer* renderer)
 	renderer->setPerObjectBuffer(perObject);
 
 	unsigned int stride = sizeof(TextQuadVert), offset = 0;
-
+	
+	renderer->setBlendState(true);
 	renderer->context()->IASetVertexBuffers(0, 1, &mpVertexBuffer, &stride, &offset);
-	renderer->context()->Draw(mText.size(), 0);
+	renderer->context()->Draw((UINT)mText.size(), 0);
 }
 
 void TextRenderer::setText(const std::string& text)

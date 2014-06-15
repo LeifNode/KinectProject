@@ -3,6 +3,7 @@
 #include "D3DRenderer.h"
 #include "TextureManager.h"
 #include "FontManager.h"
+#include "LineRenderer.h"
 
 #pragma comment(lib, "d3d11")
 #pragma comment(lib, "d3dcompiler")
@@ -47,8 +48,11 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 
 D3DApp::~D3DApp()
 {
-	delete mpRenderer;
+	LineRenderer::DeInit();
+	
+	delete mpTextureManager;
 	delete mpFontManager;
+	delete mpRenderer;
 }
 
 float D3DApp::aspectRatio() const
@@ -102,6 +106,8 @@ bool D3DApp::Initialize()
 		return false;
 
 	mpFontManager->Initialize();
+
+	LineRenderer::Initialize();
 
 	return true;
 }

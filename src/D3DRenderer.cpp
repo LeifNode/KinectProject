@@ -236,7 +236,7 @@ bool D3DRenderer::initialize()
 
 	D3D11_BLEND_DESC blendDesc;
 	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
-	blendDesc.RenderTarget[0].BlendEnable = FALSE;
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
 	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
@@ -331,7 +331,6 @@ Shader* D3DRenderer::loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRI
 
 	Shader* newShader = new Shader(nameStr);
 	newShader->mPrimitiveTopology = primitiveTopology;
-	mLoadedShaders[nameStr] = newShader;
 
 	HRESULT hr = S_OK;
 	ID3DBlob* shaderBlob = nullptr;
@@ -417,6 +416,8 @@ Shader* D3DRenderer::loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRI
 
 		ReleaseCOM(shaderBlob);
 	}
+
+	mLoadedShaders[nameStr] = newShader;
 
 	return newShader;
 }

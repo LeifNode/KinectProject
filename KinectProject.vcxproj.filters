@@ -173,6 +173,15 @@
     <ClInclude Include="src\RectangleBinPacker.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\LineRenderer.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LineSegment.h">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PointList.h">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp">
@@ -271,6 +280,15 @@
     <ClCompile Include="src\RectangleBinPacker.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\LineSegment.cpp">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PointList.cpp">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LineRenderer.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\color.fx">
@@ -311,6 +329,18 @@
     </FxCompile>
     <FxCompile Include="Shaders\kinect.fx">
       <Filter>Shaders\Kinect</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\line.fx">
+      <Filter>Shaders\Lines</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\line_VS.hlsl">
+      <Filter>Shaders\Lines</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\line_GS.hlsl">
+      <Filter>Shaders\Lines</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\line_PS.hlsl">
+      <Filter>Shaders\Lines</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
