@@ -28,6 +28,7 @@ D3DRenderer::D3DRenderer()
 	mClearColor[3] = 1.0f;
 
 	ZeroMemory(&mScreenViewport, sizeof(D3D11_VIEWPORT));
+	ZeroMemory(&mDepthStencilStates[0], sizeof(ID3D11DepthStencilState*) * Depth_Stencil_State_Count);
 }
 
 D3DRenderer::~D3DRenderer()
@@ -37,6 +38,11 @@ D3DRenderer::~D3DRenderer()
 		delete it->second;
 	}
 	mLoadedShaders.clear();
+
+	for (int i = 0; i < Depth_Stencil_State_Count; i++)
+	{
+		ReleaseCOM(mDepthStencilStates[i]);
+	}
 
 	ReleaseCOM(mBlendStateAlpha);
 	ReleaseCOM(mBlendStateOpaque);
@@ -286,7 +292,43 @@ bool D3DRenderer::initialize()
 
 	onResize();
 
+	initializeDepthStencilStates();
+
 	return true;
+}
+
+void D3DRenderer::initializeDepthStencilStates()
+{
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	
+	//Default state
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	dsDesc.StencilEnable = false;
+	dsDesc.StencilReadMask = 0xFF;
+	dsDesc.StencilWriteMask = 0xFF;
+
+	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	md3dDevice->CreateDepthStencilState(&dsDesc, &mDepthStencilStates[Depth_Stencil_State_Default]);
+
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+
+	md3dDevice->CreateDepthStencilState(&dsDesc, &mDepthStencilStates[Depth_Stencil_State_Particle]);
+
+	md3dImmediateContext->OMSetDepthStencilState(mDepthStencilStates[Depth_Stencil_State_Default], 0);
 }
 
 HRESULT D3DRenderer::compileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut )
@@ -639,6 +681,11 @@ void D3DRenderer::setBlendState(bool blendingEnabled)
 		context()->OMSetBlendState(mBlendStateAlpha, blendFactor, sampleMask);
 	else
 		context()->OMSetBlendState(mBlendStateOpaque, blendFactor, sampleMask);
+}
+
+void D3DRenderer::setDepthStencilState(Depth_Stencil_State state)
+{
+	md3dImmediateContext->OMSetDepthStencilState(mDepthStencilStates[state], 0);
 }
 
 void D3DRenderer::setViewport(int width, int height, int x, int y)

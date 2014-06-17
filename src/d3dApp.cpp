@@ -319,6 +319,7 @@ void D3DApp::calculateFrameStats()
 			 << L"FPS: " << fps << L"    " 
 			 << L"Frame Time: " << mspf << L" (ms)";
 		SetWindowText(mhWnd, outs.str().c_str());
+		mMainWndCaptionFull = outs.str();
 		
 		// Reset for next average.
 		frameCnt = 0;

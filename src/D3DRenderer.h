@@ -8,9 +8,19 @@
 
 class D3DApp;
 
+
 class D3DRenderer
 {
 	friend class OVRRenderer;
+
+public:
+	enum Depth_Stencil_State
+	{
+		Depth_Stencil_State_Invalid = -1,
+		Depth_Stencil_State_Default,
+		Depth_Stencil_State_Particle,
+		Depth_Stencil_State_Count,
+	};
 
 public:
 	D3DRenderer();
@@ -34,6 +44,7 @@ public:
 	void setRenderTarget(RenderTarget* target);
 
 	void setBlendState(bool blendingEnabled);
+	void setDepthStencilState(Depth_Stencil_State state);
 
 	void setViewport(int width, int height, int x, int y);
 
@@ -54,6 +65,8 @@ public:
 private:
 	static HRESULT compileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut );
 
+	void initializeDepthStencilStates();
+
 private:
 	UINT m4xMsaaQuality;
 
@@ -73,6 +86,8 @@ private:
 	ID3D11SamplerState* mSamplerState;
 	ID3D11BlendState* mBlendStateAlpha;
 	ID3D11BlendState* mBlendStateOpaque;
+
+	ID3D11DepthStencilState* mDepthStencilStates[Depth_Stencil_State_Count];
 
 	bool mEnable4xMsaa;
 

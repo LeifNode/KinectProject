@@ -111,6 +111,8 @@ void TextRenderer::updateVertexBuffer()
 
 		renderer->context()->Unmap(mpVertexBuffer, 0);
 
+		delete [] pVertArray;
+
 		mTextChanged = false;
 	}
 }
@@ -122,7 +124,7 @@ void TextRenderer::Render(D3DRenderer* renderer)
 	CBPerObject perObject;
 
 	//perObject.World =  XMMatrixScaling(-1.0f, 1.0f, 1.0f) * mTransform.getTransform();
-	perObject.World = XMMatrixScaling(-1.0f, 1.0f, 1.0f) * mTransform.getTransform() * XMMatrixTranslation(0.0f, 0.0f, 0.4f) * XMMatrixTranslationFromVector(XMLoadFloat3(&renderer->getPerFrameBuffer()->EyePosition));
+	perObject.World = XMMatrixScaling(-1.0f, 1.0f, 1.0f) * mTransform.getTransform() * XMMatrixTranslation(-0.25f, -0.2f, 0.25f) * XMMatrixTranslationFromVector(XMLoadFloat3(&renderer->getPerFrameBuffer()->EyePosition));
 	perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
 	perObject.WorldViewProj = perObject.World * renderer->getPerFrameBuffer()->ViewProj;
 	//perObject.WorldViewProj = perObject.World * XMMatrixOrthographicLH(1.0f, 0.5625f, 0.0f, 1.0f);
@@ -138,11 +140,9 @@ void TextRenderer::Render(D3DRenderer* renderer)
 
 void TextRenderer::setText(const std::string& text)
 {
-	if (text.size() < mMaxCharCount)
+	if (text.size() < mMaxCharCount && mText != text)
 	{
-		if (mText != text)
-			mTextChanged = true;
-
+		mTextChanged = true;
 		mText = text;
 	}
 }

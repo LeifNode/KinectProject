@@ -11,7 +11,7 @@ Camera::Camera(const XMFLOAT3& position)
 	mDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	mUp = XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f));
 	mRotation = XMQuaternionIdentity();
-	mNear = 0.1f;
+	mNear = 0.01f;
 	mFar = 10000.0f;
 	OnResize(1280, 720);
 }
@@ -141,8 +141,8 @@ void Camera::updateOrientation(float dt)
 	HydraManager* hydra = inputSystem->getHydra();
 
 
-	float dx = hydra->getJoystick(1).x * (MathHelper::Pi / 180.0f) * 0.2f;
-	float dy = hydra->getJoystick(1).y * (MathHelper::Pi / 180.0f) * 0.2f;
+	float dx = hydra->getJoystick(1).x * (MathHelper::Pi / 180.0f) * 100.0f * dt;
+	float dy = hydra->getJoystick(1).y * (MathHelper::Pi / 180.0f) * 100.0f * dt;
 
 	XMVECTOR direction = XMLoadFloat3(&mDirection);
 	XMVECTOR right = XMVector3Normalize(XMVector3Cross(direction, mUp));

@@ -64,6 +64,7 @@ protected:
 
 	GameTimer mTimer;
 
+	std::wstring mMainWndCaptionFull;
 	std::wstring mMainWndCaption;
 	int mClientWidth;
 	int mClientHeight;

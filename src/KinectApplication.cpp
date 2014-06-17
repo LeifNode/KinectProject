@@ -16,8 +16,7 @@
 #include "TextRenderer.h"
 #include "LineRenderer.h"
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
-{
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd){
 	UNREFERENCED_PARAMETER( prevInstance );
     UNREFERENCED_PARAMETER( cmdLine );
 
@@ -53,7 +52,7 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 
 	mpCamera = new Camera(XMFLOAT3(0.0f, 1.66f, -2.0f));
 	mpHydraRenderer = new HydraRenderer();
-	mpText = new TextRenderer(140000);
+	mpText = new TextRenderer(100);
 	mpLineRenderer = new LineRenderer();
 }
 
@@ -126,16 +125,6 @@ bool KinectApplication::Initialize()
 	timer.Tick();
 	std::cout << "Total time: " << timer.DeltaTime() << "s\n";
 
-	/*mpFontManager->loadFont("Fonts/ITCEDSCR.TTF");
-
-	for(int i = 16; i > 4; i--)
-		mpFontManager->loadGlyphs(i);
-
-	mpFontManager->loadFont("Fonts/arial.TTF");
-
-	for(int i = 10; i > 0; i--)
-		mpFontManager->loadGlyphs(i);*/
-
 	mpText->Initialize();
 	mpText->setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer elementum lacus ac velit vehicula, a sodales tellus molestie. Vestibulum aliquet, nunc eu gravida bibendum, felis neque porttitor sapien, at aliquam dolor leo sit amet dolor. Morbi at risus eget magna tristique convallis sit amet at elit. Aenean in felis pellentesque, varius arcu et, rhoncus elit. Quisque dapibus sem quis lectus sodales sagittis. Morbi at feugiat libero. Sed sagittis lacus nec mauris luctus, vitae semper tellus accumsan. Nullam ac lobortis odio. Cras ac sem cursus, consectetur orci sit amet, facilisis ligula. Integer nec lorem sit amet nulla faucibus luctus. Fusce neque neque, molestie in quam non, vulputate faucibus urna. Vivamus cursus aliquam pharetra. Suspendisse lorem sapien, adipiscing dictum velit nec, dictum sodales justo. Etiam aliquam rhoncus arcu, vitae vehicula arcu molestie vitae. Suspendisse ultrices placerat nunc, at pulvinar urna lacinia ut. Suspendisse convallis eu magna sit amet pellentesque."
 		"Quisque dapibus cursus tellus ac porttitor. Quisque id neque purus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras condimentum, nunc vel facilisis varius, lorem nibh tincidunt ipsum, et semper augue nulla in erat. Nunc mattis erat justo, sodales tincidunt massa commodo a. Nullam massa felis, tempor eu erat non, hendrerit convallis massa. Vivamus nec enim pulvinar, interdum ante convallis, cursus est. Pellentesque ultricies bibendum faucibus. Morbi ultrices nulla diam, id bibendum odio iaculis nec. Vivamus placerat dui vel ante congue, sit amet bibendum elit imperdiet. Praesent justo diam, elementum in lacinia sit amet, posuere eget lacus."
@@ -192,15 +181,51 @@ void KinectApplication::Update(float dt)
 
 	mpInputSystem->Update(dt);
 
-	//mpLineRenderer->Points.clear();
-	//mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(0));
+	/*mpLineRenderer->Points.clear();
+	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(0));
+	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
+	mpLineRenderer->reloadPoints();
+*/
+	static int pointCount = 0;
+
 	if (mpInputSystem->getHydra()->getTrigger(1) > 0.8f)
 	{
-		mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
-		if (mpLineRenderer->Points.List.size() > 1)
-			mpLineRenderer->Points.addPoint(mpLineRenderer->Points.List[mpLineRenderer->Points.List.size() - 1]);
-		mpLineRenderer->reloadPoints();
+		pointCount++;
+
+		if (pointCount % 20 == 0)
+		{
+			//if (mpLineRenderer->Points.List.size() > 1)
+				//mpLineRenderer->Points.addPoint(mpLineRenderer->Points.List[mpLineRenderer->Points.List.size() - 1]);
+
+			mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
+			mpLineRenderer->reloadPoints();
+		}
 	}
+
+	//static XMVECTOR lastPoint;
+	//static bool pressed = false;
+
+	/*if (mpInputSystem->getHydra()->getTrigger(1) > 0.8f)
+	{	
+		if (!pressed)
+		{
+			if (mpLineRenderer->Points.List.size() > 1)
+				mpLineRenderer->Points.addPoint(lastPoint);
+
+			mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
+			mpLineRenderer->reloadPoints();
+
+			pressed = true;
+		}
+	}
+	else
+		pressed = false;
+
+	if (mpInputSystem->getHydra()->getTrigger(0) > 0.8f)
+	{
+		lastPoint = mpInputSystem->getHydra()->getPointerPosition(0);
+	}*/
+
 }
 
 void KinectApplication::Draw()
@@ -283,7 +308,11 @@ void KinectApplication::Draw()
 
 		mpFontManager->bindRender(mpRenderer);
 
-		//mpText->Render(mpRenderer);
+		std::stringstream stream;
+		stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()) << " Points: " << mpLineRenderer->Points.List.size();
+
+		mpText->setText(stream.str());
+		mpText->Render(mpRenderer);
 
 		mpLineRenderer->Render(mpRenderer);
 

@@ -35,4 +35,5 @@ private:
 	static ID3D11Buffer* pPerLineBuffer;
 
 	ID3D11Buffer* mpVertexBuffer;
+	ID3D11Buffer* mpIndexBuffer;
 };
