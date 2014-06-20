@@ -3,6 +3,7 @@
 #include "d3dStd.h"
 #include "RectangleBinPacker.h"
 #include <freetype\ft2build.h>
+#include "Font.h"
 #include FT_FREETYPE_H
 
 class Texture;
@@ -12,48 +13,30 @@ class D3DRenderer;
 class FontManager
 {
 public:
-	struct Glyph
-	{
-		char character;
-		int pointSize;
-		int left;
-		int top;
-		int width;
-		int height;
-		int advance;
-		int bearing;
-	};
-
-public:
 	FontManager();
 	~FontManager();
 
 	void Initialize();
 
-	void loadFont(const std::string fontPath);
-	void loadGlyphs(int ptSize = 12);
+	Font* loadFont(const std::string& fontKey, 
+				   const std::string& fontPath, 
+				   const std::string& fontPathBold = "", 
+				   const std::string& fontPathItalic = "", 
+				   const std::string& fontPathBoldItalic = "");
 
-	const Glyph* getGlyph(char ch, int pointSize);
+	Font* getFont(const std::string& key);
 
 	void bindRender(D3DRenderer* renderer);
 
 private:
-	void initializeTexture();
 	void initializeSampler();
 	void initializeShader();
-	
-	void loadCharacter(char ch, int pointSize);
 
 private:
-	//Character and point size
-	std::map<std::pair<char, int>, Glyph*> mGlyphMap;
-
-	RectangleBinPacker mBinPacker;
-
 	FT_Library mftLibrary;
-	FT_Face mFace;
+
+	std::map<std::string, Font*> mFontMap;
 
 	Shader* mpTextRenderShader;
-	Texture* mpFontTexture;
 	ID3D11SamplerState* mpSampler;
 };

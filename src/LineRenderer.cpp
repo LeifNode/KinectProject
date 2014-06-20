@@ -147,7 +147,7 @@ void LineRenderer::Render(D3DRenderer* renderer)
 
 		CBPerLine perLine;
 		perLine.Color = XMFLOAT4(2.0f, 0.0f, 0.0f, 1.0f);
-		perLine.Thickness = 0.01f;
+		perLine.Thickness = 0.005f;
 		perLine.PointCount = Points.List.size();
 
 		renderer->context()->UpdateSubresource(pPerLineBuffer, 0, NULL, &perLine, 0, 0);

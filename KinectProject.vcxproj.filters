@@ -60,6 +60,12 @@
     <Filter Include="Source Files\Graphics\Text">
       <UniqueIdentifier>{28375f37-02c5-4c01-b3f1-db3b82a27676}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Graphics\GUI">
+      <UniqueIdentifier>{82a2a9b2-a6aa-4e3b-80ee-314a9ba28cf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Resource Manager\Fonts">
+      <UniqueIdentifier>{8cab157f-4b7c-4242-a4a4-68e783a4d26b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -161,9 +167,6 @@
     <ClInclude Include="src\Transform.h">
       <Filter>Source Files\Utils\Math</Filter>
     </ClInclude>
-    <ClInclude Include="src\FontManager.h">
-      <Filter>Source Files\Resource Manager</Filter>
-    </ClInclude>
     <ClInclude Include="src\Bitmap.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
@@ -180,6 +183,24 @@
       <Filter>Source Files\Utils\Math</Filter>
     </ClInclude>
     <ClInclude Include="src\PointList.h">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MatrixStack.h">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderable.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TexturedQuad.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FontManager.h">
+      <Filter>Source Files\Resource Manager\Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Font.h">
+      <Filter>Source Files\Resource Manager\Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rectangle.h">
       <Filter>Source Files\Utils\Math</Filter>
     </ClInclude>
   </ItemGroup>
@@ -268,9 +289,6 @@
     <ClCompile Include="src\Transform.cpp">
       <Filter>Source Files\Utils\Math</Filter>
     </ClCompile>
-    <ClCompile Include="src\FontManager.cpp">
-      <Filter>Source Files\Resource Manager</Filter>
-    </ClCompile>
     <ClCompile Include="src\Bitmap.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
@@ -288,6 +306,15 @@
     </ClCompile>
     <ClCompile Include="src\LineRenderer.cpp">
       <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MatrixStack.cpp">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FontManager.cpp">
+      <Filter>Source Files\Resource Manager\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Font.cpp">
+      <Filter>Source Files\Resource Manager\Fonts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

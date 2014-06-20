@@ -599,6 +599,8 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 Texture* D3DRenderer::createTexture(D3D11_TEXTURE2D_DESC* textureDescription)
 {
 	Texture* newTexture = new Texture();
+	newTexture->mWidth = textureDescription->Width;
+	newTexture->mHeight = textureDescription->Height;
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
 	shaderResourceViewDesc.Format = textureDescription->Format;

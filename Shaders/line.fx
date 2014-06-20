@@ -38,6 +38,7 @@ GS_INPUT VS(VS_INPUT input)
 void GS(lineadj GS_INPUT points[4], uint primID : SV_PrimitiveID, inout TriangleStream<PS_INPUT> triStream)
 {
 	PS_INPUT output;
+
 	int i = 0;
 
 	float3 midPoint;
@@ -60,9 +61,7 @@ void GS(lineadj GS_INPUT points[4], uint primID : SV_PrimitiveID, inout Triangle
 		toEye = normalize(midPoint - gEyePosition);
 		toNextPoint = points[i].PositionW - points[i + 1].PositionW;
 
-		float nextPointLength = toNextPoint.x * toNextPoint.x + 
-						        toNextPoint.y * toNextPoint.y + 
-						        toNextPoint.z * toNextPoint.z;
+		float nextPointLength = dot(toNextPoint, toNextPoint);
 
 		
 		[flatten] 
@@ -96,6 +95,36 @@ void GS(lineadj GS_INPUT points[4], uint primID : SV_PrimitiveID, inout Triangle
 
 		triStream.Append(output);
 	}
+
+	/*int i = 0;
+	float halfLineThickness = gLineThickness * 0.5f;
+
+	const float4 screenPoints[2] =
+	{
+		mul(gViewProj, float4(points[1], 1.0f)),
+		mul(gViewProj, float4(points[2], 1.0f)),
+	};
+
+
+	float2 toPoint = normalize(screenPoints[0].xy - screenPoints[1].xy);
+	float4 offsetVec = float4(normalize(float2(-toPoint.y, toPoint.x)), 0.0f, 0.0f);
+
+	const float4 finalPoints[4] =
+	{
+		screenPoints[0] + offsetVec * halfLineThickness * screenPoints[0].w,
+		screenPoints[0] - offsetVec * halfLineThickness * screenPoints[0].w,
+		screenPoints[1] + offsetVec * halfLineThickness * screenPoints[1].w,
+		screenPoints[1] - offsetVec * halfLineThickness * screenPoints[1].w,
+	};
+
+	[unroll]
+	for (i = 0; i < 4; i++)
+	{
+		output.PositionH = finalPoints[i];
+		output.Id = primID;
+
+		triStream.Append(output);
+	}*/
 }
 
 //TODO: Trick depth buffer into thinking this is a 3d object? SV_Depth
@@ -104,6 +133,9 @@ float4 PS(PS_INPUT input) : SV_Target
 	//float4 color = gLineColor + float4(0.0f, frac((float)input.Id * 0.0001f), frac((float)input.Id * 0.0003f), 0.0f);
 
 	float4 color = gLineColor + float4(0.0f, frac(input.Id * 0.001f), frac(input.Id * 0.0003f), 0.0f);
+	//float4 color = float4(input.PositionH.yyy / 720.0f, 1.0f);
 
 	return color;
 }
+
+

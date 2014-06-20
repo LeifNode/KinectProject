@@ -161,6 +161,7 @@
     <ClInclude Include="src\dxerr.h" />
     <ClInclude Include="src\Events.h" />
     <ClInclude Include="src\EventSystem.h" />
+    <ClInclude Include="src\Font.h" />
     <ClInclude Include="src\FontManager.h" />
     <ClInclude Include="src\GameTimer.h" />
     <ClInclude Include="src\Geometry.h" />
@@ -174,18 +175,22 @@
     <ClInclude Include="src\LineRenderer.h" />
     <ClInclude Include="src\LineSegment.h" />
     <ClInclude Include="src\MathHelper.h" />
+    <ClInclude Include="src\MatrixStack.h" />
     <ClInclude Include="src\MeshRenderer.h" />
     <ClInclude Include="src\MouseState.h" />
     <ClInclude Include="src\OVRRenderer.h" />
     <ClInclude Include="src\PointList.h" />
     <ClInclude Include="src\Quaternion.h" />
+    <ClInclude Include="src\Rectangle.h" />
     <ClInclude Include="src\RectangleBinPacker.h" />
+    <ClInclude Include="src\Renderable.h" />
     <ClInclude Include="src\RenderTarget.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\StringUtils.h" />
     <ClInclude Include="src\TextRenderer.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Bitmap.h" />
+    <ClInclude Include="src\TexturedQuad.h" />
     <ClInclude Include="src\TextureManager.h" />
     <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\TransformTool.h" />
@@ -199,6 +204,7 @@
     <ClCompile Include="src\dxerr.cpp" />
     <ClCompile Include="src\Events.cpp" />
     <ClCompile Include="src\EventSystem.cpp" />
+    <ClCompile Include="src\Font.cpp" />
     <ClCompile Include="src\FontManager.cpp" />
     <ClCompile Include="src\GameTimer.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
@@ -211,6 +217,7 @@
     <ClCompile Include="src\LineRenderer.cpp" />
     <ClCompile Include="src\LineSegment.cpp" />
     <ClCompile Include="src\MathHelper.cpp" />
+    <ClCompile Include="src\MatrixStack.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\MouseState.cpp" />
     <ClCompile Include="src\OVRRenderer.cpp" />

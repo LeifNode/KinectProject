@@ -64,6 +64,7 @@ public:
 
 	static XMVECTOR RandUnitVec3();
 	static XMVECTOR RandHemisphereUnitVec3(XMVECTOR n);
+	static int MipMapCount(int width, int height);
 
 	static const float Infinity;
 	static const float Pi;

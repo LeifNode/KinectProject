@@ -2,13 +2,15 @@
 #include "D3DRenderer.h"
 #include "d3dApp.h"
 #include "FontManager.h"
+#include "Font.h"
 
 TextRenderer::TextRenderer(int capacity)
 	:mTextChanged(false),
 	mpVertexBuffer(NULL),
-	mMaxCharCount(capacity)
+	mMaxCharCount(capacity),
+	mpFont(NULL),
+	mTextSize(12)
 {
-	//mTransform.scale(2.0f);
 }
 
 TextRenderer::~TextRenderer()
@@ -82,7 +84,7 @@ void TextRenderer::updateVertexBuffer()
 				lineCount = 0;
 			}
 			
-			const FontManager::Glyph* glyph = fontManager->getGlyph(ch, 50);
+			const Font::Glyph* glyph = mpFont->getCharacter(ch, mTextSize);
 
 			if (glyph == NULL) //Character not loaded
 			{
@@ -92,10 +94,11 @@ void TextRenderer::updateVertexBuffer()
 			}
 
 			int index = i - skippedCount;
+			float width = mpFont->getTextureWidth();
+			float height = mpFont->getTextureHeight();
 			
-			
-			pVertArray[index].TexTL = XMFLOAT2(glyph->left / 2048.0f, glyph->top / 2048.0f);
-			pVertArray[index].TexBR = XMFLOAT2((glyph->left + glyph->width) / 2048.0f, (glyph->top + glyph->height) / 2048.0f);
+			pVertArray[index].TexTL = XMFLOAT2(glyph->left / width, glyph->top / height);
+			pVertArray[index].TexBR = XMFLOAT2((glyph->left + glyph->width) / width, (glyph->top + glyph->height) / height);
 			pVertArray[index].Dimensions = XMFLOAT2(glyph->width / 12000.0f, glyph->height / 12000.0f);//Transform pixel counts into meters assuming 300dpi
 			pVertArray[index].Position = XMFLOAT3(textOffset, heightOffset - (glyph->height - glyph->bearing) / 12000.0f, 0.0f);
 
@@ -120,6 +123,8 @@ void TextRenderer::updateVertexBuffer()
 void TextRenderer::Render(D3DRenderer* renderer)
 {
 	updateVertexBuffer();
+
+	renderer->setTextureResource(0, mpFont->getFontTexture());
 
 	CBPerObject perObject;
 

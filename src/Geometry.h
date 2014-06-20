@@ -10,22 +10,6 @@
 #include <list>
 #include "MathHelper.h"
 
-class MatrixStack
-{
-public:
-	MatrixStack();
-	~MatrixStack();
-
-	void push(const XMMATRIX&);
-	void pushAndSet(const XMMATRIX&);
-	void pop();
-	XMMATRIX* getTop();
-	void multMatrixLocal(const XMMATRIX&);
-
-private:
-	std::list<XMMATRIX> mMatrixStack;
-};
-
 class Vector3 : public XMFLOAT3
 {
 public:

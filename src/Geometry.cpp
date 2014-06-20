@@ -1,48 +1,5 @@
 #include "Geometry.h"
 
-MatrixStack::MatrixStack()
-	:mMatrixStack()
-{
-	mMatrixStack.push_back(XMMatrixIdentity());
-}
-
-MatrixStack::~MatrixStack()
-{
-	mMatrixStack.clear();
-}
-
-void MatrixStack::push(const XMMATRIX& mat)
-{
-	mMatrixStack.push_back(mat);
-}
-
-void MatrixStack::pushAndSet(const XMMATRIX& mat)
-{
-	XMMATRIX newTop = mat * mMatrixStack.back();
-	mMatrixStack.push_back(newTop);
-}
-
-void MatrixStack::multMatrixLocal(const XMMATRIX& mat)
-{
-	XMMATRIX topMat = mMatrixStack.back();
-	topMat = XMMatrixMultiply(topMat, mat);
-	(*mMatrixStack.rbegin()) = topMat; //replace top
-}
-
-void MatrixStack::pop()
-{
-	mMatrixStack.pop_back();
-
-	if (mMatrixStack.empty())
-		mMatrixStack.push_back(XMMatrixIdentity());
-}
-
-XMMATRIX* MatrixStack::getTop()
-{
-	return &mMatrixStack.back();
-}
-
-
 void GeometryGenerator::CreateBox(float width, float height, float depth, Mesh& mesh)
 {
 	//

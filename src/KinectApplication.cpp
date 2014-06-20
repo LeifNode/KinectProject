@@ -119,13 +119,19 @@ bool KinectApplication::Initialize()
 	timer.Reset();
 	timer.Start();
 
-	mpFontManager->loadFont("Fonts/arial.ttf");
-	mpFontManager->loadGlyphs(50);
+	Font* font = mpFontManager->loadFont("arial", "Fonts/arial.ttf", "Fonts/arialbd.ttf", "Fonts/ariali.ttf", "Fonts/arialbi.ttf");
+	font->loadGlyphs(40, FONT_TYPE_NORMAL);
+	font->loadGlyphs(40, FONT_TYPE_BOLD);
+	font->loadGlyphs(40, FONT_TYPE_ITALIC);
+	//std::cout << font->getUsedSpace() << std::endl;
 
 	timer.Tick();
 	std::cout << "Total time: " << timer.DeltaTime() << "s\n";
 
 	mpText->Initialize();
+	mpText->setFont(font);
+	mpText->setTextSize(40);
+
 	mpText->setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer elementum lacus ac velit vehicula, a sodales tellus molestie. Vestibulum aliquet, nunc eu gravida bibendum, felis neque porttitor sapien, at aliquam dolor leo sit amet dolor. Morbi at risus eget magna tristique convallis sit amet at elit. Aenean in felis pellentesque, varius arcu et, rhoncus elit. Quisque dapibus sem quis lectus sodales sagittis. Morbi at feugiat libero. Sed sagittis lacus nec mauris luctus, vitae semper tellus accumsan. Nullam ac lobortis odio. Cras ac sem cursus, consectetur orci sit amet, facilisis ligula. Integer nec lorem sit amet nulla faucibus luctus. Fusce neque neque, molestie in quam non, vulputate faucibus urna. Vivamus cursus aliquam pharetra. Suspendisse lorem sapien, adipiscing dictum velit nec, dictum sodales justo. Etiam aliquam rhoncus arcu, vitae vehicula arcu molestie vitae. Suspendisse ultrices placerat nunc, at pulvinar urna lacinia ut. Suspendisse convallis eu magna sit amet pellentesque."
 		"Quisque dapibus cursus tellus ac porttitor. Quisque id neque purus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras condimentum, nunc vel facilisis varius, lorem nibh tincidunt ipsum, et semper augue nulla in erat. Nunc mattis erat justo, sodales tincidunt massa commodo a. Nullam massa felis, tempor eu erat non, hendrerit convallis massa. Vivamus nec enim pulvinar, interdum ante convallis, cursus est. Pellentesque ultricies bibendum faucibus. Morbi ultrices nulla diam, id bibendum odio iaculis nec. Vivamus placerat dui vel ante congue, sit amet bibendum elit imperdiet. Praesent justo diam, elementum in lacinia sit amet, posuere eget lacus."
 "In urna sem, viverra in tortor quis, condimentum sollicitudin erat. Phasellus faucibus ullamcorper nisl eu convallis. Nam porttitor sapien ut elit feugiat volutpat. Morbi aliquam adipiscing metus a tempor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut rhoncus vulputate felis in consequat. Mauris fringilla est eget vulputate ornare. Integer venenatis molestie malesuada. Morbi lorem nisl, malesuada a mauris vel, ultrices sagittis dui. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas et pellentesque dui. Vestibulum nec ullamcorper tortor. Sed accumsan justo eget eros pellentesque, fermentum ullamcorper odio malesuada. Duis cursus tellus non mi pellentesque lobortis."
@@ -135,6 +141,7 @@ bool KinectApplication::Initialize()
 "Maecenas consequat tincidunt nisi malesuada ornare. Nulla at metus convallis, vulputate ipsum eu, sodales mi. In ornare nec tellus non pellentesque. Aenean ac pharetra felis. Suspendisse fringilla iaculis mollis. Aenean eros erat, cursus id molestie fringilla, scelerisque ut ipsum. In quis sagittis ipsum. Suspendisse potenti. Sed vel ante odio. Sed eleifend vestibulum velit quis tincidunt."
 "Quisque dapibus cursus tellus ac porttitor. Quisque id neque purus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras condimentum, nunc vel facilisis varius, lorem nibh tincidunt ipsum, et semper augue nulla in erat. Nunc mattis erat justo, sodales tincidunt massa commodo a. Nullam massa felis, tempor eu erat non, hendrerit convallis massa. Vivamus nec enim pulvinar, interdum ante convallis, cursus est. Pellentesque ultricies bibendum faucibus. Morbi ultrices nulla diam, id bibendum odio iaculis nec. Vivamus placerat dui vel ante congue, sit amet bibendum elit imperdiet. Praesent justo diam, elementum in lacinia sit amet, posuere eget lacus."
 "In urna sem, viverra in tortor quis, condimentum sollicitudin erat. Phasellus faucibus ullamcorper nisl eu convallis. Nam porttitor sapien ut elit feugiat volutpat. Morbi aliquam adipiscing metus a tempor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut rhoncus vulputate felis in consequat. Mauris fringilla est eget vulputate ornare. Integer venenatis molestie malesuada. Morbi lorem nisl, malesuada a mauris vel, ultrices sagittis dui. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas et pellentesque dui. Vestibulum nec ullamcorper tortor. Sed accumsan justo eget eros pellentesque, fermentum ullamcorper odio malesuada. Duis cursus tellus non mi pellentesque lobortis.");
+	
 	return true;
 }
 
