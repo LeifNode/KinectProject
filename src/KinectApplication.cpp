@@ -15,6 +15,8 @@
 #include "FontManager.h"
 #include "TextRenderer.h"
 #include "LineRenderer.h"
+#include "LeapRenderer.h"
+#include "LeapManager.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd){
 	UNREFERENCED_PARAMETER( prevInstance );
@@ -54,6 +56,7 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	mpHydraRenderer = new HydraRenderer();
 	mpText = new TextRenderer(100);
 	mpLineRenderer = new LineRenderer();
+	mpLeapRenderer = new LeapRenderer();
 }
 
 KinectApplication::~KinectApplication()
@@ -142,6 +145,8 @@ bool KinectApplication::Initialize()
 "Quisque dapibus cursus tellus ac porttitor. Quisque id neque purus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras condimentum, nunc vel facilisis varius, lorem nibh tincidunt ipsum, et semper augue nulla in erat. Nunc mattis erat justo, sodales tincidunt massa commodo a. Nullam massa felis, tempor eu erat non, hendrerit convallis massa. Vivamus nec enim pulvinar, interdum ante convallis, cursus est. Pellentesque ultricies bibendum faucibus. Morbi ultrices nulla diam, id bibendum odio iaculis nec. Vivamus placerat dui vel ante congue, sit amet bibendum elit imperdiet. Praesent justo diam, elementum in lacinia sit amet, posuere eget lacus."
 "In urna sem, viverra in tortor quis, condimentum sollicitudin erat. Phasellus faucibus ullamcorper nisl eu convallis. Nam porttitor sapien ut elit feugiat volutpat. Morbi aliquam adipiscing metus a tempor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut rhoncus vulputate felis in consequat. Mauris fringilla est eget vulputate ornare. Integer venenatis molestie malesuada. Morbi lorem nisl, malesuada a mauris vel, ultrices sagittis dui. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas et pellentesque dui. Vestibulum nec ullamcorper tortor. Sed accumsan justo eget eros pellentesque, fermentum ullamcorper odio malesuada. Duis cursus tellus non mi pellentesque lobortis.");
 	
+	mpLeapRenderer->Initialize();
+
 	return true;
 }
 
@@ -193,7 +198,7 @@ void KinectApplication::Update(float dt)
 	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
 	mpLineRenderer->reloadPoints();
 */
-	static int pointCount = 0;
+	/*static int pointCount = 0;
 
 	if (mpInputSystem->getHydra()->getTrigger(1) > 0.8f)
 	{
@@ -201,38 +206,16 @@ void KinectApplication::Update(float dt)
 
 		if (pointCount % 20 == 0)
 		{
-			//if (mpLineRenderer->Points.List.size() > 1)
-				//mpLineRenderer->Points.addPoint(mpLineRenderer->Points.List[mpLineRenderer->Points.List.size() - 1]);
-
-			mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
-			mpLineRenderer->reloadPoints();
-		}
-	}
-
-	//static XMVECTOR lastPoint;
-	//static bool pressed = false;
-
-	/*if (mpInputSystem->getHydra()->getTrigger(1) > 0.8f)
-	{	
-		if (!pressed)
-		{
 			if (mpLineRenderer->Points.List.size() > 1)
-				mpLineRenderer->Points.addPoint(lastPoint);
+				mpLineRenderer->Points.addPoint(mpLineRenderer->Points.List[mpLineRenderer->Points.List.size() - 1]);
 
 			mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
+			mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
 			mpLineRenderer->reloadPoints();
-
-			pressed = true;
 		}
-	}
-	else
-		pressed = false;
-
-	if (mpInputSystem->getHydra()->getTrigger(0) > 0.8f)
-	{
-		lastPoint = mpInputSystem->getHydra()->getPointerPosition(0);
 	}*/
 
+	mpLeapRenderer->Update();
 }
 
 void KinectApplication::Draw()
@@ -249,10 +232,10 @@ void KinectApplication::Draw()
 		//Per frame buffer update
 
 		//Convert quaterinon to correct axis
-		XMVECTOR rotQuat = XMLoadFloat4(&XMFLOAT4(mpOVRRenderer->mEyeRenderPose.Orientation.x,
-												  mpOVRRenderer->mEyeRenderPose.Orientation.y,
-												  mpOVRRenderer->mEyeRenderPose.Orientation.z,
-												  mpOVRRenderer->mEyeRenderPose.Orientation.w));
+		XMVECTOR rotQuat = XMLoadFloat4(&XMFLOAT4(mpOVRRenderer->mEyeRenderPoses[i].Orientation.x,
+												  mpOVRRenderer->mEyeRenderPoses[i].Orientation.y,
+												  mpOVRRenderer->mEyeRenderPoses[i].Orientation.z,
+												  mpOVRRenderer->mEyeRenderPoses[i].Orientation.w));
 		
 		XMVECTOR axis;
 		float angle;
@@ -263,9 +246,9 @@ void KinectApplication::Draw()
 
 		rotQuat = XMQuaternionRotationAxis(axis, -angle);
 
-		XMVECTOR offset = XMVectorSet(mpOVRRenderer->mEyeRenderPose.Position.x,
-									  mpOVRRenderer->mEyeRenderPose.Position.y,
-									  mpOVRRenderer->mEyeRenderPose.Position.z,
+		XMVECTOR offset = XMVectorSet(mpOVRRenderer->mEyeRenderPoses[i].Position.x,
+									  mpOVRRenderer->mEyeRenderPoses[i].Position.y,
+									  mpOVRRenderer->mEyeRenderPoses[i].Position.z,
 									  0.0f);
 
 		XMMATRIX view = mpCamera->getView(offset, rotQuat);
@@ -286,6 +269,8 @@ void KinectApplication::Draw()
 		mPerFrameData.EyeDirection = mpCamera->getDirection();
 
 		mpRenderer->setPerFrameBuffer(mPerFrameData);
+
+		LeapManager::getInstance().setViewTransform(mPerFrameData.View);
 		
 		//Per object for the plane mesh
 		CBPerObject perObject;
@@ -312,6 +297,8 @@ void KinectApplication::Draw()
 		mpHydraRenderer->Render(mpRenderer);
 
 		//mpKinectRenderer->Render(mpRenderer);
+
+		mpLeapRenderer->Render(mpRenderer);
 
 		mpFontManager->bindRender(mpRenderer);
 

@@ -32,7 +32,10 @@ void MatrixStack::pop()
 	mMatrixStack.pop_back();
 
 	if (mMatrixStack.empty())
+	{
 		mMatrixStack.push_back(XMMatrixIdentity());
+		std::cout << "Pop called on matrix stack when it was already empty.\n";
+	}
 
 	mTopInverseDirty = true;
 }

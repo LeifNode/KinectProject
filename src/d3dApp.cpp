@@ -4,6 +4,7 @@
 #include "TextureManager.h"
 #include "FontManager.h"
 #include "LineRenderer.h"
+#include "LeapManager.h"
 
 #pragma comment(lib, "d3d11")
 #pragma comment(lib, "d3dcompiler")
@@ -40,6 +41,7 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 
 	mpRenderer = new D3DRenderer();
 	mpInputSystem = InputSystem::get();
+	LeapManager::getInstance();
 	mpTextureManager = new TextureManager();
 	mpFontManager = new FontManager();
 
@@ -49,6 +51,7 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 D3DApp::~D3DApp()
 {
 	LineRenderer::DeInit();
+	LeapManager::getInstance().DeInit();
 	
 	delete mpTextureManager;
 	delete mpFontManager;
@@ -81,6 +84,7 @@ int D3DApp::Run()
 			{
 				calculateFrameStats();
 				EventSystem::get()->update();
+				LeapManager::getInstance().Update(0.0f);
 				Update((float)mTimer.DeltaTime());	
 				Draw();
 			}

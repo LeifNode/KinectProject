@@ -29,7 +29,7 @@ public:
 
 	void EndFrame();
 
-	ovrPosef mEyeRenderPose;
+	ovrPosef mEyeRenderPoses[2];
 	XMMATRIX getProjection(int eyeIndex);
 
 private:

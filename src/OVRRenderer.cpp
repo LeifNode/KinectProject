@@ -115,7 +115,7 @@ void OVRRenderer::PreRender(int eyeIndex)
 	D3DRenderer* renderer = gpApplication->getRenderer();
 	CBPerFrame perFrame = *renderer->getPerFrameBuffer();
 
-	mEyeRenderPose = ovrHmd_BeginEyeRender(mHMD, eye);
+	mEyeRenderPoses[eyeIndex] = ovrHmd_BeginEyeRender(mHMD, eye);
 
 	OVR::Recti viewport = mEyeRenderViewport[eye];
 
@@ -134,7 +134,7 @@ void OVRRenderer::PostRender(int eyeIndex)
 {
 #if USE_RIFT
 	ovrEyeType eye = mHMDDesc.EyeRenderOrder[eyeIndex];
-	ovrHmd_EndEyeRender(mHMD, eye, mEyeRenderPose, &mEyeTextures[eye].Texture);
+	ovrHmd_EndEyeRender(mHMD, eye, mEyeRenderPoses[eyeIndex], &mEyeTextures[eye].Texture);
 #endif
 }
 

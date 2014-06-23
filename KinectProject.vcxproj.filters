@@ -66,6 +66,9 @@
     <Filter Include="Source Files\Resource Manager\Fonts">
       <UniqueIdentifier>{8cab157f-4b7c-4242-a4a4-68e783a4d26b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Graphics\Input">
+      <UniqueIdentifier>{18f5d889-bc0e-41bd-985a-e412390f81a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -155,9 +158,6 @@
     <ClInclude Include="src\TransformTool.h">
       <Filter>Source Files\Utils\Hydra Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\HydraRenderer.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="src\MathHelper.h">
       <Filter>Source Files\Utils\Math</Filter>
     </ClInclude>
@@ -202,6 +202,15 @@
     </ClInclude>
     <ClInclude Include="src\Rectangle.h">
       <Filter>Source Files\Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LeapManager.h">
+      <Filter>Source Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HydraRenderer.h">
+      <Filter>Source Files\Graphics\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LeapRenderer.h">
+      <Filter>Source Files\Graphics\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -274,9 +283,6 @@
     <ClCompile Include="src\Texture.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\HydraRenderer.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="src\TransformTool.cpp">
       <Filter>Source Files\Utils\Hydra Tools</Filter>
     </ClCompile>
@@ -315,6 +321,18 @@
     </ClCompile>
     <ClCompile Include="src\Font.cpp">
       <Filter>Source Files\Resource Manager\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderable.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LeapManager.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HydraRenderer.cpp">
+      <Filter>Source Files\Graphics\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LeapRenderer.cpp">
+      <Filter>Source Files\Graphics\Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

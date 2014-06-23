@@ -5,6 +5,7 @@
 #include "ConstantBuffers.h"
 #include "Texture.h"
 #include "RenderTarget.h"
+#include "MatrixStack.h"
 
 class D3DApp;
 
@@ -96,4 +97,6 @@ private:
 	Shader* mpActiveShader;
 
 	std::map<std::string, Shader*> mLoadedShaders;
+
+	MatrixStack mMatrixStack;
 };

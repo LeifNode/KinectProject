@@ -15,6 +15,7 @@ class MeshRenderer;
 struct Vertex;
 class TextRenderer;
 class LineRenderer;
+class LeapRenderer;
 
 class KinectApplication : public D3DApp
 {
@@ -55,6 +56,7 @@ private:
 
 	TextRenderer* mpText;
 	LineRenderer* mpLineRenderer;
+	LeapRenderer* mpLeapRenderer;
 
 	Camera* mpCamera;
 

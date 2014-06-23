@@ -107,7 +107,7 @@ bool Font::loadCharacter(int charCode, int pointSize, FONT_TYPE type)
 	assert(error == 0);
 
 	FT_Render_Glyph(mFaces[type]->glyph, FT_RENDER_MODE_NORMAL);
-	assert(mFace->glyph->format == FT_GLYPH_FORMAT_BITMAP);
+	/*assert(mFace->glyph->format == FT_GLYPH_FORMAT_BITMAP);*/
 
 	FT_Bitmap* bitmap = &mFaces[type]->glyph->bitmap;
 	assert(bitmap);

@@ -71,7 +71,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(KINECTSDK10_DIR)\inc;$(ProjectDir)\3rdParty\Include\;$(ProjectDir)\3rdParty\Include\sixense;$(ProjectDir)\3rdParty\Include\FastDelegate;$(ProjectDir)\3rdParty\Include\freetype;$(ProjectDir)\3rdParty\Include\DirectXTex;$(IncludePath)</IncludePath>
+    <IncludePath>$(KINECTSDK10_DIR)\inc;$(ProjectDir)\3rdParty\Include\;$(ProjectDir)\3rdParty\Include\sixense;$(ProjectDir)\3rdParty\Include\FastDelegate;$(ProjectDir)\3rdParty\Include\freetype;$(ProjectDir)\3rdParty\Include\DirectXTex;$(ProjectDir)\3rdParty\Include\leap;$(IncludePath)</IncludePath>
     <LibraryPath>$(KINECTSDK10_DIR)\lib\amd64;$(ProjectDir)\3rdParty\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -108,7 +108,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sixensed_x64.lib;sixense_utilsd_x64.lib;libovr64d.lib;winmm.lib;Kinect10.lib;freetype253_D.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sixensed_x64.lib;sixense_utilsd_x64.lib;libovr64d.lib;winmm.lib;Kinect10.lib;freetype253_D.lib;DirectXTex.lib;Leapd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -145,7 +145,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>sixense_x64.lib;sixense_utils_x64.lib;libovr64.lib;winmm.lib;Kinect10.lib;freetype253.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sixense_x64.lib;sixense_utils_x64.lib;libovr64.lib;winmm.lib;Kinect10.lib;freetype253.lib;DirectXTex.lib;Leap.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -171,6 +171,8 @@
     <ClInclude Include="src\KeyboardState.h" />
     <ClInclude Include="src\KinectApplication.h" />
     <ClInclude Include="src\KinectRenderer.h" />
+    <ClInclude Include="src\LeapManager.h" />
+    <ClInclude Include="src\LeapRenderer.h" />
     <ClInclude Include="src\Lights.h" />
     <ClInclude Include="src\LineRenderer.h" />
     <ClInclude Include="src\LineSegment.h" />
@@ -214,6 +216,8 @@
     <ClCompile Include="src\KeyboardState.cpp" />
     <ClCompile Include="src\KinectApplication.cpp" />
     <ClCompile Include="src\KinectRenderer.cpp" />
+    <ClCompile Include="src\LeapManager.cpp" />
+    <ClCompile Include="src\LeapRenderer.cpp" />
     <ClCompile Include="src\LineRenderer.cpp" />
     <ClCompile Include="src\LineSegment.cpp" />
     <ClCompile Include="src\MathHelper.cpp" />
@@ -224,6 +228,7 @@
     <ClCompile Include="src\PointList.cpp" />
     <ClCompile Include="src\Quaternion.cpp" />
     <ClCompile Include="src\RectangleBinPacker.cpp" />
+    <ClCompile Include="src\Renderable.cpp" />
     <ClCompile Include="src\RenderTarget.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\StringUtils.cpp" />
