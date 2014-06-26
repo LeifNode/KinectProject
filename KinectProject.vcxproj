@@ -153,6 +153,8 @@
     <ClInclude Include="3rdParty\include\FastDelegate\FastDelegateBind.h" />
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h" />
     <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\COLLADALoader.h" />
+    <ClInclude Include="src\COLLADATypes.h" />
     <ClInclude Include="src\ObjectComponent.h" />
     <ClInclude Include="src\ConstantBuffers.h" />
     <ClInclude Include="src\d3dApp.h" />
@@ -183,6 +185,8 @@
     <ClInclude Include="src\MeshRenderer.h" />
     <ClInclude Include="src\MouseState.h" />
     <ClInclude Include="src\OVRRenderer.h" />
+    <ClInclude Include="src\Particle.h" />
+    <ClInclude Include="src\PhysicsSystem.h" />
     <ClInclude Include="src\PointList.h" />
     <ClInclude Include="src\Quaternion.h" />
     <ClInclude Include="src\Rectangle.h" />
@@ -202,6 +206,7 @@
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\COLLADALoader.cpp" />
     <ClCompile Include="src\d3dApp.cpp" />
     <ClCompile Include="src\D3DRenderer.cpp" />
     <ClCompile Include="src\DDSTextureLoader.cpp" />

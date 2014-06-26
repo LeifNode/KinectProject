@@ -75,6 +75,12 @@
     <Filter Include="Source Files\GameObjects">
       <UniqueIdentifier>{ce87f1d5-1d07-4c63-8335-10c37000a0fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Resource Manager\Textures">
+      <UniqueIdentifier>{e1d15343-d552-44a7-982b-d451cb9c53c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Resource Manager\Models">
+      <UniqueIdentifier>{0ccfb976-9f60-4c0c-a3ff-677934f8a700}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -91,12 +97,6 @@
     </ClInclude>
     <ClInclude Include="src\StringUtils.h">
       <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DDSTextureLoader.h">
-      <Filter>Source Files\Resource Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="src\TextureManager.h">
-      <Filter>Source Files\Resource Manager</Filter>
     </ClInclude>
     <ClInclude Include="src\D3DRenderer.h">
       <Filter>Source Files\Graphics</Filter>
@@ -224,6 +224,24 @@
     <ClInclude Include="src\ObjectComponent.h">
       <Filter>Source Files\GameObjects</Filter>
     </ClInclude>
+    <ClInclude Include="src\PhysicsSystem.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Particle.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DDSTextureLoader.h">
+      <Filter>Source Files\Resource Manager\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TextureManager.h">
+      <Filter>Source Files\Resource Manager\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\COLLADATypes.h">
+      <Filter>Source Files\Resource Manager\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\COLLADALoader.h">
+      <Filter>Source Files\Resource Manager\Models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp">
@@ -234,12 +252,6 @@
     </ClCompile>
     <ClCompile Include="src\StringUtils.cpp">
       <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DDSTextureLoader.cpp">
-      <Filter>Source Files\Resource Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="src\TextureManager.cpp">
-      <Filter>Source Files\Resource Manager</Filter>
     </ClCompile>
     <ClCompile Include="src\D3DRenderer.cpp">
       <Filter>Source Files\Graphics</Filter>
@@ -348,6 +360,15 @@
     </ClCompile>
     <ClCompile Include="src\GameObject.cpp">
       <Filter>Source Files\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DDSTextureLoader.cpp">
+      <Filter>Source Files\Resource Manager\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextureManager.cpp">
+      <Filter>Source Files\Resource Manager\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="src\COLLADALoader.cpp">
+      <Filter>Source Files\Resource Manager\Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
