@@ -730,6 +730,13 @@ Shader* D3DRenderer::getShader(const std::string& name)
 	return nullptr;
 }
 
+void D3DRenderer::resetSamplerState()
+{
+	setSampler(0, mSamplerState);
+	setSampler(1, mSamplerState);
+	setSampler(2, mSamplerState);
+}
+
 void D3DRenderer::clear(RenderTarget* target)
 {
 	md3dImmediateContext->ClearRenderTargetView(target->mpRenderTargetView, mClearColor);

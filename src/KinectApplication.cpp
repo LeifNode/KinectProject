@@ -112,7 +112,7 @@ bool KinectApplication::Initialize()
 
 	mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
 
-	//mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
+	mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
 	//mRotationTool.setTargetTransform(&mCubeRotation);
 	//mRotationTool.setTargetTransform(&mpText->mTransform);
 
@@ -296,22 +296,24 @@ void KinectApplication::Draw()
 
 		mpHydraRenderer->Render(mpRenderer);
 
-		//mpKinectRenderer->Render(mpRenderer);
+		mpKinectRenderer->Render(mpRenderer);
 
 		mpLeapRenderer->Render(mpRenderer);
 
-		mpFontManager->bindRender(mpRenderer);
+		//mpFontManager->bindRender(mpRenderer);
 
 		std::stringstream stream;
 		stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()) << " Points: " << mpLineRenderer->Points.List.size();
 
-		mpText->setText(stream.str());
-		mpText->Render(mpRenderer);
+		//mpText->setText(stream.str());
+		//mpText->Render(mpRenderer);
 
 		mpLineRenderer->Render(mpRenderer);
 
 		mpRenderer->setShader(mpMainShader);
 		mpRenderer->setBlendState(false);
+		mpRenderer->setDepthStencilState(D3DRenderer::Depth_Stencil_State_Default);
+		mpRenderer->resetSamplerState();
 		
 #if USE_RIFT
 		mpOVRRenderer->PostRender(i);

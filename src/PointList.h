@@ -8,7 +8,7 @@ class PointList
 {
 public:
 	PointList();
-	PointList(const std::vector<XMFLOAT3>& list);
+	explicit PointList(const std::vector<XMFLOAT3>& list);
 	~PointList();
 
 	void addPoint(const XMFLOAT3& point);

@@ -10,12 +10,12 @@ public:
 
 	void push(const XMMATRIX&);
 	void pop();
-	XMMATRIX getTop();
-	XMMATRIX getTopInverse();
+	XMMATRIX getTop() const;
+	XMMATRIX getTopInverse() const;
 	void multMatrixLocal(const XMMATRIX&);
 
 private:
-	XMMATRIX mTopInverse;
-	bool mTopInverseDirty;
+	mutable XMMATRIX mTopInverse;
+	mutable bool mTopInverseDirty;
 	std::list<XMMATRIX> mMatrixStack;
 };

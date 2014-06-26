@@ -10,7 +10,7 @@ LineRenderer::LineRenderer()
 	:mpVertexBuffer(NULL),
 	mpIndexBuffer(NULL)
 {
-
+	mMode = LINE_DRAW_MODE_LINELIST;
 }
 
 LineRenderer::~LineRenderer()
@@ -19,12 +19,82 @@ LineRenderer::~LineRenderer()
 	ReleaseCOM(mpIndexBuffer);
 }
 
+void LineRenderer::setDrawMode(LineRenderer::LINE_DRAW_MODE mode)
+{
+	if (mMode != mode)
+	{
+		mMode = mode; 
+		reloadPoints();
+	}
+}
+
+void LineRenderer::generateIndices(UINT** ppArrayOut, UINT* pIndexCount)
+{
+	//Line list = 2 indices per point, Line strip = 4 indices per point
+	UINT indexCount = (UINT)Points.List.size() * (mMode == LINE_DRAW_MODE_LINELIST ? 2 : 4);
+	*pIndexCount = indexCount;
+
+	UINT* indexArray = new UINT[indexCount];
+
+	//Line List indexing
+	if (mMode == LINE_DRAW_MODE_LINELIST)
+	{
+		if (Points.List.size() > 1)
+		{
+			for (int i = 0; i < Points.List.size() - 1; i += 2)
+			{
+				if (i > 0)
+					indexArray[i * 2] = i - 2; //Change to 2 for smoothing
+				else
+					indexArray[i * 2] = i;
+
+				indexArray[i * 2 + 1] = i;
+				indexArray[i * 2 + 2] = i + 1;
+
+				if (i < Points.List.size() - 2)
+					indexArray[i * 2 + 3] = i + 3; //Change to 3 for smoothing
+				else
+					indexArray[i * 2 + 3] = i + 1;
+			}
+		}
+	}
+	else if (mMode == LINE_DRAW_MODE_LINESTRIP)
+	{
+		//Line strip indexing
+		if (Points.List.size() > 1)
+		{
+			for (int i = 0; i < Points.List.size() - 1; i++)
+			{
+				if (i > 0)
+					indexArray[i * 4] = i - 1;
+				else
+					indexArray[i * 4] = i;
+
+				indexArray[i * 4 + 1] = i;
+				indexArray[i * 4 + 2] = i + 1;
+
+				if (i < Points.List.size() - 2)
+					indexArray[i * 4 + 3] = i + 2;
+				else
+					indexArray[i * 4 + 3] = i + 1;
+			}
+		}
+	}
+
+	*ppArrayOut = indexArray;
+}
+
 void LineRenderer::reloadPoints()
 {
 	if (Points.List.size() > 0)
 	{
 		ReleaseCOM(mpVertexBuffer);
 		ReleaseCOM(mpIndexBuffer);
+
+		UINT* indexArr;
+		UINT indexCount;
+
+		generateIndices(&indexArr, &indexCount);
 
 		D3D11_BUFFER_DESC bd;
 		bd.Usage = D3D11_USAGE_IMMUTABLE;
@@ -39,51 +109,9 @@ void LineRenderer::reloadPoints()
 
 		HR(gpApplication->getRenderer()->device()->CreateBuffer(&bd, &initData, &mpVertexBuffer));
 
-		UINT* indexArr = new UINT[(UINT)Points.List.size() * 2];
-	
-		//Line List indexing
-		if (Points.List.size() > 1)
-		{
-			for (int i = 0; i < Points.List.size() - 1; i += 2)
-			{
-				if (i > 0)
-					indexArr[i * 2] = i - 2; //Change to 2 for smoothing
-				else
-					indexArr[i * 2] = i;
-
-				indexArr[i * 2 + 1] = i;
-				indexArr[i * 2 + 2] = i + 1;
-
-				if (i < Points.List.size() - 2)
-					indexArr[i * 2 + 3] = i + 3; //Change to 3 for smoothing
-				else
-					indexArr[i * 2 + 3] = i + 1;
-			}
-		}
-
-		//Line strip indexing
-		/*if (Points.List.size() > 1)
-		{
-			for (int i = 0; i < Points.List.size() - 1; i++)
-			{
-				if (i > 0)
-					indexArr[i * 4] = i - 1;
-				else
-					indexArr[i * 4] = i;
-
-				indexArr[i * 4 + 1] = i;
-				indexArr[i * 4 + 2] = i + 1;
-
-				if (i < Points.List.size() - 2)
-					indexArr[i * 4 + 3] = i + 2;
-				else
-					indexArr[i * 4 + 3] = i + 1;
-			}
-		}*/
-
 		D3D11_BUFFER_DESC ibd;
 		ibd.Usage = D3D11_USAGE_IMMUTABLE;
-		ibd.ByteWidth = sizeof(UINT) * (UINT)Points.List.size() * 2;
+		ibd.ByteWidth = sizeof(UINT) * indexCount;
 		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		ibd.CPUAccessFlags = 0;
 		ibd.MiscFlags = 0;
@@ -160,10 +188,12 @@ void LineRenderer::Render(D3DRenderer* renderer)
 
 		UINT stride = sizeof(XMFLOAT3);
 		UINT offset = 0;
+		UINT indexCount = (UINT)Points.List.size() * (mMode == LINE_DRAW_MODE_LINELIST ? 2 : 4);
+
 		renderer->context()->IASetVertexBuffers(0, 1, &mpVertexBuffer, &stride, &offset); 
 		renderer->context()->IASetIndexBuffer(mpIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 		
-		renderer->context()->DrawIndexed((UINT)Points.List.size() * 2, 0, 0);
+		renderer->context()->DrawIndexed(indexCount, 0, 0);
 
 		renderer->setBlendState(false);
 		renderer->setDepthStencilState(D3DRenderer::Depth_Stencil_State_Default);

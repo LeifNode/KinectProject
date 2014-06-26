@@ -82,8 +82,8 @@ private:
 class EventData_KeyboardDown : public BaseEventData
 {
 public:
-	EventData_KeyboardDown(KeyboardKey key) : key(key) { }
-	EventData_KeyboardDown(WPARAM key) : key((KeyboardKey)key) { }
+	explicit EventData_KeyboardDown(KeyboardKey key) : key(key) { }
+	explicit EventData_KeyboardDown(WPARAM key) : key((KeyboardKey)key) { }
 	virtual ~EventData_KeyboardDown() { }
 
 	virtual const EventType& getEventType() const { return skEventType; }
@@ -105,8 +105,8 @@ private:
 class EventData_KeyboardUp : public BaseEventData
 {
 public:
-	EventData_KeyboardUp(KeyboardKey key) : key(key) { }
-	EventData_KeyboardUp(WPARAM key) : key((KeyboardKey)key) { }
+	explicit EventData_KeyboardUp(KeyboardKey key) : key(key) { }
+	explicit EventData_KeyboardUp(WPARAM key) : key((KeyboardKey)key) { }
 	virtual ~EventData_KeyboardUp() { }
 
 	virtual const EventType& getEventType() const { return skEventType; }

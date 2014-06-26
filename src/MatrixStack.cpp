@@ -40,12 +40,12 @@ void MatrixStack::pop()
 	mTopInverseDirty = true;
 }
 
-XMMATRIX MatrixStack::getTop()
+XMMATRIX MatrixStack::getTop() const
 {
 	return mMatrixStack.back();
 }
 
-XMMATRIX MatrixStack::getTopInverse()
+XMMATRIX MatrixStack::getTopInverse() const
 {
 	if (mTopInverseDirty)
 	{

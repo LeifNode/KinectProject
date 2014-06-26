@@ -56,6 +56,8 @@ public:
 	Shader* getShader(const std::string& name);
 	Shader* getActiveShader() const { return mpActiveShader; }
 
+	void resetSamplerState();
+
 	Shader* loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize);
 
 	void clear(RenderTarget* target);

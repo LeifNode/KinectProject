@@ -5,6 +5,7 @@
 #pragma once
 
 #include <Windows.h>
+#include <vector>
 
 enum KeyboardKey
 {
@@ -94,6 +95,7 @@ enum KeyboardKey
 	KEY_RSHIFT,
 	KEY_LCONTROL,
 	KEY_RCONTROL,
+	KEY_COUNT,
 };
 
 class KeyboardState
@@ -110,5 +112,6 @@ private:
 	void releaseKey(KeyboardKey key);
 
 private:
-	char mKeys[21]; //Array where each bit represents a key
+	//char mKeys[21]; //Array where each bit represents a key
+	std::vector<bool> mKeys; //Looks like vector handles bools in the same way internally
 };

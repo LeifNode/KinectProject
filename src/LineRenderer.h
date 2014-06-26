@@ -18,10 +18,20 @@ class LineRenderer
 	};
 
 public:
+	enum LINE_DRAW_MODE
+	{
+		LINE_DRAW_MODE_LINELIST,
+		LINE_DRAW_MODE_LINESTRIP,
+		LINE_DRAW_MODE_COUNT,
+	};
+
+public:
 	LineRenderer();
 	~LineRenderer();
 
 	void reloadPoints();
+
+	void setDrawMode(LINE_DRAW_MODE mode);
 
 	static void Initialize();
 	static void DeInit();
@@ -31,9 +41,14 @@ public:
 	PointList Points;
 
 private:
+	void generateIndices(UINT** ppArrayOut, UINT* pIndexCount);
+
+private:
 	static Shader* pLineShader;
 	static ID3D11Buffer* pPerLineBuffer;
 
 	ID3D11Buffer* mpVertexBuffer;
 	ID3D11Buffer* mpIndexBuffer;
+
+	LINE_DRAW_MODE mMode;
 };

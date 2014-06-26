@@ -133,6 +133,11 @@ void OVRRenderer::Render(D3DRenderer* renderer)
 void OVRRenderer::PostRender(int eyeIndex)
 {
 #if USE_RIFT
+	//D3DRenderer* renderer = gpApplication->getRenderer();
+
+	//renderer->setBlendState(false);
+	//renderer->setDepthStencilState(D3DRenderer::Depth_Stencil_State_Default);
+
 	ovrEyeType eye = mHMDDesc.EyeRenderOrder[eyeIndex];
 	ovrHmd_EndEyeRender(mHMD, eye, mEyeRenderPoses[eyeIndex], &mEyeTextures[eye].Texture);
 #endif
