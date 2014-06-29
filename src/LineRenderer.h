@@ -32,6 +32,8 @@ public:
 	void reloadPoints();
 
 	void setDrawMode(LINE_DRAW_MODE mode);
+	void setLineThickness(float thickness);
+	void setLineColor(const XMFLOAT4& color);
 
 	static void Initialize();
 	static void DeInit();
@@ -46,6 +48,9 @@ private:
 private:
 	static Shader* pLineShader;
 	static ID3D11Buffer* pPerLineBuffer;
+
+	float mLineThickness;
+	XMFLOAT4 mLineColor;
 
 	ID3D11Buffer* mpVertexBuffer;
 	ID3D11Buffer* mpIndexBuffer;

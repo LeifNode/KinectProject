@@ -5,6 +5,7 @@
 #include "FontManager.h"
 #include "LineRenderer.h"
 #include "LeapManager.h"
+#include "PhysicsSystem.h"
 
 #pragma comment(lib, "d3d11")
 #pragma comment(lib, "d3dcompiler")
@@ -44,6 +45,7 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 	LeapManager::getInstance();
 	mpTextureManager = new TextureManager();
 	mpFontManager = new FontManager();
+	mpPhysicsSystem = new PhysicsSystem();
 
 	EventSystem::get();
 }
@@ -85,6 +87,7 @@ int D3DApp::Run()
 				calculateFrameStats();
 				EventSystem::get()->update();
 				LeapManager::getInstance().Update(0.0f);
+				mpPhysicsSystem->Update((float)mTimer.DeltaTime());
 				Update((float)mTimer.DeltaTime());	
 				Draw();
 			}
@@ -112,6 +115,8 @@ bool D3DApp::Initialize()
 	mpFontManager->Initialize();
 
 	LineRenderer::Initialize();
+
+	mpPhysicsSystem->Initialize();
 
 	return true;
 }

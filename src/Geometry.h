@@ -10,79 +10,79 @@
 #include <list>
 #include "MathHelper.h"
 
-class Vector3 : public XMFLOAT3
-{
-public:
-	Vector3() { x = 0.0f, y = 0.0f, z = 0.0f; }
-	Vector3(float xyz) { x = y = z = xyz; }
-	Vector3(XMFLOAT3 &vector) : XMFLOAT3(vector) { }
-	Vector3(const XMFLOAT3 &vector) : XMFLOAT3(vector) { }
-	Vector3(XMVECTOR &vector) : XMFLOAT3(XMVectorGetX(vector), XMVectorGetY(vector), XMVectorGetZ(vector)) { }
-	Vector3(float _x, float _y, float _z) { x=_x; y=_y; z=_z; }
-	Vector3(double _x, double _y, double _z) { x = (float)_x; y = (float)_y; z = (float)_z; }
-
-	inline float length() const { return XMVectorGetX(XMVector3Length(XMLoadFloat3(this))); }
-	inline float lengthSquared() const { return XMVectorGetX(XMVector3LengthSq(XMLoadFloat3(this))); }
-	inline void normalize() { XMStoreFloat3(this, XMVector3Normalize(XMLoadFloat3(this))); }
-	inline float dot(const XMFLOAT3 &b) const {	return XMVectorGetX(XMVector3Dot(XMLoadFloat3(this), XMLoadFloat3(&b))); }
-	inline Vector3 cross(const XMFLOAT3&b) const;
-
-	inline Vector3 operator+(const XMFLOAT3& b) { return Vector3(x + b.x, y + b.y, z + b.z); }
-	inline Vector3 operator-(const XMFLOAT3& b) { return Vector3(x - b.x, y - b.y, z - b.z); }
-	inline float operator*(const XMFLOAT3& b) { return this->dot(b); }
-	inline Vector3 operator*(float scalar) { return Vector3(x * scalar, y * scalar, z * scalar); }
-	inline Vector3 operator/(float scalar) { return Vector3(x / scalar, y / scalar, z / scalar); }
-	inline Vector3 operator-() { return Vector3(-x, -y, -z); }
-	inline bool operator==(const XMFLOAT3& b)
-	{
-		if (x == b.x && y == b.y && z == b.z)
-			return true;
-		else
-			return false;
-	}
-	inline bool operator!=(const XMFLOAT3& b)
-	{
-		if (x != b.x || y != b.y || z != b.z)
-			return true;
-		else
-			return false;
-	}
-	inline Vector3& operator+=(const XMFLOAT3& b)
-	{
-		x += b.x;
-		y += b.y;
-		z += b.z;
-		return *this;
-	}
-	inline Vector3& operator-=(const XMFLOAT3& b)
-	{
-		x -= b.x;
-		y -= b.y;
-		z -= b.z;
-		return *this;
-	}
-	inline Vector3& operator*=(float scalar)
-	{
-		x *= scalar;
-		y *= scalar;
-		z *= scalar;
-		return *this;
-	}
-	inline Vector3& operator/=(float scalar)
-	{
-		x /= scalar;
-		y /= scalar;
-		z /= scalar;
-		return *this;
-	}
-};
-
-inline Vector3 Vector3::cross(const XMFLOAT3 &b) const
-{
-	Vector3 out;
-	XMStoreFloat3(&out, XMVector3Cross(XMLoadFloat3(this), XMLoadFloat3(this)));
-	return out;
-}
+//class Vector3 : public XMFLOAT3
+//{
+//public:
+//	Vector3() { x = 0.0f, y = 0.0f, z = 0.0f; }
+//	Vector3(float xyz) { x = y = z = xyz; }
+//	Vector3(XMFLOAT3 &vector) : XMFLOAT3(vector) { }
+//	Vector3(const XMFLOAT3 &vector) : XMFLOAT3(vector) { }
+//	Vector3(XMVECTOR &vector) : XMFLOAT3(XMVectorGetX(vector), XMVectorGetY(vector), XMVectorGetZ(vector)) { }
+//	Vector3(float _x, float _y, float _z) { x=_x; y=_y; z=_z; }
+//	Vector3(double _x, double _y, double _z) { x = (float)_x; y = (float)_y; z = (float)_z; }
+//
+//	inline float length() const { return XMVectorGetX(XMVector3Length(XMLoadFloat3(this))); }
+//	inline float lengthSquared() const { return XMVectorGetX(XMVector3LengthSq(XMLoadFloat3(this))); }
+//	inline void normalize() { XMStoreFloat3(this, XMVector3Normalize(XMLoadFloat3(this))); }
+//	inline float dot(const XMFLOAT3 &b) const {	return XMVectorGetX(XMVector3Dot(XMLoadFloat3(this), XMLoadFloat3(&b))); }
+//	inline Vector3 cross(const XMFLOAT3&b) const;
+//
+//	inline Vector3 operator+(const XMFLOAT3& b) { return Vector3(x + b.x, y + b.y, z + b.z); }
+//	inline Vector3 operator-(const XMFLOAT3& b) { return Vector3(x - b.x, y - b.y, z - b.z); }
+//	inline float operator*(const XMFLOAT3& b) { return this->dot(b); }
+//	inline Vector3 operator*(float scalar) { return Vector3(x * scalar, y * scalar, z * scalar); }
+//	inline Vector3 operator/(float scalar) { return Vector3(x / scalar, y / scalar, z / scalar); }
+//	inline Vector3 operator-() { return Vector3(-x, -y, -z); }
+//	inline bool operator==(const XMFLOAT3& b)
+//	{
+//		if (x == b.x && y == b.y && z == b.z)
+//			return true;
+//		else
+//			return false;
+//	}
+//	inline bool operator!=(const XMFLOAT3& b)
+//	{
+//		if (x != b.x || y != b.y || z != b.z)
+//			return true;
+//		else
+//			return false;
+//	}
+//	inline Vector3& operator+=(const XMFLOAT3& b)
+//	{
+//		x += b.x;
+//		y += b.y;
+//		z += b.z;
+//		return *this;
+//	}
+//	inline Vector3& operator-=(const XMFLOAT3& b)
+//	{
+//		x -= b.x;
+//		y -= b.y;
+//		z -= b.z;
+//		return *this;
+//	}
+//	inline Vector3& operator*=(float scalar)
+//	{
+//		x *= scalar;
+//		y *= scalar;
+//		z *= scalar;
+//		return *this;
+//	}
+//	inline Vector3& operator/=(float scalar)
+//	{
+//		x /= scalar;
+//		y /= scalar;
+//		z /= scalar;
+//		return *this;
+//	}
+//};
+//
+//inline Vector3 Vector3::cross(const XMFLOAT3 &b) const
+//{
+//	Vector3 out;
+//	XMStoreFloat3(&out, XMVector3Cross(XMLoadFloat3(this), XMLoadFloat3(this)));
+//	return out;
+//}
 
 struct Vertex
 {

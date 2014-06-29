@@ -318,17 +318,17 @@ void GeometryGenerator::Subdivide(Mesh& mesh)
 		// For subdivision, we just care about the position component.  We derive the other
 		// vertex components in CreateGeosphere.
 
-		m0.Position = Vector3(
+		m0.Position = XMFLOAT3(
 			0.5f*(v0.Position.x + v1.Position.x),
 			0.5f*(v0.Position.y + v1.Position.y),
 			0.5f*(v0.Position.z + v1.Position.z));
 
-		m1.Position = Vector3(
+		m1.Position = XMFLOAT3(
 			0.5f*(v1.Position.x + v2.Position.x),
 			0.5f*(v1.Position.y + v2.Position.y),
 			0.5f*(v1.Position.z + v2.Position.z));
 
-		m2.Position = Vector3(
+		m2.Position = XMFLOAT3(
 			0.5f*(v0.Position.x + v2.Position.x),
 			0.5f*(v0.Position.y + v2.Position.y),
 			0.5f*(v0.Position.z + v2.Position.z));
@@ -372,14 +372,14 @@ void GeometryGenerator::CreateGeosphere(float radius, UINT numSubdivisions, Mesh
 	const float X = 0.525731f; 
 	const float Z = 0.850651f;
 
-	Vector3 pos[12] = 
+	XMFLOAT3 pos[12] = 
 	{
-		Vector3(-X, 0.0f, Z),  Vector3(X, 0.0f, Z),  
-		Vector3(-X, 0.0f, -Z), Vector3(X, 0.0f, -Z),    
-		Vector3(0.0f, Z, X),   Vector3(0.0f, Z, -X), 
-		Vector3(0.0f, -Z, X),  Vector3(0.0f, -Z, -X),    
-		Vector3(Z, X, 0.0f),   Vector3(-Z, X, 0.0f), 
-		Vector3(Z, -X, 0.0f),  Vector3(-Z, -X, 0.0f)
+		XMFLOAT3(-X, 0.0f, Z),  XMFLOAT3(X, 0.0f, Z),  
+		XMFLOAT3(-X, 0.0f, -Z), XMFLOAT3(X, 0.0f, -Z),    
+		XMFLOAT3(0.0f, Z, X),   XMFLOAT3(0.0f, Z, -X), 
+		XMFLOAT3(0.0f, -Z, X),  XMFLOAT3(0.0f, -Z, -X),    
+		XMFLOAT3(Z, X, 0.0f),   XMFLOAT3(-Z, X, 0.0f), 
+		XMFLOAT3(Z, -X, 0.0f),  XMFLOAT3(-Z, -X, 0.0f)
 	};
 
 	DWORD k[60] = 
@@ -472,7 +472,7 @@ void GeometryGenerator::CreateCylinder(float bottomRadius, float topRadius, floa
 			float c = cosf(j*dTheta);
 			float s = sinf(j*dTheta);
 
-			vertex.Position = Vector3(r*c, y, r*s);
+			vertex.Position = XMFLOAT3(r*c, y, r*s);
 
 			vertex.TexCoord.x = (float)j/sliceCount;
 			vertex.TexCoord.y = 1.0f - (float)i/stackCount;
@@ -497,10 +497,10 @@ void GeometryGenerator::CreateCylinder(float bottomRadius, float topRadius, floa
 			//  dz/dv = (r0-r1)*sin(t)
 
 			// This is unit length.
-			vertex.Tangent = Vector3(-s, 0.0f, c);
+			vertex.Tangent = XMFLOAT3(-s, 0.0f, c);
 
 			float dr = bottomRadius-topRadius;
-			Vector3 bitangent(dr*c, -height, dr*s);
+			XMFLOAT3 bitangent(dr*c, -height, dr*s);
 
 			XMVECTOR T = XMLoadFloat3(&vertex.Tangent);
 			XMVECTOR B = XMLoadFloat3(&bitangent);
@@ -635,10 +635,10 @@ void GeometryGenerator::CreateGrid(float width, float depth, UINT m, UINT n, Mes
 		{
 			float x = -halfWidth + j*dx;
 
-			mesh.Vertices[i*n+j].Position = Vector3(x, 0.0f, z);
-			mesh.Vertices[i*n+j].Normal   = Vector3(0.0f, 1.0f, 0.0f);
-			mesh.Vertices[i*n+j].Tangent = Vector3(1.0f, 0.0f, 0.0f);
-			mesh.Vertices[i*n+j].Bitangent = Vector3(0.0f, 1.0f, 0.0f);
+			mesh.Vertices[i*n+j].Position = XMFLOAT3(x, 0.0f, z);
+			mesh.Vertices[i*n+j].Normal   = XMFLOAT3(0.0f, 1.0f, 0.0f);
+			mesh.Vertices[i*n+j].Tangent = XMFLOAT3(1.0f, 0.0f, 0.0f);
+			mesh.Vertices[i*n+j].Bitangent = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
 			// Stretch texture over grid.
 			mesh.Vertices[i*n+j].TexCoord.x = j*du;

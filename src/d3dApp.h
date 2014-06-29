@@ -10,6 +10,7 @@ class D3DRenderer;
 class InputSystem;
 class TextureManager;
 class FontManager;
+class PhysicsSystem;
 
 class D3DApp
 {
@@ -26,6 +27,7 @@ public:
 	D3DRenderer* getRenderer() const { return mpRenderer; }
 	TextureManager* getTextureManager() const { return mpTextureManager; }
 	FontManager* getFontManager() const { return mpFontManager; }
+	PhysicsSystem* getPhysicsSystem() const { return mpPhysicsSystem; }
 
 	int Run();
 
@@ -60,6 +62,7 @@ protected:
 
 	D3DRenderer* mpRenderer;
 	InputSystem* mpInputSystem;
+	PhysicsSystem* mpPhysicsSystem;
 	FontManager* mpFontManager;
 
 	GameTimer mTimer;

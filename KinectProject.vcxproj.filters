@@ -81,6 +81,9 @@
     <Filter Include="Source Files\Resource Manager\Models">
       <UniqueIdentifier>{0ccfb976-9f60-4c0c-a3ff-677934f8a700}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Graphics\Physics">
+      <UniqueIdentifier>{b90579ac-799f-41ea-b159-ebaf5e5e1bcb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -242,6 +245,18 @@
     <ClInclude Include="src\COLLADALoader.h">
       <Filter>Source Files\Resource Manager\Models</Filter>
     </ClInclude>
+    <ClInclude Include="src\Vector3.h">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ParticleForceGen.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ParticleRenderer.h">
+      <Filter>Source Files\Graphics\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConstraintRenderer.h">
+      <Filter>Source Files\Graphics\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp">
@@ -369,6 +384,24 @@
     </ClCompile>
     <ClCompile Include="src\COLLADALoader.cpp">
       <Filter>Source Files\Resource Manager\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vector3.cpp">
+      <Filter>Source Files\Utils\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Particle.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ParticleForceGen.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ConstraintRenderer.cpp">
+      <Filter>Source Files\Graphics\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ParticleRenderer.cpp">
+      <Filter>Source Files\Graphics\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PhysicsSystem.cpp">
+      <Filter>Source Files\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

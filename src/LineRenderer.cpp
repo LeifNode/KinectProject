@@ -11,6 +11,8 @@ LineRenderer::LineRenderer()
 	mpIndexBuffer(NULL)
 {
 	mMode = LINE_DRAW_MODE_LINELIST;
+	mLineThickness = 0.01f;
+	mLineColor = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
 LineRenderer::~LineRenderer()
@@ -26,6 +28,16 @@ void LineRenderer::setDrawMode(LineRenderer::LINE_DRAW_MODE mode)
 		mMode = mode; 
 		reloadPoints();
 	}
+}
+
+void LineRenderer::setLineThickness(float thickness)
+{
+	mLineThickness = thickness;
+}
+
+void LineRenderer::setLineColor(const XMFLOAT4& color)
+{
+	mLineColor = color;
 }
 
 void LineRenderer::generateIndices(UINT** ppArrayOut, UINT* pIndexCount)
@@ -177,8 +189,8 @@ void LineRenderer::Render(D3DRenderer* renderer)
 		renderer->setPerObjectBuffer(perObject);
 
 		CBPerLine perLine;
-		perLine.Color = XMFLOAT4(2.0f, 0.0f, 0.0f, 1.0f);
-		perLine.Thickness = 0.01f;
+		perLine.Color = mLineColor;
+		perLine.Thickness = mLineThickness;
 		perLine.PointCount = Points.List.size();
 
 		renderer->context()->UpdateSubresource(pPerLineBuffer, 0, NULL, &perLine, 0, 0);
