@@ -41,6 +41,7 @@ public:
 	Vector3 operator/(const Vector3& other) const { return Vector3(mBaseVector / other.mBaseVector); }
 	Vector3 operator*(float scalar) const { return Vector3(mBaseVector * scalar); }
 	Vector3 operator/(float scalar) const { return Vector3(mBaseVector / scalar); }
+	Vector3 operator-() const { return Vector3(mBaseVector * -1.0f); }
 
 	Vector3& operator=(const XMFLOAT3& other);
 

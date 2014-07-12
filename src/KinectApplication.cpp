@@ -179,13 +179,15 @@ void KinectApplication::Update(float dt)
 	mRotationTool.Update(dt);
 
 	mpInputSystem->Update(dt);
+	
+	mpPhysicsSystem->Update(dt);
 
 	/*mpLineRenderer->Points.clear();
 	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(0));
 	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
 	mpLineRenderer->reloadPoints();
 */
-	/*static int pointCount = 0;
+	static int pointCount = 0;
 
 	if (mpInputSystem->getHydra()->getTrigger(1) > 0.8f)
 	{
@@ -200,7 +202,7 @@ void KinectApplication::Update(float dt)
 			mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
 			mpLineRenderer->reloadPoints();
 		}
-	}*/
+	}
 
 	mpLeapRenderer->Update();
 }
@@ -295,7 +297,7 @@ void KinectApplication::Draw()
 		//mpText->setText(stream.str());
 		//mpText->Render(mpRenderer);
 
-		mpLineRenderer->Render(mpRenderer);
+		//mpLineRenderer->Render(mpRenderer);
 		mpPhysicsSystem->Render(mpRenderer);
 
 		mpRenderer->setShader(mpMainShader);

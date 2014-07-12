@@ -87,7 +87,6 @@ int D3DApp::Run()
 				calculateFrameStats();
 				EventSystem::get()->update();
 				LeapManager::getInstance().Update(0.0f);
-				mpPhysicsSystem->Update((float)mTimer.DeltaTime());
 				Update((float)mTimer.DeltaTime());	
 				Draw();
 			}

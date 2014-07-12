@@ -56,6 +56,8 @@ void ParticleRenderer::Render(D3DRenderer* renderer)
 
 		renderer->setPerObjectBuffer(perObject);
 
+		//std::cout << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+
 		mMeshRenderer.Render(renderer);
 	}
 }

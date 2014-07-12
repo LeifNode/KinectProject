@@ -3,7 +3,7 @@
 
 Particle::Particle()
 {
-
+	clearAccmulator();
 }
 
 void Particle::integrate(float dt)
@@ -41,6 +41,11 @@ float Particle::getMass() const
     } else {
         return (1.0f)/inverseMass;
     }
+}
+
+float Particle::getInverseMass() const
+{
+	return inverseMass;
 }
 
 bool Particle::hasFiniteMass() const

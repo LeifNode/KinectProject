@@ -13,11 +13,13 @@ public:
 
 	void setVelocity(const Vector3& newVel) { velocity = newVel; }
 	Vector3 getVelocity() const { return velocity; }
-
+	Vector3 getAcceleration() const { return acceleration; }
 	Vector3 getPosition() const { return position; }
 
 	void setMass(float mass);
 	float getMass() const;
+
+	float getInverseMass() const;
 
 	bool hasFiniteMass() const;
 

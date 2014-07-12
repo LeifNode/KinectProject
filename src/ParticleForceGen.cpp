@@ -77,8 +77,8 @@ void ParticleAnchoredSpring::updateForce(Particle* particle, float dt)
 	particle->addForce(force);
 }
 
-ParticleBungee::ParticleBungee(Particle* other, float springConstant, float restLength)
-	:other(other),
+ParticleBungee::ParticleBungee(Particle* otherP, float springConstant, float restLength)
+	:other(otherP),
 	springConstant(springConstant),
 	restLength(restLength)
 {}

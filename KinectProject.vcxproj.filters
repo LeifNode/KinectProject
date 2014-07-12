@@ -257,6 +257,12 @@
     <ClInclude Include="src\ConstraintRenderer.h">
       <Filter>Source Files\Graphics\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="src\ParticleContacts.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ParticleContactGenerators.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp">
@@ -401,6 +407,12 @@
       <Filter>Source Files\Graphics\Physics</Filter>
     </ClCompile>
     <ClCompile Include="src\PhysicsSystem.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ParticleContacts.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ParticleContactGenerators.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
   </ItemGroup>

@@ -153,6 +153,8 @@
     <ClInclude Include="3rdParty\include\FastDelegate\FastDelegateBind.h" />
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h" />
     <ClInclude Include="src\ConstraintRenderer.h" />
+    <ClInclude Include="src\ParticleContactGenerators.h" />
+    <ClInclude Include="src\ParticleContacts.h" />
     <ClInclude Include="src\ParticleRenderer.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\COLLADALoader.h" />
@@ -239,6 +241,8 @@
     <ClCompile Include="src\MouseState.cpp" />
     <ClCompile Include="src\OVRRenderer.cpp" />
     <ClCompile Include="src\Particle.cpp" />
+    <ClCompile Include="src\ParticleContactGenerators.cpp" />
+    <ClCompile Include="src\ParticleContacts.cpp" />
     <ClCompile Include="src\ParticleForceGen.cpp" />
     <ClCompile Include="src\ParticleRenderer.cpp" />
     <ClCompile Include="src\PhysicsSystem.cpp" />
