@@ -1,6 +1,6 @@
 #pragma once
 
-#define USE_RIFT 0
+#define USE_RIFT 1
 #define OVR_D3D_VERSION 11
 
 #include "d3dStd.h"
