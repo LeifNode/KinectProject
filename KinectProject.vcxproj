@@ -153,8 +153,6 @@
     <ClInclude Include="3rdParty\include\FastDelegate\FastDelegateBind.h" />
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h" />
     <ClInclude Include="src\ConstraintRenderer.h" />
-    <ClInclude Include="src\DeferredRenderer.h" />
-    <ClInclude Include="src\FullscreenTriangle.h" />
     <ClInclude Include="src\ParticleContactGenerators.h" />
     <ClInclude Include="src\ParticleContacts.h" />
     <ClInclude Include="src\ParticleRenderer.h" />

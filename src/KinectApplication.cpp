@@ -284,21 +284,21 @@ void KinectApplication::Draw()
 		//mpCubeRenderer->Render(mpRenderer);
 
 		mpHydraRenderer->Render(mpRenderer);
-		mpPhysicsSystem->Render(mpRenderer);
 
-		//mpKinectRenderer->Render(mpRenderer);
+		mpKinectRenderer->Render(mpRenderer);
 
 		mpLeapRenderer->Render(mpRenderer);
 
-		mpFontManager->bindRender(mpRenderer);
+		//mpFontManager->bindRender(mpRenderer);
 
 		std::stringstream stream;
 		stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()) << " Points: " << mpLineRenderer->Points.List.size();
 
-		mpText->setText(stream.str());
-		mpText->Render(mpRenderer);
+		//mpText->setText(stream.str());
+		//mpText->Render(mpRenderer);
 
 		//mpLineRenderer->Render(mpRenderer);
+		mpPhysicsSystem->Render(mpRenderer);
 
 		mpRenderer->setShader(mpMainShader);
 		mpRenderer->setBlendState(false);

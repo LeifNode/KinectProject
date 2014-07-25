@@ -1,7 +1,6 @@
 #include "Camera.h"
 #include "MathHelper.h"
 #include "InputSystem.h"
-#include "OVRRenderer.h"
 
 Camera::Camera(const XMFLOAT3& position)
 	:mPosition(position),

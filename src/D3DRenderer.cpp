@@ -2,7 +2,6 @@
 #include "d3dApp.h"
 #include "Geometry.h"
 #include "ConstantBuffers.h"
-#include "OVRRenderer.h"
 
 extern D3DApp* gpApplication;
 
@@ -530,7 +529,7 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 	if (format & Texture_RGBA && format & Texture_KinectDynamic)
 		d3dformat = DXGI_FORMAT_B8G8R8A8_UNORM;
 	else if (format & Texture_RGBA)
-		d3dformat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		d3dformat = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	else if (format & Texture_Depth && format & Texture_KinectDynamic)
 		d3dformat = DXGI_FORMAT_R16_SINT;
 	else if (format & Texture_Depth)
