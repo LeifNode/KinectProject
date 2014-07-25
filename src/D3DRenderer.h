@@ -41,6 +41,7 @@ public:
 
 	Texture* createTexture(UINT format, int width, int height);
 	Texture* createTexture(D3D11_TEXTURE2D_DESC* textureDescription);
+	//Texture* createTexture(int width, int height, DXGI_FORMAT colorFormat, )
 	RenderTarget* createRenderTarget(int width, int height, bool useDepthBuffer = true);
 	void setRenderTarget(RenderTarget* target);
 
