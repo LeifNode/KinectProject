@@ -375,27 +375,27 @@ void COLLADALoader::constructModelGeometry(XMLElement* geometryElement)
 
 				//Copy params if they exist
 				vert.Position = XMFLOAT3(accessorArray[0].source->data[pList[currentIndex + accessorArray[0].offset] * accessorArray[0].source->stride] * mScalingFactor, 
-									 accessorArray[0].source->data[pList[currentIndex + accessorArray[0].offset] * accessorArray[0].source->stride + yOffset] * mScalingFactor, 
-									 accessorArray[0].source->data[pList[currentIndex + accessorArray[0].offset] * accessorArray[0].source->stride + zOffset] * mScalingFactor * zMultiplier);
+										 accessorArray[0].source->data[pList[currentIndex + accessorArray[0].offset] * accessorArray[0].source->stride + yOffset] * mScalingFactor, 
+										 accessorArray[0].source->data[pList[currentIndex + accessorArray[0].offset] * accessorArray[0].source->stride + zOffset] * mScalingFactor * zMultiplier);
 
 				if (accessorArray[1].source != NULL)
 					vert.Normal =   XMFLOAT3(accessorArray[1].source->data[pList[currentIndex + accessorArray[1].offset] * accessorArray[1].source->stride], 
-										 accessorArray[1].source->data[pList[currentIndex + accessorArray[1].offset] * accessorArray[1].source->stride + yOffset], 
-										 accessorArray[1].source->data[pList[currentIndex + accessorArray[1].offset] * accessorArray[1].source->stride + zOffset] * zMultiplier);
+											 accessorArray[1].source->data[pList[currentIndex + accessorArray[1].offset] * accessorArray[1].source->stride + yOffset], 
+											 accessorArray[1].source->data[pList[currentIndex + accessorArray[1].offset] * accessorArray[1].source->stride + zOffset] * zMultiplier);
 
 				if (accessorArray[2].source != NULL)
 					vert.TexCoord = XMFLOAT2(accessorArray[2].source->data[pList[currentIndex + accessorArray[2].offset] * accessorArray[2].source->stride],
-										 accessorArray[2].source->data[pList[currentIndex + accessorArray[2].offset] * accessorArray[2].source->stride + 1]);
+											 accessorArray[2].source->data[pList[currentIndex + accessorArray[2].offset] * accessorArray[2].source->stride + 1]);
 
 				if (accessorArray[3].source != NULL)
 					vert.Tangent =  XMFLOAT3(accessorArray[3].source->data[pList[currentIndex + accessorArray[3].offset] * accessorArray[3].source->stride], 
-										 accessorArray[3].source->data[pList[currentIndex + accessorArray[3].offset] * accessorArray[3].source->stride + yOffset], 
-										 accessorArray[3].source->data[pList[currentIndex + accessorArray[3].offset] * accessorArray[3].source->stride + zOffset] * zMultiplier);
+											 accessorArray[3].source->data[pList[currentIndex + accessorArray[3].offset] * accessorArray[3].source->stride + yOffset], 
+											 accessorArray[3].source->data[pList[currentIndex + accessorArray[3].offset] * accessorArray[3].source->stride + zOffset] * zMultiplier);
 
 				if (accessorArray[4].source != NULL)
 					vert.Bitangent = XMFLOAT3(accessorArray[4].source->data[pList[currentIndex + accessorArray[4].offset] * accessorArray[4].source->stride], 
-										 accessorArray[4].source->data[pList[currentIndex + accessorArray[4].offset] * accessorArray[4].source->stride + yOffset], 
-										 accessorArray[4].source->data[pList[currentIndex + accessorArray[4].offset] * accessorArray[4].source->stride + zOffset] * zMultiplier);
+											  accessorArray[4].source->data[pList[currentIndex + accessorArray[4].offset] * accessorArray[4].source->stride + yOffset], 
+											  accessorArray[4].source->data[pList[currentIndex + accessorArray[4].offset] * accessorArray[4].source->stride + zOffset] * zMultiplier);
 
 				//Push the vertex to the mesh
 				subMesh->mesh.Vertices.push_back(vert);

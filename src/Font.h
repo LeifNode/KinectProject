@@ -43,8 +43,8 @@ public:
 	int getTextureWidth() const { return mpFontTexture->getWidth(); }
 	int getTextureHeight() const { return mpFontTexture->getHeight(); }
 
-	bool loadCharacter(int charCode, int pointSize, FONT_TYPE type);
-	bool loadGlyphs(int pointSize, FONT_TYPE type);
+	bool loadCharacter(int charCode, int pointSize, FONT_TYPE type = FONT_TYPE_NORMAL);
+	bool loadGlyphs(int pointSize, FONT_TYPE type = FONT_TYPE_NORMAL);
 
 	float getUsedSpace() { return mBinPacker.getFillPercent(); }
 	Texture* getFontTexture() const { return mpFontTexture; }

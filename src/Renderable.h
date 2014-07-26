@@ -18,7 +18,7 @@ public:
 	std::list<Renderable*>* getChildren() { return &mChildren; }
 
 public:
-	Transform Transform;
+	Transform transform;
 	
 protected:
 	void deleteChildren();

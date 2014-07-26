@@ -85,10 +85,7 @@
       <UniqueIdentifier>{b90579ac-799f-41ea-b159-ebaf5e5e1bcb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Graphics\Post Processing">
-      <UniqueIdentifier>{8c45df8f-1426-438f-8e1e-c20dfcb58dcf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\Post Process">
-      <UniqueIdentifier>{522127aa-fcd7-4d3a-b205-4404ff25c5a2}</UniqueIdentifier>
+      <UniqueIdentifier>{68b8194b-9cc7-4eb9-9629-619c06459746}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -270,10 +267,13 @@
       <Filter>Source Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="src\DeferredRenderer.h">
-      <Filter>Source Files\Graphics\Post Processing</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\FullscreenTriangle.h">
       <Filter>Source Files\Graphics\Post Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GBuffer.h">
+      <Filter>Source Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -426,6 +426,9 @@
     </ClCompile>
     <ClCompile Include="src\ParticleContactGenerators.cpp">
       <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GBuffer.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,8 @@
 #include "Texture.h"
 #include "RenderTarget.h"
 #include "MatrixStack.h"
+#include "GBuffer.h"
+#include "Transform.h"
 
 class D3DApp;
 
@@ -40,7 +42,7 @@ public:
 	void setPerObjectBuffer(CBPerObject& buffer);
 
 	Texture* createTexture(UINT format, int width, int height);
-	Texture* createTexture(D3D11_TEXTURE2D_DESC* textureDescription);
+	Texture* createTexture(D3D11_TEXTURE2D_DESC* textureDescription, DXGI_FORMAT resViewFmt = DXGI_FORMAT_UNKNOWN);
 	//Texture* createTexture(int width, int height, DXGI_FORMAT colorFormat, )
 	RenderTarget* createRenderTarget(int width, int height, bool useDepthBuffer = true);
 	void setRenderTarget(RenderTarget* target);
@@ -66,12 +68,19 @@ public:
 	void preRender();
 	void postRender();
 
+	void pushTransform(Transform& transform);
+	void popTransform();
+	XMMATRIX getTopTransform() const;
+	XMMATRIX getTopTransformInverse() const;
+
 private:
 	static HRESULT compileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut );
 
 	void initializeDepthStencilStates();
 
 private:
+	GBuffer mGBuffer;
+
 	UINT m4xMsaaQuality;
 
 	ID3D11Device* md3dDevice;

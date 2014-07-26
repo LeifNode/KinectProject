@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "D3DRenderer.h"
 
 GameObject::GameObject()
 {
@@ -30,6 +31,8 @@ void GameObject::Update(float dt)
 	
 void GameObject::PreRender(D3DRenderer* renderer)
 {
+	renderer->pushTransform(transform);
+
 	auto end = mComponents.end();
 	for (auto it = mComponents.begin(); it != end; ++it)
 	{
@@ -44,6 +47,8 @@ void GameObject::Render(D3DRenderer* renderer)
 	{
 		it->second->Render(renderer);
 	}
+
+	renderChildren(renderer);
 }
 
 void GameObject::PostRender(D3DRenderer* renderer)
@@ -53,6 +58,8 @@ void GameObject::PostRender(D3DRenderer* renderer)
 	{
 		it->second->PostRender(renderer);
 	}
+
+	renderer->popTransform();
 }
 
 bool GameObject::addComponent(ObjectComponent* component)

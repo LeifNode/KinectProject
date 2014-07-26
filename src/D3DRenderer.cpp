@@ -34,6 +34,8 @@ D3DRenderer::D3DRenderer()
 
 D3DRenderer::~D3DRenderer()
 {
+	mGBuffer.DeInit();
+
 	for (auto it = mLoadedShaders.begin(); it != mLoadedShaders.end(); ++it)
 	{
 		delete it->second;
@@ -125,6 +127,8 @@ void D3DRenderer::onResize()
 	// Set the viewport transform.
 
 	setViewport(gpApplication->getClientWidth(), gpApplication->getClientHeight(), 0, 0);
+
+	mGBuffer.OnResize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
 }
 
 bool D3DRenderer::initialize()
@@ -294,6 +298,8 @@ bool D3DRenderer::initialize()
 	onResize();
 
 	initializeDepthStencilStates();
+
+	mGBuffer.Initialize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
 
 	return true;
 }
@@ -530,7 +536,7 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 	if (format & Texture_RGBA && format & Texture_KinectDynamic)
 		d3dformat = DXGI_FORMAT_B8G8R8A8_UNORM;
 	else if (format & Texture_RGBA)
-		d3dformat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		d3dformat = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	else if (format & Texture_Depth && format & Texture_KinectDynamic)
 		d3dformat = DXGI_FORMAT_R16_SINT;
 	else if (format & Texture_Depth)
@@ -597,14 +603,18 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 	return newTexture;
 }
 
-Texture* D3DRenderer::createTexture(D3D11_TEXTURE2D_DESC* textureDescription)
+Texture* D3DRenderer::createTexture(D3D11_TEXTURE2D_DESC* textureDescription, DXGI_FORMAT resViewFmt)
 {
 	Texture* newTexture = new Texture();
 	newTexture->mWidth = textureDescription->Width;
 	newTexture->mHeight = textureDescription->Height;
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
-	shaderResourceViewDesc.Format = textureDescription->Format;
+	if (resViewFmt == DXGI_FORMAT_UNKNOWN)
+		shaderResourceViewDesc.Format = textureDescription->Format;
+	else
+		shaderResourceViewDesc.Format = resViewFmt;
+
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = textureDescription->MipLevels;
@@ -765,4 +775,24 @@ void D3DRenderer::postRender()
 #endif
 
 	md3dImmediateContext->OMSetRenderTargets(1, &mRenderTarget, mDepthStencilView);
+}
+
+void D3DRenderer::pushTransform(Transform& transform)
+{
+	mMatrixStack.push(transform.getTransform());
+}
+
+void D3DRenderer::popTransform()
+{
+	mMatrixStack.pop();
+}
+
+XMMATRIX D3DRenderer::getTopTransform() const
+{
+	return mMatrixStack.getTop();
+}
+
+XMMATRIX D3DRenderer::getTopTransformInverse() const
+{
+	return mMatrixStack.getTopInverse();
 }

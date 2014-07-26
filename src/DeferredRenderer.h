@@ -16,8 +16,5 @@ public:
 	void bindRenderTargets();
 
 private:
-	Texture* mpDepthTexture;
-	Texture* mpDiffuseTexture;
-	Texture* mpNormalTexture;
-	Texture* mpSpecularTaget;
+	
 };
