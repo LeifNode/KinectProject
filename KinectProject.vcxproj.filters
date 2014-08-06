@@ -87,6 +87,12 @@
     <Filter Include="Source Files\Graphics\Post Processing">
       <UniqueIdentifier>{68b8194b-9cc7-4eb9-9629-619c06459746}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Post Process">
+      <UniqueIdentifier>{4a93a764-b5b8-46cd-9de2-867c21b1d951}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Post Process\Deferred Rendering">
+      <UniqueIdentifier>{e10b3b88-71ab-4d02-b26e-fd25f2e8f997}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -203,9 +209,6 @@
     <ClInclude Include="src\Renderable.h">
       <Filter>Source Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\TexturedQuad.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="src\FontManager.h">
       <Filter>Source Files\Resource Manager\Fonts</Filter>
     </ClInclude>
@@ -274,6 +277,9 @@
     </ClInclude>
     <ClInclude Include="src\GBuffer.h">
       <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene.h">
+      <Filter>Source Files\Resource Manager\Models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -432,9 +438,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\color.fx">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\color_PS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -450,15 +453,6 @@
     <FxCompile Include="Shaders\kinect_VS.hlsl">
       <Filter>Shaders\Kinect</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\ConstantBuffers.fx">
-      <Filter>Shaders\Utils</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\LightingHelper.fx">
-      <Filter>Shaders\Utils</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\text.fx">
-      <Filter>Shaders\Text</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\text_VS.hlsl">
       <Filter>Shaders\Text</Filter>
     </FxCompile>
@@ -468,12 +462,6 @@
     <FxCompile Include="Shaders\text_PS.hlsl">
       <Filter>Shaders\Text</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\kinect.fx">
-      <Filter>Shaders\Kinect</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\line.fx">
-      <Filter>Shaders\Lines</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\line_VS.hlsl">
       <Filter>Shaders\Lines</Filter>
     </FxCompile>
@@ -482,6 +470,36 @@
     </FxCompile>
     <FxCompile Include="Shaders\line_PS.hlsl">
       <Filter>Shaders\Lines</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DeferredShading.hlsl">
+      <Filter>Shaders\Utils</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\ConstantBuffers.hlsl">
+      <Filter>Shaders\Utils</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LightingHelper.hlsl">
+      <Filter>Shaders\Utils</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\color.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\text.hlsl">
+      <Filter>Shaders\Text</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\line.hlsl">
+      <Filter>Shaders\Lines</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\kinect.hlsl">
+      <Filter>Shaders\Kinect</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\FullscreenTriangle.hlsl">
+      <Filter>Shaders\Utils</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DeferredRendering.hlsl">
+      <Filter>Shaders\Utils</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DeferredDirectionalLight.hlsl">
+      <Filter>Shaders\Post Process\Deferred Rendering</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

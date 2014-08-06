@@ -1,1 +1,1 @@
-#include "kinect.fx"
+#include "kinect.hlsl"

@@ -1,4 +1,7 @@
-#include "LightingHelper.fx"
+#if !defined(CONSTANT_BUFFERS_HLSL)
+#define CONSTANT_BUFFERS_HLSL
+
+#include "LightingHelper.hlsl"
 
 cbuffer cbPerFrame : register( b0 )
 {
@@ -28,3 +31,5 @@ cbuffer cbPerObject : register( b1 )
 	float4x4 gTextureTransform;
 	Material gMaterial;
 };
+
+#endif //!defined(CONSTANT_BUFFERS_HLSL)

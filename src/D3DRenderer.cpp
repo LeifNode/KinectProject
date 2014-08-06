@@ -34,7 +34,8 @@ D3DRenderer::D3DRenderer()
 
 D3DRenderer::~D3DRenderer()
 {
-	mGBuffer.DeInit();
+	mpGBuffer->DeInit();
+	SAFE_DELETE(mpGBuffer);
 
 	for (auto it = mLoadedShaders.begin(); it != mLoadedShaders.end(); ++it)
 	{
@@ -128,7 +129,7 @@ void D3DRenderer::onResize()
 
 	setViewport(gpApplication->getClientWidth(), gpApplication->getClientHeight(), 0, 0);
 
-	mGBuffer.OnResize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
+	mpGBuffer->OnResize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
 }
 
 bool D3DRenderer::initialize()
@@ -295,11 +296,12 @@ bool D3DRenderer::initialize()
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	md3dDevice->CreateSamplerState( &sampDesc, &mSamplerState );
 
+	mpGBuffer = new GBuffer();
+	mpGBuffer->Initialize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
+
 	onResize();
 
 	initializeDepthStencilStates();
-
-	mGBuffer.Initialize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
 
 	return true;
 }
@@ -461,6 +463,40 @@ Shader* D3DRenderer::loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRI
 				MessageBox(0, L"Unable to create compute shader.", L"Error", MB_OK);
 			}
 			break;
+		case SHADER_TYPE_HULL:
+			hr = compileShaderFromFile(filePath, shaderInfo[i].entrypoint, "hs_5_0", &shaderBlob);
+			if (FAILED(hr))
+			{
+				MessageBox(0, L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+
+				return NULL;
+			}
+
+			hr = device()->CreateHullShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), NULL, &newShader->mpHullShader);
+			if (FAILED(hr))
+			{
+				shaderBlob->Release();
+		
+				MessageBox(0, L"Unable to create hull shader.", L"Error", MB_OK);
+			}
+			break;
+		case SHADER_TYPE_DOMAIN:
+			hr = compileShaderFromFile(filePath, shaderInfo[i].entrypoint, "ds_5_0", &shaderBlob);
+			if (FAILED(hr))
+			{
+				MessageBox(0, L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+
+				return NULL;
+			}
+
+			hr = device()->CreateDomainShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), NULL, &newShader->mpDomainShader);
+			if (FAILED(hr))
+			{
+				shaderBlob->Release();
+		
+				MessageBox(0, L"Unable to create domain shader.", L"Error", MB_OK);
+			}
+			break;
 		}
 
 		ReleaseCOM(shaderBlob);
@@ -483,6 +519,36 @@ void D3DRenderer::setTextureResource(int index, Texture* texture)
 			md3dImmediateContext->GSSetShaderResources(index, 1, &texture->mpResourceView);
 		if (mpActiveShader->hasComputeShader())
 			md3dImmediateContext->CSSetShaderResources(index, 1, &texture->mpResourceView);
+		if (mpActiveShader->hasHullShader())
+			md3dImmediateContext->HSSetShaderResources(index, 1, &texture->mpResourceView);
+		if (mpActiveShader->hasDomainShader())
+			md3dImmediateContext->DSSetShaderResources(index, 1, &texture->mpResourceView);
+	}
+}
+
+void D3DRenderer::setTextureResources(int index, Texture** texArray, unsigned count)
+{
+	if (mpActiveShader)
+	{
+		ID3D11ShaderResourceView** resourceArray = new ID3D11ShaderResourceView*[count];
+
+		for (int i = 0; i < count; i++)
+			resourceArray[i] = texArray[i]->mpResourceView;
+
+		if (mpActiveShader->hasVertexShader())
+			md3dImmediateContext->VSSetShaderResources(index, count, resourceArray);
+		if (mpActiveShader->hasPixelShader())
+			md3dImmediateContext->PSSetShaderResources(index, count, resourceArray);
+		if (mpActiveShader->hasGeometryShader())
+			md3dImmediateContext->GSSetShaderResources(index, count, resourceArray);
+		if (mpActiveShader->hasComputeShader())
+			md3dImmediateContext->CSSetShaderResources(index, count, resourceArray);
+		if (mpActiveShader->hasHullShader())
+			md3dImmediateContext->HSSetShaderResources(index, count, resourceArray);
+		if (mpActiveShader->hasDomainShader())
+			md3dImmediateContext->DSSetShaderResources(index, count, resourceArray);
+
+		delete [] resourceArray;
 	}
 }
 
@@ -498,6 +564,10 @@ void D3DRenderer::setSampler(int index, ID3D11SamplerState* samplerState)
 			md3dImmediateContext->GSSetSamplers(index, 1, &samplerState);
 		if (mpActiveShader->hasComputeShader())
 			md3dImmediateContext->CSSetSamplers(index, 1, &samplerState);
+		if (mpActiveShader->hasHullShader())
+			md3dImmediateContext->HSSetSamplers(index, 1, &samplerState);
+		if (mpActiveShader->hasDomainShader())
+			md3dImmediateContext->DSSetSamplers(index, 1, &samplerState);
 	}
 }
 
@@ -513,6 +583,10 @@ void D3DRenderer::setConstantBuffer(int index, ID3D11Buffer* buffer)
 			md3dImmediateContext->GSSetConstantBuffers(index, 1, &buffer);
 		if (mpActiveShader->hasComputeShader())
 			md3dImmediateContext->CSSetConstantBuffers(index, 1, &buffer);
+		if (mpActiveShader->hasHullShader())
+			md3dImmediateContext->HSSetConstantBuffers(index, 1, &buffer);
+		if (mpActiveShader->hasDomainShader())
+			md3dImmediateContext->DSSetConstantBuffers(index, 1, &buffer);
 	}
 }
 
@@ -761,6 +835,8 @@ void D3DRenderer::preRender()
 	md3dImmediateContext->VSSetSamplers(0, 1, &mSamplerState);
 	md3dImmediateContext->PSSetSamplers(0, 1, &mSamplerState);
 	md3dImmediateContext->GSSetSamplers(0, 1, &mSamplerState);
+	md3dImmediateContext->DSSetSamplers(0, 1, &mSamplerState);
+	md3dImmediateContext->HSSetSamplers(0, 1, &mSamplerState);
 
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT sampleMask   = 0xffffffff;

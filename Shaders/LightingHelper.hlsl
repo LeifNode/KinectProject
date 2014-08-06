@@ -1,3 +1,6 @@
+#if !defined(LIGHTING_HELPER_HLSL)
+#define LIGHTING_HELPER_HLSL
+
 struct Material
 {
 	float4 Ambient;
@@ -148,3 +151,5 @@ void ComputeSpotLight(Material mat, SpotLight L, float3 pos, float3 normal, floa
 	diffuse *= att;
 	spec    *= att;
 }
+
+#endif

@@ -1,1 +1,1 @@
-#include "text.fx"
+#include "text.hlsl"

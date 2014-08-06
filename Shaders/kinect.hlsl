@@ -1,4 +1,4 @@
-#include "ConstantBuffers.fx"
+#include "ConstantBuffers.hlsl"
 
 Texture2D<int> textureDepth    : register( t0 );
 Texture2D<float4> textureColor : register( t1 );

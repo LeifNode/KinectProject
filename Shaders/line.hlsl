@@ -1,4 +1,4 @@
-#include "ConstantBuffers.fx"
+#include "ConstantBuffers.hlsl"
 
 cbuffer cbPerLine : register( b2 )
 {

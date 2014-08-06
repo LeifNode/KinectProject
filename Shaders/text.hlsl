@@ -1,4 +1,4 @@
-#include "ConstantBuffers.fx"
+#include "ConstantBuffers.hlsl"
 
 Texture2D textAtlus : register( t0 );
 

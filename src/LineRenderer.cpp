@@ -154,7 +154,7 @@ void LineRenderer::Initialize()
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
-	pLineShader = renderer->loadShader(L"Shaders/line.fx", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_LINELIST_ADJ, vertexDescription, ARRAYSIZE(vertexDescription));
+	pLineShader = renderer->loadShader(L"Shaders/line.hlsl", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_LINELIST_ADJ, vertexDescription, ARRAYSIZE(vertexDescription));
 
 	D3D11_BUFFER_DESC bd;
 	bd.Usage = D3D11_USAGE_DEFAULT;

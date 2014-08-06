@@ -7,7 +7,9 @@ Shader::Shader(const std::string& name)
 	mpInputLayout(nullptr),
 	mpPixelShader(nullptr),
 	mpGeometryShader(nullptr),
-	mpComputeShader(nullptr)
+	mpComputeShader(nullptr),
+	mpHullShader(nullptr),
+	mpDomainShader(nullptr)
 {
 }
 
@@ -18,6 +20,8 @@ Shader::~Shader()
 	ReleaseCOM(mpPixelShader);
 	ReleaseCOM(mpGeometryShader);
 	ReleaseCOM(mpComputeShader);
+	ReleaseCOM(mpHullShader);
+	ReleaseCOM(mpDomainShader);
 }
 
 void Shader::bind(D3DRenderer* renderer)
@@ -32,4 +36,6 @@ void Shader::bind(D3DRenderer* renderer)
 	context->PSSetShader(mpPixelShader, NULL, 0);
 	context->GSSetShader(mpGeometryShader, NULL, 0);
 	context->CSSetShader(mpComputeShader, NULL, 0);
+	context->HSSetShader(mpHullShader, NULL, 0);
+	context->DSSetShader(mpDomainShader, NULL, 0);
 }

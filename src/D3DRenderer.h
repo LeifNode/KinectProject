@@ -36,6 +36,7 @@ public:
 	ID3D11DeviceContext* context() const { return md3dImmediateContext; }
 
 	void setTextureResource(int index, Texture*);
+	void setTextureResources(int index, Texture** texArray, unsigned count);
 	void setSampler(int index, ID3D11SamplerState* samplerState);
 	void setConstantBuffer(int index, ID3D11Buffer*);
 	void setPerFrameBuffer(CBPerFrame& buffer);
@@ -79,7 +80,7 @@ private:
 	void initializeDepthStencilStates();
 
 private:
-	GBuffer mGBuffer;
+	GBuffer* mpGBuffer;
 
 	UINT m4xMsaaQuality;
 

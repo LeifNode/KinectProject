@@ -1,1 +1,1 @@
-#include "color.fx"
+#include "color.hlsl"

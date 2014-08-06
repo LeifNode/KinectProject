@@ -76,7 +76,7 @@ void KinectRenderer::Initialize()
 		{"POSITION", 0, DXGI_FORMAT_R16_SINT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
-	mpKinectRenderShader = gpApplication->getRenderer()->loadShader(L"Shaders/kinect.fx", shaderInfo, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST, vertexDescription, ARRAYSIZE(vertexDescription)); 
+	mpKinectRenderShader = gpApplication->getRenderer()->loadShader(L"Shaders/kinect.hlsl", shaderInfo, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST, vertexDescription, ARRAYSIZE(vertexDescription)); 
 
 	//Create empty vertex buffer
 	D3D11_BUFFER_DESC bd = {0};

@@ -79,7 +79,7 @@ void FontManager::initializeShader()
 		{"DIMENSION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
-	mpTextRenderShader = gpApplication->getRenderer()->loadShader(L"Shaders/text.fx", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_POINTLIST, vertexDescription, ARRAYSIZE(vertexDescription)); 
+	mpTextRenderShader = gpApplication->getRenderer()->loadShader(L"Shaders/text.hlsl", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_POINTLIST, vertexDescription, ARRAYSIZE(vertexDescription)); 
 }
 
 void FontManager::bindRender(D3DRenderer* renderer)

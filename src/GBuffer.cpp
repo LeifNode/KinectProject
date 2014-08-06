@@ -13,7 +13,8 @@ GBuffer::GBuffer()
 	mpNormalTargetView(NULL),
 	mpSpecularTargetView(NULL),
 	mpEmissiveTargetView(NULL),
-	mpDepthStencilState(NULL)
+	mpDepthStencilState(NULL),
+	mpSamplerState(NULL)
 {
 
 }
@@ -39,6 +40,16 @@ void GBuffer::Initialize(int width, int height)
 	desc.BackFace = stencilMarkOp;
 
 	gpApplication->getRenderer()->device()->CreateDepthStencilState(&desc, &mpDepthStencilState);
+
+	D3D11_SAMPLER_DESC samDesc;
+    ZeroMemory( &samDesc, sizeof(samDesc) );
+    samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+    samDesc.AddressU = samDesc.AddressV = samDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    samDesc.MaxAnisotropy = 1;
+    samDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+    samDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	gpApplication->getRenderer()->device()->CreateSamplerState(&samDesc, &mpSamplerState);
 }
 
 void GBuffer::DeInit()
@@ -49,6 +60,7 @@ void GBuffer::DeInit()
 	ReleaseCOM(mpSpecularTargetView);
 	ReleaseCOM(mpEmissiveTargetView);
 	ReleaseCOM(mpDepthStencilState);
+	ReleaseCOM(mpSamplerState);
 
 	SAFE_DELETE(mpDiffuseTexture);
 	SAFE_DELETE(mpDepthStencilTexture);
@@ -141,9 +153,55 @@ void GBuffer::OnResize(int width, int height)
 
 	rtsvd.Format = emissiveRenderViewFormat;
 	renderer->device()->CreateRenderTargetView(mpEmissiveTexture->getD3DTexture(), &rtsvd, &mpEmissiveTargetView);
+
+	std::cout << "GBuffer render targets initialized.\n";
 }
 
 void GBuffer::bindRenderTargets()
 {
+	D3DRenderer* renderer = gpApplication->getRenderer();
 
+	ID3D11RenderTargetView* renderTargets[4] = 
+	{
+		mpDiffuseTargetView,
+		mpNormalTargetView,
+		mpSpecularTargetView,
+		mpEmissiveTargetView
+	};
+
+	renderer->context()->OMSetRenderTargets(4, renderTargets, mpDepthStencilTargetView);
+}
+
+void GBuffer::bindTextures()
+{
+	D3DRenderer* renderer = gpApplication->getRenderer();
+
+	Texture* texArray[5] = { 
+		mpDiffuseTexture, 
+		mpNormalTexture,
+		mpSpecularTexture,
+		mpEmissiveTexture,
+		mpDepthStencilTexture
+	};
+
+	renderer->setTextureResources(0, texArray, 5);
+}
+
+void GBuffer::bindSampler()
+{
+	gpApplication->getRenderer()->setSampler(0, mpSamplerState);
+}
+
+void GBuffer::clearRenderTargets()
+{
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	ID3D11DeviceContext* context = gpApplication->getRenderer()->context();
+
+	context->ClearDepthStencilView(mpDepthStencilTargetView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	context->ClearRenderTargetView(mpDiffuseTargetView, clearColor);
+	context->ClearRenderTargetView(mpNormalTargetView, clearColor);
+	context->ClearRenderTargetView(mpSpecularTargetView, clearColor);
+	context->ClearRenderTargetView(mpEmissiveTargetView, clearColor);
 }

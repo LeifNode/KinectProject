@@ -1,4 +1,4 @@
-#include "ConstantBuffers.fx"
+#include "ConstantBuffers.hlsl"
 
 Texture2D textureDiffuse : register( t0 );
 Texture2D textureNormal  : register( t1 );

@@ -12,6 +12,10 @@ public:
 	~GBuffer();
 
 	void bindRenderTargets();
+	void bindTextures();
+	void bindSampler();
+
+	void clearRenderTargets();
 
 private:
 	void Initialize(int width, int height);
@@ -33,4 +37,5 @@ private:
 	ID3D11RenderTargetView* mpEmissiveTargetView;
 
 	ID3D11DepthStencilState* mpDepthStencilState;
+	ID3D11SamplerState* mpSamplerState;
 };

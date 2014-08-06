@@ -40,7 +40,7 @@ void ParticleRenderer::removeParticle(Particle* particle)
 
 void ParticleRenderer::Render(D3DRenderer* renderer)
 {
-	Shader* shader = renderer->getShader("Shaders/color.fx");
+	Shader* shader = renderer->getShader("Shaders/color.hlsl");
 	renderer->setShader(shader);
 	
 	CBPerObject perObject;
