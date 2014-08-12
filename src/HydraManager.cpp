@@ -42,7 +42,7 @@ void HydraManager::Update(float dt)
 XMVECTOR HydraManager::getPosition(int controllerIndex) const
 {
 	if (sixenseIsControllerEnabled(controllerIndex))
-		return XMLoadFloat3(&XMFLOAT3(mAcd.controllers[controllerIndex].pos[0], 
+		return XMLoadFloat3(&XMFLOAT3(-mAcd.controllers[controllerIndex].pos[0], 
 									  mAcd.controllers[controllerIndex].pos[1] + 900.0f, //Table height offset in mm
 									  -mAcd.controllers[controllerIndex].pos[2])) / 1000.0f;
 	
@@ -58,9 +58,9 @@ XMVECTOR HydraManager::getRotation(int controllerIndex) const
 
 		XMQuaternionToAxisAngle(&axis, &angle, XMLoadFloat4(&XMFLOAT4(&mAcd.controllers[controllerIndex].rot_quat[0])));
 
-		axis = XMVectorSet(XMVectorGetX(axis), XMVectorGetY(axis), -XMVectorGetZ(axis), 0.0f);
+		axis = XMVectorSet(-XMVectorGetX(axis), XMVectorGetY(axis), -XMVectorGetZ(axis), 0.0f);
 
-		XMVECTOR rotationQuat = XMQuaternionRotationAxis(axis, -angle);
+		XMVECTOR rotationQuat = XMQuaternionRotationAxis(axis, angle);
 
 		return rotationQuat;
 	}

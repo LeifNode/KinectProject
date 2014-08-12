@@ -97,7 +97,7 @@ void OVRRenderer::OnResize()
 
 XMMATRIX OVRRenderer::getProjection(int eyeIndex)
 {
-	return XMMatrixTranspose(XMLoadFloat4x4(&XMFLOAT4X4(&ovrMatrix4f_Projection(mEyeRenderDesc[mHMDDesc.EyeRenderOrder[eyeIndex]].Fov, 0.01f, 10000.0f, false).M[0][0])));
+	return XMMatrixTranspose(XMLoadFloat4x4(&XMFLOAT4X4(&ovrMatrix4f_Projection(mEyeRenderDesc[mHMDDesc.EyeRenderOrder[eyeIndex]].Fov, 0.01f, 10000.0f, true).M[0][0])));
 }
 
 void OVRRenderer::Update(float dt)
@@ -116,6 +116,22 @@ void OVRRenderer::PreRender(int eyeIndex)
 	CBPerFrame perFrame = *renderer->getPerFrameBuffer();
 
 	mEyeRenderPoses[eyeIndex] = ovrHmd_BeginEyeRender(mHMD, eye);
+
+	XMVECTOR rotQuat = XMLoadFloat4(&XMFLOAT4(mEyeRenderPoses[eyeIndex].Orientation.x,
+											  mEyeRenderPoses[eyeIndex].Orientation.y,
+											  mEyeRenderPoses[eyeIndex].Orientation.z,
+											  mEyeRenderPoses[eyeIndex].Orientation.w));
+		
+	XMVECTOR axis;
+	float angle;
+	
+	XMQuaternionToAxisAngle(&axis, &angle, rotQuat);
+
+	axis = XMVectorSet(XMVectorGetX(axis), -XMVectorGetY(axis), XMVectorGetZ(axis), 0.0f);
+
+	rotQuat = XMQuaternionRotationAxis(axis, -angle);
+
+	mEyeOrientations[eyeIndex] = rotQuat;
 
 	OVR::Recti viewport = mEyeRenderViewport[eye];
 

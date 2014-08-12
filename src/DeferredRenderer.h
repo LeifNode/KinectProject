@@ -1,7 +1,9 @@
 #pragma once
 
 #include "d3dStd.h"
-#include "Texture.h"
+#include "Shader.h"
+
+class D3DRenderer;
 
 class DeferredRenderer
 {
@@ -13,8 +15,11 @@ public:
 
 	void OnResize();
 
-	void bindRenderTargets();
+	void Render(D3DRenderer* renderer);
 
 private:
-	
+	void renderDirectionalLight(D3DRenderer* renderer);
+
+private:
+	Shader* mpDirectionalLightPass;
 };

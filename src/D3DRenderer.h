@@ -8,6 +8,7 @@
 #include "MatrixStack.h"
 #include "GBuffer.h"
 #include "Transform.h"
+#include "DeferredRenderer.h"
 
 class D3DApp;
 
@@ -41,6 +42,7 @@ public:
 	void setConstantBuffer(int index, ID3D11Buffer*);
 	void setPerFrameBuffer(CBPerFrame& buffer);
 	void setPerObjectBuffer(CBPerObject& buffer);
+	void bindPerFrameBuffer();
 
 	Texture* createTexture(UINT format, int width, int height);
 	Texture* createTexture(D3D11_TEXTURE2D_DESC* textureDescription, DXGI_FORMAT resViewFmt = DXGI_FORMAT_UNKNOWN);
@@ -68,11 +70,14 @@ public:
 
 	void preRender();
 	void postRender();
+	void renderDeferredLighting();
 
 	void pushTransform(Transform& transform);
 	void popTransform();
 	XMMATRIX getTopTransform() const;
 	XMMATRIX getTopTransformInverse() const;
+
+	GBuffer* getGBuffer() const { return mGBuffer; }
 
 private:
 	static HRESULT compileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut );
@@ -80,7 +85,8 @@ private:
 	void initializeDepthStencilStates();
 
 private:
-	GBuffer* mpGBuffer;
+	GBuffer* mGBuffer;
+	DeferredRenderer* mDeferredRenderer;
 
 	UINT m4xMsaaQuality;
 

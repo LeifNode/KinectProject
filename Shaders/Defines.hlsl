@@ -1,0 +1,22 @@
+#if !defined(DEFINES_HLSL)
+#define DEFINES_HLSL
+
+#define RENDERER_DEFERRED
+
+#ifndef SPECULAR_POW_RANGE_MIN
+#define SPECULAR_POW_RANGE_MIN 1.0
+#endif
+
+#ifndef SPECULAR_POW_RANGE_MAX
+#define SPECULAR_POW_RANGE_MAX 240.0
+#endif
+
+#ifndef EMISSIVE_RANGE_MIN //(1 / 16)
+#define EMISSIVE_RANGE_MIN 0.0625
+#endif
+
+#ifndef EMISSIVE_RANGE_MAX
+#define EMISSIVE_RANGE_MAX 16.0
+#endif
+
+#endif //!defined(DEFINES_HLSL)

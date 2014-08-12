@@ -90,7 +90,7 @@
     <Filter Include="Shaders\Post Process">
       <UniqueIdentifier>{4a93a764-b5b8-46cd-9de2-867c21b1d951}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\Post Process\Deferred Rendering">
+    <Filter Include="Shaders\Deferred Rendering">
       <UniqueIdentifier>{e10b3b88-71ab-4d02-b26e-fd25f2e8f997}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -272,9 +272,6 @@
     <ClInclude Include="src\DeferredRenderer.h">
       <Filter>Source Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\FullscreenTriangle.h">
-      <Filter>Source Files\Graphics\Post Processing</Filter>
-    </ClInclude>
     <ClInclude Include="src\GBuffer.h">
       <Filter>Source Files\Graphics</Filter>
     </ClInclude>
@@ -436,6 +433,9 @@
     <ClCompile Include="src\GBuffer.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\DeferredRenderer.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\color_PS.hlsl">
@@ -499,7 +499,16 @@
       <Filter>Shaders\Utils</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\DeferredDirectionalLight.hlsl">
-      <Filter>Shaders\Post Process\Deferred Rendering</Filter>
+      <Filter>Shaders\Deferred Rendering</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Defines.hlsl">
+      <Filter>Shaders\Utils</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DeferredDirectionalLight_VS.hlsl">
+      <Filter>Shaders\Deferred Rendering</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DeferredDirectionalLight_PS.hlsl">
+      <Filter>Shaders\Deferred Rendering</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

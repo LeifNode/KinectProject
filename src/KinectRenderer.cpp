@@ -183,7 +183,7 @@ HRESULT KinectRenderer::ProcessDepth()
     hr = mpNuiSensor->NuiImageStreamReleaseFrame(mpDepthStreamHandle, &imageFrame);
 
 	//Flip the depth stream
-	for (int y = 0; y < mDepthHeight; y++)
+	/*for (int y = 0; y < mDepthHeight; y++)
 	{
 		for (int x = 0; x < mDepthWidth / 2; x++)
 		{
@@ -191,7 +191,7 @@ HRESULT KinectRenderer::ProcessDepth()
 			mDepthD16[x + y * mDepthWidth] = mDepthD16[(mDepthWidth - x) + y * mDepthWidth - 1];
 			mDepthD16[(mDepthWidth - x) + y * mDepthWidth - 1] = temp;
 		}
-	}
+	}*/
 
     // copy to our d3d 11 depth texture
     D3D11_MAPPED_SUBRESOURCE msT;
@@ -267,8 +267,8 @@ HRESULT KinectRenderer::MapColorToDepth()
 		for (LONG x = 0; x < mColorWidth; ++x)
         {
             // calculate index into depth array
-			int depthIndex = (mDepthWidth - x / colorToDepthDivisor) + (y/colorToDepthDivisor + 1) * mDepthWidth - 1;//Flip color buffer
-			//int depthIndex = x / colorToDepthDivisor + y/colorToDepthDivisor * mDepthWidth;
+			//int depthIndex = (mDepthWidth - x / colorToDepthDivisor) + (y/colorToDepthDivisor + 1) * mDepthWidth - 1;//Flip color buffer
+			int depthIndex = x / colorToDepthDivisor + y/colorToDepthDivisor * mDepthWidth;
 
             // retrieve the depth to color mapping for the current depth pixel
 			LONG colorInDepthX = mColorCoordinates[depthIndex * 2];

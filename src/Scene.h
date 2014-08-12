@@ -2,14 +2,25 @@
 
 #include "d3dStd.h"
 
-class Scene
+namespace assettypes
 {
-public:
+	enum TextureType
+	{
+		TextureType_UNKNOWN = -1,
+		TextureType_NONE,
+		TextureType_DIFFUSE,
+		TextureType_SPECULAR,
+		TextureType_EMISSIVE,
+		TextureType_HEIGHT,
+		TextureType_NORMAL,
+		TextureType_SHININESS,
+		TextureType_LIGHTMAP,
+	};
+
 	struct Bone
 	{
-		unsigned id;
-		XMFLOAT4 rotation;
-		XMFLOAT3 position;
+		unsigned mId;
+		XMMATRIX mOffset;
 	};
 
 	struct BoneVertexWeights

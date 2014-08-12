@@ -113,8 +113,8 @@ bool KinectApplication::Initialize()
 
 	mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
 
-	mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
-	//mRotationTool.setTargetTransform(&mCubeRotation);
+	//mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
+	mRotationTool.setTargetTransform(&mCubeRotation);
 	//mRotationTool.setTargetTransform(&mpText->mTransform);
 
 	mpHydraRenderer->Initialize();
@@ -221,19 +221,7 @@ void KinectApplication::Draw()
 		//Per frame buffer update
 
 		//Convert quaterinon to correct axis
-		XMVECTOR rotQuat = XMLoadFloat4(&XMFLOAT4(mpOVRRenderer->mEyeRenderPoses[i].Orientation.x,
-												  mpOVRRenderer->mEyeRenderPoses[i].Orientation.y,
-												  mpOVRRenderer->mEyeRenderPoses[i].Orientation.z,
-												  mpOVRRenderer->mEyeRenderPoses[i].Orientation.w));
-		
-		XMVECTOR axis;
-		float angle;
-
-		XMQuaternionToAxisAngle(&axis, &angle, rotQuat);
-
-		axis = XMVectorSet(XMVectorGetX(axis), XMVectorGetY(axis), -XMVectorGetZ(axis), 0.0f);
-
-		rotQuat = XMQuaternionRotationAxis(axis, -angle);
+		XMVECTOR rotQuat = mpOVRRenderer->mEyeOrientations[i];
 
 		XMVECTOR offset = XMVectorSet(mpOVRRenderer->mEyeRenderPoses[i].Position.x,
 									  mpOVRRenderer->mEyeRenderPoses[i].Position.y,
@@ -251,7 +239,7 @@ void KinectApplication::Draw()
 #endif
 		
 		mPerFrameData.View = view;
-		mPerFrameData.ViewInv = XMMatrixInverse(NULL, view);
+		mPerFrameData.ViewInv = XMMatrixInverse(NULL, mPerFrameData.View);
 		mPerFrameData.ViewProj = view * mPerFrameData.Projection;
 		mPerFrameData.ViewProjInv = XMMatrixInverse(NULL, mPerFrameData.ViewProj);
 
@@ -281,22 +269,22 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		//mpCubeRenderer->Render(mpRenderer);
+		mpCubeRenderer->Render(mpRenderer);
 
 		mpHydraRenderer->Render(mpRenderer);
 		mpPhysicsSystem->Render(mpRenderer);
 
-		//mpKinectRenderer->Render(mpRenderer);
+		mpKinectRenderer->Render(mpRenderer);
 
 		mpLeapRenderer->Render(mpRenderer);
 
-		mpFontManager->bindRender(mpRenderer);
+		//mpFontManager->bindRender(mpRenderer);
 
 		std::stringstream stream;
 		stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()) << " Points: " << mpLineRenderer->Points.List.size();
 
-		mpText->setText(stream.str());
-		mpText->Render(mpRenderer);
+		//mpText->setText(stream.str());
+		//mpText->Render(mpRenderer);
 
 		//mpLineRenderer->Render(mpRenderer);
 
@@ -310,7 +298,9 @@ void KinectApplication::Draw()
 	}
 #endif
 
+	mpRenderer->renderDeferredLighting();
 	mpRenderer->postRender();
+
 	mpOVRRenderer->EndFrame();
 }
 

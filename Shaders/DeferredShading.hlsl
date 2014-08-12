@@ -1,14 +1,72 @@
-#if !defined(DEFERRED_SHADING_HLSL)
+//Handles sampling from GBuffer for lighting
+
+#ifndef DEFERRED_SHADING_HLSL
 #define DEFERRED_SHADING_HLSL
+
+#include "ConstantBuffers.hlsl"
+#include "Defines.hlsl"
 
 Texture2D<float4> DiffuseTexture  : register( t0 );
 Texture2D<float3> NormalTexture   : register( t1 );
 Texture2D<float4> SpecularTexture : register( t2 );
-Texture2D<float4> EmissiveTexture : register( t4 );
-Texture2D<float> DepthTexture     : register( t5 );
+Texture2D<float4> EmissiveTexture : register( t3 );
+Texture2D<float> DepthTexture     : register( t4 );
 
 SamplerState PointSampler         : register( s0 );
 
+struct SURFACE_DATA
+{
+	float Depth;
+	float LinearDepth;
+	float3 Diffuse;
+	float3 Normal;
+	float3 Specular;
+	float SpecPow;
+	float3 Emissive;
+};
 
+float ConvertZToLinearDepth(float depth)
+{
+	float linearDepth = gProjection[3][2] / (depth + gProjection[2][2]);
+	return linearDepth;
+}
+
+//float3 GetWorldPos(float2 posClip, float depth)
+//{
+//	float4 position;
+//	float linearDepth = ConvertZToLinearDepth(depth);
+//
+//	position.xy = posClip.xy * float2(1.0 / gProjection[0][0], 1.0 / gProjection[1][1]) * linearDepth;
+//	position.z = linearDepth;
+//	position.w = 1.0;
+//
+//	return mul(gViewInv, position).xyz;
+//}
+
+float3 GetWorldPos(float2 posClip, float depth)
+{
+	float4 position;
+
+	position.xy = posClip.xy;
+
+	position.z = depth;
+	position.w = 1.0;
+
+	
+	position = mul(gViewProjInv, position);
+
+	return position.xyz / position.w;
+}
+
+SURFACE_DATA UnpackGBuffer(float2 UV)
+{
+	SURFACE_DATA Out;
+
+	Out.Depth = DepthTexture.Sample(PointSampler, UV).x;
+	Out.LinearDepth = ConvertZToLinearDepth(Out.Depth);
+
+
+	return Out;
+}
 
 #endif //!defined(DEFERRED_SHADING_HLSL)

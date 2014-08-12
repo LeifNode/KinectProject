@@ -7,6 +7,7 @@ struct Material
 	float4 Diffuse;
 	float4 Specular; // w is the specular power
 	//float4 Reflect;
+	float4 Emissive; // w is emissive multiplier
 };
 
 struct DirectionalLight

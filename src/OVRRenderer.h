@@ -31,6 +31,7 @@ public:
 	void EndFrame();
 
 	ovrPosef mEyeRenderPoses[2];
+	XMVECTOR mEyeOrientations[2];
 	XMMATRIX getProjection(int eyeIndex);
 
 private:

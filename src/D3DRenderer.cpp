@@ -21,7 +21,9 @@ D3DRenderer::D3DRenderer()
 	mPerFrameBuffer(NULL),
 	mPerObjectBuffer(NULL),
 	mBlendStateAlpha(NULL),
-	mBlendStateOpaque(NULL)
+	mBlendStateOpaque(NULL),
+	mGBuffer(NULL),
+	mDeferredRenderer(NULL)
 {
 	mClearColor[0] = 0.0f;
 	mClearColor[1] = 0.125f;
@@ -34,8 +36,9 @@ D3DRenderer::D3DRenderer()
 
 D3DRenderer::~D3DRenderer()
 {
-	mpGBuffer->DeInit();
-	SAFE_DELETE(mpGBuffer);
+	mGBuffer->DeInit();
+	SAFE_DELETE(mGBuffer);
+	SAFE_DELETE(mDeferredRenderer);
 
 	for (auto it = mLoadedShaders.begin(); it != mLoadedShaders.end(); ++it)
 	{
@@ -129,7 +132,7 @@ void D3DRenderer::onResize()
 
 	setViewport(gpApplication->getClientWidth(), gpApplication->getClientHeight(), 0, 0);
 
-	mpGBuffer->OnResize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
+	mGBuffer->OnResize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
 }
 
 bool D3DRenderer::initialize()
@@ -225,6 +228,16 @@ bool D3DRenderer::initialize()
 
 	HR(dxgiFactory->CreateSwapChain(md3dDevice, &sd, &mSwapChain));
 	
+	//IDXGIOutput* output;
+
+	//dxgiAdapter->EnumOutputs(2, &output);
+
+	//DXGI_OUTPUT_DESC outputDesc;
+
+	//output->GetDesc(&outputDesc);
+	//output->GetDisplaySurfaceData
+	//std::cout << "Monitor: " << outputDesc.DesktopCoordinates.left << std::endl;
+
 	ReleaseCOM(dxgiDevice);
 	ReleaseCOM(dxgiAdapter);
 	ReleaseCOM(dxgiFactory);
@@ -237,7 +250,8 @@ bool D3DRenderer::initialize()
 	ZeroMemory(&rasterDesc, sizeof(D3D11_RASTERIZER_DESC));
 
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.FrontCounterClockwise = true;
 
 	ID3D11RasterizerState* rasterState;
 
@@ -296,8 +310,11 @@ bool D3DRenderer::initialize()
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	md3dDevice->CreateSamplerState( &sampDesc, &mSamplerState );
 
-	mpGBuffer = new GBuffer();
-	mpGBuffer->Initialize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
+	mGBuffer = new GBuffer();
+	mGBuffer->Initialize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
+
+	mDeferredRenderer = new DeferredRenderer();
+	mDeferredRenderer->Initialize();
 
 	onResize();
 
@@ -410,7 +427,11 @@ Shader* D3DRenderer::loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRI
 			}
 
 			//Create the input layout
-			hr = md3dDevice->CreateInputLayout(vertexDescription, vertexDescriptionSize, shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &newShader->mpInputLayout);
+			if (vertexDescription != NULL && vertexDescriptionSize > 0)
+				hr = md3dDevice->CreateInputLayout(vertexDescription, vertexDescriptionSize, shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &newShader->mpInputLayout);
+			else
+				newShader->mpInputLayout = NULL;
+
 			break;
 		case SHADER_TYPE_PIXEL:
 			hr = compileShaderFromFile(filePath, shaderInfo[i].entrypoint, "ps_5_0", &shaderBlob);
@@ -601,6 +622,11 @@ void D3DRenderer::setPerObjectBuffer(CBPerObject& buffer)
 {
 	md3dImmediateContext->UpdateSubresource(mPerObjectBuffer, 0, NULL, &buffer, 0, 0);
 	setConstantBuffer(1, mPerObjectBuffer);
+}
+
+void D3DRenderer::bindPerFrameBuffer()
+{
+	setConstantBuffer(0, mPerFrameBuffer);
 }
 
 Texture* D3DRenderer::createTexture(UINT format, int width, int height)
@@ -842,15 +868,26 @@ void D3DRenderer::preRender()
 	UINT sampleMask   = 0xffffffff;
 
 	setBlendState(false);
+
+	mGBuffer->clearRenderTargets();
+	mGBuffer->bindRenderTargets();
 }
 
 void D3DRenderer::postRender()
 {
+	md3dImmediateContext->OMSetRenderTargets(1, &mRenderTarget, mDepthStencilView);
+
 #if !USE_RIFT
 	mSwapChain->Present(0, 0);
 #endif
 
+}
+
+void D3DRenderer::renderDeferredLighting()
+{
 	md3dImmediateContext->OMSetRenderTargets(1, &mRenderTarget, mDepthStencilView);
+
+	mDeferredRenderer->Render(this);
 }
 
 void D3DRenderer::pushTransform(Transform& transform)

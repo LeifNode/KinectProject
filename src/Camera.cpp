@@ -25,10 +25,10 @@ Camera::~Camera()
 XMMATRIX Camera::getView(const XMVECTOR& offset, const XMVECTOR& rotationQuat)
 {
 	XMVECTOR pos = XMLoadFloat3(&mPosition);
-	XMVECTOR up = XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotationQuat);
-	XMVECTOR forward = XMVector3Rotate(XMLoadFloat3(&mDirection), rotationQuat);
+	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR forward = XMLoadFloat3(&mDirection);
 
-	return XMMatrixLookAtLH(pos + offset, pos + offset + forward, up);
+	return XMMatrixLookAtRH(pos, pos + forward, up);
 }
 
 void Camera::OnMouseMove(int x, int y)
@@ -45,9 +45,9 @@ void Camera::OnMouseMove(int x, int y)
 		XMVECTOR right = XMVector3Normalize(XMVector3Cross(direction, mUp));
 
 #if !USE_RIFT
-		XMVECTOR rotationQuat =  XMQuaternionMultiply(XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), -dx), XMQuaternionRotationAxis(right, dy));
+		XMVECTOR rotationQuat =  XMQuaternionMultiply(XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx), XMQuaternionRotationAxis(right, dy));
 #else
-		XMVECTOR rotationQuat =  XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), -dx);
+		XMVECTOR rotationQuat =  XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx);
 #endif
 
 		mRotation = XMQuaternionNormalize(XMQuaternionMultiply(mRotation, rotationQuat));
@@ -124,14 +124,14 @@ void Camera::updatePosition(float dt)
 
 		if (inputSystem->getKeyboardState()->isKeyPressed(KEY_A))
 		{
-			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) + sidewaysOffset);
+			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) - sidewaysOffset);
 		}
 		else
-			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) - sidewaysOffset * hydra->getJoystick(0).x);
+			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) + sidewaysOffset * hydra->getJoystick(0).x);
 
 		if (inputSystem->getKeyboardState()->isKeyPressed(KEY_D))
 		{
-			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) - sidewaysOffset);
+			XMStoreFloat3(&mPosition, XMLoadFloat3(&mPosition) + sidewaysOffset);
 		}
 	}
 }
@@ -142,7 +142,7 @@ void Camera::updateOrientation(float dt)
 	HydraManager* hydra = inputSystem->getHydra();
 
 
-	float dx = hydra->getJoystick(1).x * (MathHelper::Pi / 180.0f) * 100.0f * dt;
+	float dx = -hydra->getJoystick(1).x * (MathHelper::Pi / 180.0f) * 100.0f * dt;
 	float dy = hydra->getJoystick(1).y * (MathHelper::Pi / 180.0f) * 100.0f * dt;
 
 	XMVECTOR direction = XMLoadFloat3(&mDirection);
@@ -173,5 +173,5 @@ void Camera::updateOrientation(float dt)
 
 void Camera::setProjection(int width, int height, float fovVertical)
 {
-	mProjection = XMMatrixPerspectiveFovLH(45.0f, (float)width / (float)height, mNear, mFar);
+	mProjection = XMMatrixPerspectiveFovRH(45.0f, (float)width / (float)height, mNear, mFar);
 }

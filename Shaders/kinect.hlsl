@@ -1,4 +1,5 @@
 #include "ConstantBuffers.hlsl"
+#include "DeferredRendering.hlsl"
 
 Texture2D<int> textureDepth    : register( t0 );
 Texture2D<float4> textureColor : register( t1 );
@@ -19,19 +20,19 @@ static const float2 ColorWidthHeight = float2(640, 480);
 
 static const float4 quadOffsets[4] = 
 {
+    float4( 0.5,  0.5, 0, 0),
+	float4(-0.5,  0.5, 0, 0),
     float4( 0.5, -0.5, 0, 0),
 	float4(-0.5, -0.5, 0, 0),
-    float4( 0.5,  0.5, 0, 0),
-	float4(-0.5,  0.5, 0, 0)
 };
 
 // texture lookup offsets for sampling current and nearby depth pixels
 static const float2 texOffsets4Samples[4] =
 {
-    float2(1, 0),
-    float2(0, 0),
     float2(1, 1),
 	float2(0, 1),
+    float2(1, 0),
+    float2(0, 0),
 };
 
 //--------------------------------------------------------------------------------------
@@ -125,6 +126,7 @@ void GS(point GS_INPUT particles[1], uint primID : SV_PrimitiveID, inout Triangl
     }
 }
 
+#ifndef RENDERER_DEFERRED
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
@@ -132,3 +134,12 @@ float4 PS(PS_INPUT input) : SV_Target
 {
     return float4(input.Col.rgb, 1.0);
 }
+
+#else
+
+PS_GBUFFER_OUT PS(PS_INPUT input)
+{
+	return PackGBuffer(input.Col, float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), 1.0, input.Col.rgb, 1.0);
+}
+
+#endif

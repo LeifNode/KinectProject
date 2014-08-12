@@ -1,4 +1,5 @@
 #include "ConstantBuffers.hlsl"
+#include "DeferredRendering.hlsl"
 
 Texture2D textureDiffuse : register( t0 );
 Texture2D textureNormal  : register( t1 );
@@ -41,6 +42,9 @@ VertexOut VS(VertexIn vin)
     
     return vout;
 }
+
+
+#ifndef RENDERER_DEFERRED
 
 float4 PS(VertexOut pin) : SV_Target
 {
@@ -89,3 +93,14 @@ float4 PS(VertexOut pin) : SV_Target
 
 	return color;
 }
+
+#else
+
+PS_GBUFFER_OUT PS(VertexOut pin)
+{
+	pin.Normal = normalize(pin.Normal);
+
+	return PackGBuffer(float4(1.0, 1.0, 1.0, 1.0), pin.Normal, float3(1.0, 1.0, 1.0), 80.0, float3(0.0, 0.0, 0.0), 0.0);
+}
+
+#endif
