@@ -59,4 +59,6 @@ public:
 	bool operator<(const Vector3& other) const;
 	bool operator>=(const Vector3& other) const;
 	bool operator<=(const Vector3& other) const;
+
+	float operator[](int index) const;
 };

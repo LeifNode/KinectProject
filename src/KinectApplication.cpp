@@ -18,6 +18,7 @@
 #include "LeapRenderer.h"
 #include "LeapManager.h"
 #include "PhysicsSystem.h"
+#include "COLLADALoader.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd){
 	UNREFERENCED_PARAMETER( prevInstance );
@@ -47,7 +48,7 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	mMainWndCaption = L"Test App";
 
 	mpPlaneRenderer = new MeshRenderer<Vertex>();
-	mpCubeRenderer = new MeshRenderer<Vertex>();
+	//mpCubeRenderer = new MeshRenderer<Vertex>();
 	ZeroMemory(&mPerFrameData, sizeof(CBPerFrame));
 
 	mpOVRRenderer = new OVRRenderer();
@@ -65,7 +66,10 @@ KinectApplication::~KinectApplication()
 	unhookInputEvents();
 
 	SAFE_DELETE(mpPlaneRenderer);
-	SAFE_DELETE(mpCubeRenderer);
+
+	for (int i = 0; i < mpCubeRendererArr.size(); i++)
+		delete mpCubeRendererArr[i];
+	//SAFE_DELETE(mpCubeRenderer);
 	SAFE_DELETE(mpCamera);
 	SAFE_DELETE(mpHydraRenderer);
 	SAFE_DELETE(mpOVRRenderer);
@@ -111,7 +115,26 @@ bool KinectApplication::Initialize()
 
 	GeometryGenerator::CreateBox(1.0f, 1.0f, 1.0f, mesh);
 
-	mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
+	//mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
+	//COLLADALoader loader("bunny_3ds.dae");
+	COLLADALoader loader("sponza.dae");
+	loader.loadDocument();
+	loader.parse();
+
+	//mpCubeRenderer->Initialize(loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Vertices, loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Indices, mpRenderer);
+
+	int size = loader.getRootNode()->children.size();
+	for (int i = 0; i < size; i++)
+	{
+		if (loader.getRootNode()->children[i]->model != NULL)
+		{
+			MeshRenderer<Vertex>* meshRenderer = new MeshRenderer<Vertex>();
+
+			meshRenderer->Initialize(loader.getRootNode()->children[i]->model->subMeshes[0]->mesh.Vertices, loader.getRootNode()->children[i]->model->subMeshes[0]->mesh.Indices, mpRenderer);
+
+			mpCubeRendererArr.push_back(meshRenderer);
+		}
+	}
 
 	//mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
 	mRotationTool.setTargetTransform(&mCubeRotation);
@@ -269,7 +292,12 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		mpCubeRenderer->Render(mpRenderer);
+		for (int i = 0; i < mpCubeRendererArr.size(); i++)
+		{
+			mpCubeRendererArr[i]->Render(mpRenderer);
+		}
+
+		//mpCubeRenderer->Render(mpRenderer);
 
 		mpHydraRenderer->Render(mpRenderer);
 		mpPhysicsSystem->Render(mpRenderer);
@@ -299,9 +327,10 @@ void KinectApplication::Draw()
 #endif
 
 	mpRenderer->renderDeferredLighting();
-	mpRenderer->postRender();
 
 	mpOVRRenderer->EndFrame();
+
+	mpRenderer->postRender();
 }
 
 void KinectApplication::onKeyDown(IEventDataPtr eventData)

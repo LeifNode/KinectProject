@@ -93,6 +93,9 @@
     <Filter Include="Shaders\Deferred Rendering">
       <UniqueIdentifier>{e10b3b88-71ab-4d02-b26e-fd25f2e8f997}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Resource Manager\Models\Post Processing">
+      <UniqueIdentifier>{87d1def4-579a-4d30-a645-0443098dccb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -275,7 +278,10 @@
     <ClInclude Include="src\GBuffer.h">
       <Filter>Source Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene.h">
+    <ClInclude Include="src\AssetTypes.h">
+      <Filter>Source Files\Resource Manager\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OBJLoader.h">
       <Filter>Source Files\Resource Manager\Models</Filter>
     </ClInclude>
   </ItemGroup>
@@ -435,6 +441,9 @@
     </ClCompile>
     <ClCompile Include="src\DeferredRenderer.cpp">
       <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OBJLoader.cpp">
+      <Filter>Source Files\Resource Manager\Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

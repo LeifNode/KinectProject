@@ -48,7 +48,7 @@ private:
 
 	Shader* mpMainShader;
 	MeshRenderer<Vertex>* mpPlaneRenderer;
-	MeshRenderer<Vertex>* mpCubeRenderer;
+	std::vector<MeshRenderer<Vertex>*> mpCubeRendererArr;
 
 	KinectRenderer* mpKinectRenderer;
 

@@ -1,4 +1,5 @@
 #include "ConstantBuffers.hlsl"
+#include "DeferredRendering.hlsl"
 
 cbuffer cbPerLine : register( b2 )
 {
@@ -127,6 +128,8 @@ void GS(lineadj GS_INPUT points[4], uint primID : SV_PrimitiveID, inout Triangle
 	}*/
 }
 
+#ifndef RENDERER_DEFERRED
+
 //TODO: Trick depth buffer into thinking this is a 3d object? SV_Depth
 float4 PS(PS_INPUT input) : SV_Target
 {
@@ -134,8 +137,22 @@ float4 PS(PS_INPUT input) : SV_Target
 
 	float4 color = gLineColor + float4(0.0f, frac(input.Id * 0.001f), frac(input.Id * 0.0003f), 0.0f);
 	//float4 color = float4(input.PositionH.yyy / 720.0f, 1.0f);
+	color.a = 1.0;
 
 	return color;
 }
 
+#else
 
+PS_GBUFFER_OUT PS(PS_INPUT input)
+{
+	//float4 color = gLineColor + float4(0.0f, frac((float)input.Id * 0.0001f), frac((float)input.Id * 0.0003f), 0.0f);
+
+	float4 color = gLineColor + float4(0.0f, frac(input.Id * 0.001f), frac(input.Id * 0.0003f), 0.0f);
+	//float4 color = float4(input.PositionH.yyy / 720.0f, 1.0f);
+	color.a = 1.0;
+
+	return PackGBuffer(float4(0.0, 0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), 1, color.rgb, 1);
+}
+
+#endif

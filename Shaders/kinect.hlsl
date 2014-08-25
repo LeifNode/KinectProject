@@ -139,7 +139,7 @@ float4 PS(PS_INPUT input) : SV_Target
 
 PS_GBUFFER_OUT PS(PS_INPUT input)
 {
-	return PackGBuffer(input.Col, float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), 1.0, input.Col.rgb, 1.0);
+	return PackGBuffer(float4(0.0, 0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), 1.0, input.Col.rgb, 1.0);
 }
 
 #endif

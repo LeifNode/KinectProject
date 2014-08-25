@@ -183,3 +183,4 @@ $RECYCLE.BIN/
 .DS_Store
 
 d3dcompiler_46.dll
+*.dae

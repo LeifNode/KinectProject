@@ -20,15 +20,32 @@ VS_OUTPUT VS( uint VertexID : SV_VertexID )
 
 float4 PS(VS_OUTPUT In) : SV_TARGET
 {
-	float depth = ConvertZToLinearDepth(DepthTexture.Sample(PointSampler, In.Tex));
-	float3 worldPos = GetWorldPos(In.PosClip.xy, DepthTexture.Sample(PointSampler, In.Tex));
+	SURFACE_DATA surface = UnpackGBuffer(In.Tex);
+
+	float3 worldPos = GetWorldPos(In.PosClip.xy, surface.Depth);
+	float3 toEye = normalize(gEyePosition - worldPos);
 
 	//return float4(depth, depth, depth, 1.0);
-	[flatten]
-	if(depth < 15)
-		return float4(worldPos, 1.0);
-	else
-		return float4(0.0, 0.0, 0.0, 1.0);
+	[branch]
+	if(surface.LinearDepth > 500.0)
+		return float4(0.0, 0.125, 0.3, 1.0);
 
-	//return float4(In.PosClip.x, In.PosClip.y, 0.0, 1.0);
+
+	Material mat;
+	mat.Ambient = float4(1.0, 1.0, 1.0, 1.0);
+	mat.Diffuse = surface.Diffuse;
+	mat.Specular = float4(surface.Specular, surface.SpecPow);
+	
+	DirectionalLight light;
+	light.Diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	light.Ambient = float4(0.01f, 0.01f, 0.01f, 0.01f);
+	light.Direction = normalize(float3(-1.0f, -1.0f, -1.0f));
+
+	float4 ambient = float4(0.0, 0.0, 0.0, 0.0);
+	float4 diffuse = float4(0.0, 0.0, 0.0, 0.0);
+	float4 specular = float4(0.0, 0.0, 0.0, 0.0);
+
+	ComputeDirectionalLight(mat, light, surface.Normal, toEye, ambient, diffuse, specular);
+
+	return float4(diffuse + specular + surface.Emissive.xyzz);
 }

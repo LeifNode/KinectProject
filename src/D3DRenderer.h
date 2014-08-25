@@ -44,6 +44,8 @@ public:
 	void setPerObjectBuffer(CBPerObject& buffer);
 	void bindPerFrameBuffer();
 
+	void unbindTextureResources();
+
 	Texture* createTexture(UINT format, int width, int height);
 	Texture* createTexture(D3D11_TEXTURE2D_DESC* textureDescription, DXGI_FORMAT resViewFmt = DXGI_FORMAT_UNKNOWN);
 	//Texture* createTexture(int width, int height, DXGI_FORMAT colorFormat, )
@@ -61,6 +63,8 @@ public:
 	void setShader(const std::string& name);
 	Shader* getShader(const std::string& name);
 	Shader* getActiveShader() const { return mpActiveShader; }
+	
+	void unbindShader();
 
 	void resetSamplerState();
 

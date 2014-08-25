@@ -154,3 +154,18 @@ bool Vector3::operator<=(const Vector3& other) const
 {
 	return XMVectorGetX(XMVector3LengthSq(mBaseVector)) <= XMVectorGetX(XMVector3LengthSq(other.mBaseVector));
 }
+
+float Vector3::operator[](int index) const
+{
+	switch(index)
+	{
+	case 0:
+		return getX();
+	case 1:
+		return getY();
+	case 2:
+		return getZ();
+	default:
+		return 0.0f;
+	}
+}

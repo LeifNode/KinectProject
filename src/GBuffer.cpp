@@ -87,13 +87,13 @@ void GBuffer::OnResize(int width, int height)
 
 	static const DXGI_FORMAT depthStencilTextureFormat = DXGI_FORMAT_R24G8_TYPELESS;
 	static const DXGI_FORMAT diffuseTextureFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	static const DXGI_FORMAT normalTextureFormat = DXGI_FORMAT_R11G11B10_FLOAT;
+	static const DXGI_FORMAT normalTextureFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	static const DXGI_FORMAT specularTextureFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	static const DXGI_FORMAT emissiveTextureFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	static const DXGI_FORMAT depthStencilRenderViewFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	static const DXGI_FORMAT diffuseRenderViewFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	static const DXGI_FORMAT normalRenderViewFormat = DXGI_FORMAT_R11G11B10_FLOAT;
+	static const DXGI_FORMAT normalRenderViewFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	static const DXGI_FORMAT specularRenderViewFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	static const DXGI_FORMAT emissiveRenderViewFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
@@ -160,6 +160,8 @@ void GBuffer::OnResize(int width, int height)
 void GBuffer::bindRenderTargets()
 {
 	D3DRenderer* renderer = gpApplication->getRenderer();
+	
+	renderer->unbindTextureResources(); //Avoid having render targets bound as input textures
 
 	ID3D11RenderTargetView* renderTargets[4] = 
 	{

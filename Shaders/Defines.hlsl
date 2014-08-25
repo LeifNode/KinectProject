@@ -8,7 +8,7 @@
 #endif
 
 #ifndef SPECULAR_POW_RANGE_MAX
-#define SPECULAR_POW_RANGE_MAX 240.0
+#define SPECULAR_POW_RANGE_MAX 160.0
 #endif
 
 #ifndef EMISSIVE_RANGE_MIN //(1 / 16)

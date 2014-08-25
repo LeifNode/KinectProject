@@ -135,7 +135,8 @@ void OVRRenderer::PreRender(int eyeIndex)
 
 	OVR::Recti viewport = mEyeRenderViewport[eye];
 
-	renderer->setRenderTarget(mpRenderTarget);
+	//renderer->setRenderTarget(mpRenderTarget);
+	renderer->getGBuffer()->bindRenderTargets();
 	
 	renderer->setViewport(viewport.w, viewport.h, viewport.x, viewport.y);
 #endif
@@ -149,13 +150,18 @@ void OVRRenderer::Render(D3DRenderer* renderer)
 void OVRRenderer::PostRender(int eyeIndex)
 {
 #if USE_RIFT
-	//D3DRenderer* renderer = gpApplication->getRenderer();
+	D3DRenderer* renderer = gpApplication->getRenderer();
 
 	//renderer->setBlendState(false);
 	//renderer->setDepthStencilState(D3DRenderer::Depth_Stencil_State_Default);
 
+	int width = gpApplication->getClientWidth();
+	int height = gpApplication->getClientHeight();
+
 	ovrEyeType eye = mHMDDesc.EyeRenderOrder[eyeIndex];
 	ovrHmd_EndEyeRender(mHMD, eye, mEyeRenderPoses[eyeIndex], &mEyeTextures[eye].Texture);
+
+	renderer->setViewport(width, height, 0, 0);
 #endif
 }
 

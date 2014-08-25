@@ -6,8 +6,7 @@ struct Material
 	float4 Ambient;
 	float4 Diffuse;
 	float4 Specular; // w is the specular power
-	//float4 Reflect;
-	float4 Emissive; // w is emissive multiplier
+	//float4 Reflect; // w is emissive multiplier
 };
 
 struct DirectionalLight
@@ -55,7 +54,7 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
 	diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	ambient = mat.Ambient * L.Ambient;
+	ambient = mat.Diffuse * L.Ambient;
 
 	float3 lightVector = normalize(-L.Direction);
 
@@ -93,7 +92,7 @@ void ComputePointLight(Material mat, PointLight L, float3 pos, float3 normal, fl
 
 	lightVector /= distance;
 
-	ambient = mat.Ambient * L.Ambient;
+	ambient = mat.Diffuse * L.Ambient;
 
 	float diffuseFactor = dot(lightVector, normal);
 
@@ -130,7 +129,7 @@ void ComputeSpotLight(Material mat, SpotLight L, float3 pos, float3 normal, floa
 
 	lightVector /= distance;
 
-	ambient = mat.Ambient * L.Ambient;
+	ambient = mat.Diffuse * L.Ambient;
 
 	float diffuseFactor = dot(lightVector, normal);
 

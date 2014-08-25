@@ -9,7 +9,7 @@ extern D3DApp* gpApplication;
 D3DRenderer::D3DRenderer()
 	:
 	md3dDriverType(D3D_DRIVER_TYPE_HARDWARE),
-	mEnable4xMsaa(true),
+	mEnable4xMsaa(false),
 	m4xMsaaQuality(16),
 
 	md3dDevice(NULL),
@@ -573,6 +573,21 @@ void D3DRenderer::setTextureResources(int index, Texture** texArray, unsigned co
 	}
 }
 
+void D3DRenderer::unbindTextureResources()
+{
+	ID3D11ShaderResourceView** arr = new ID3D11ShaderResourceView*[8];
+	for (int i = 0; i < 8 ; i++) arr[i] = NULL;
+
+	md3dImmediateContext->VSSetShaderResources(0, 8, arr);
+	md3dImmediateContext->PSSetShaderResources(0, 8, arr);
+	md3dImmediateContext->GSSetShaderResources(0, 8, arr);
+	md3dImmediateContext->CSSetShaderResources(0, 8, arr);
+	md3dImmediateContext->HSSetShaderResources(0, 8, arr);
+	md3dImmediateContext->DSSetShaderResources(0, 8, arr);
+
+	delete [] arr;
+}
+
 void D3DRenderer::setSampler(int index, ID3D11SamplerState* samplerState)
 {
 	if (mpActiveShader)
@@ -839,6 +854,19 @@ Shader* D3DRenderer::getShader(const std::string& name)
 	}
 
 	return nullptr;
+}
+
+void D3DRenderer::unbindShader()
+{
+	mpActiveShader = NULL;
+
+	//Set any active shaders and disable ones not in use
+	md3dImmediateContext->VSSetShader(NULL, NULL, 0);
+	md3dImmediateContext->PSSetShader(NULL, NULL, 0);
+	md3dImmediateContext->GSSetShader(NULL, NULL, 0);
+	md3dImmediateContext->CSSetShader(NULL, NULL, 0);
+	md3dImmediateContext->HSSetShader(NULL, NULL, 0);
+	md3dImmediateContext->DSSetShader(NULL, NULL, 0);
 }
 
 void D3DRenderer::resetSamplerState()

@@ -1,5 +1,6 @@
 #include "COLLADALoader.h"
 #include <stdio.h>
+#include "Vector3.h"
 
 using namespace tinyxml2;
 using namespace std;
@@ -665,12 +666,9 @@ void COLLADALoader::loadSceneNodes()
 	{
 		XMLElement* nodeElement = sceneElement->FirstChildElement("node");
 
-		while (nodeElement)
-		{
-			loadNode(mpRootNode, sceneElement);
+		loadNode(mpRootNode, sceneElement);
 
-			nodeElement = nodeElement->NextSiblingElement("node");
-		}
+		nodeElement = nodeElement->NextSiblingElement("node");
 
 		sceneElement = sceneElement->NextSiblingElement("visual_scene");
 	}
@@ -686,7 +684,7 @@ void COLLADALoader::loadNode(SceneNode* parent, XMLElement* nodeElement)
 		if (*url != '#')
 			cout << "Invalid url in node: " << nodeElement->Attribute("id") << endl;
 
-		url++;
+		url++;//Skip '#'
 		parent->model = mModels[url];
 
 		XMLElement* materialElement = NULL;
@@ -694,28 +692,27 @@ void COLLADALoader::loadNode(SceneNode* parent, XMLElement* nodeElement)
 		if (geometryElement->FirstChildElement("bind_material") && 
 			geometryElement->FirstChildElement("bind_material")->FirstChildElement("technique_common"))
 		{
-			materialElement = geometryElement->FirstChildElement("bind_material")->FirstChildElement("technique_common");
-			materialElement = materialElement->FirstChildElement("instance_material");
-		}
-
-		if (materialElement)
-		{
-			const char* url = materialElement->Attribute("target") + 1;
+			materialElement = geometryElement->FirstChildElement("bind_material")->FirstChildElement("technique_common")->FirstChildElement("instance_material");
 			
-			parent->effectId = mMaterials[url].effectId;
+			if (materialElement)
+			{
+				const char* url = materialElement->Attribute("target") + 1;//+1 to ignore the # in the target string
+			
+				parent->effectId = mMaterials[url].effectId;
+			}
 		}
 	}
 
-	XMLElement* childNodeElement = nodeElement->FirstChildElement("node");
+	XMLElement* childNodeElement = NULL;
 
-	while (childNodeElement)
+	for (childNodeElement = nodeElement->FirstChildElement("node"); 
+		 childNodeElement != NULL;
+		 childNodeElement = childNodeElement->NextSiblingElement("node"))
 	{
 		SceneNode* childNode = new SceneNode();
 		parent->children.push_back(childNode);
 
 		loadNode(childNode, childNodeElement);
-
-		childNodeElement = childNodeElement->NextSiblingElement("node");
 	}
 }
 
@@ -753,29 +750,35 @@ const Effect* COLLADALoader::getEffect(const string& id) const
 
 void COLLADALoader::generateTangents()
 {
-	/*for (auto modelIt = mModels.begin(); modelIt != mModels.end(); ++modelIt)
+	Vector3 tangent;
+	Vector3 binormal;
+	Vector3 uVector;
+	Vector3 vVector;
+
+	Vertex vert1, vert2, vert3;
+	Vector3 tangentVector1, tangentVector2;
+
+	for (auto modelIt = mModels.begin(); modelIt != mModels.end(); ++modelIt)
 	{
 		if (modelIt->second == NULL)
 			continue;
 
 		for (auto meshIt = modelIt->second->subMeshes.begin(); meshIt != modelIt->second->subMeshes.end(); ++meshIt)
 		{
-			if ((*meshIt)->mesh.Vertices.size() > 0 && ((*meshIt)->mesh.Vertices[0].Tangent.length() == 0.0f && (*meshIt)->mesh.Vertices[0].Bitangent.length() == 0.0f))
+			tangentVector1 = (*meshIt)->mesh.Vertices[0].Tangent;
+			tangentVector2 = (*meshIt)->mesh.Vertices[0].Bitangent;
+
+			if ((*meshIt)->mesh.Vertices.size() > 0 && tangentVector1.lengthSq() == 0.0f && tangentVector2.lengthSq() == 0.0f)
 				continue;
 
-			for (unsigned i = 0; i < (*meshIt)->mesh.Indices.size() - 2;)
+			for (unsigned i = 0; i < (*meshIt)->mesh.Indices.size() - 2; i += 3)
 			{
-				XMVECTOR tangent;
-				XMVECTOR binormal;
-				XMVECTOR uVector;
-				XMVECTOR vVector;
+				vert1 = (*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i]];
+				vert2 = (*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i + 1]];
+				vert3 = (*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i + 2]];
 
-				Vertex vert1 = (*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i]];
-				Vertex vert2 = (*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i + 1]];
-				Vertex vert3 = (*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i + 2]];
-
-				XMVECTOR tangentVector1 = vert2.Position - vert1.Position;
-				XMVECTOR tangentVector2 = vert3.Position - vert1.Position;
+				tangentVector1 = XMLoadFloat3(&vert2.Position) - XMLoadFloat3(&vert1.Position);
+				tangentVector2 = XMLoadFloat3(&vert3.Position) - XMLoadFloat3(&vert1.Position);
 
 				uVector.x = vert2.TexCoord.x - vert1.TexCoord.x;
 				uVector.y = vert3.TexCoord.x - vert1.TexCoord.x;
@@ -783,13 +786,13 @@ void COLLADALoader::generateTangents()
 				vVector.x = vert2.TexCoord.y - vert1.TexCoord.y;
 				vVector.y = vert3.TexCoord.y - vert1.TexCoord.y;
 
-				float denominator = (uVector.x * vVector[1] - uVector[1] * vVector[0]);
+				float denominator = (uVector[0] * vVector[1] - uVector[1] * vVector[0]);
 
 				if (denominator != 0.0f)
 				{
 					denominator = 1.0f / denominator;
 
-					tangent.x = (vVector[1] * tangentVector1.x - vVector[0] * tangentVector2[0]) * denominator;
+					tangent.x = (vVector[1] * tangentVector1[0] - vVector[0] * tangentVector2[0]) * denominator;
 					tangent.y = (vVector[1] * tangentVector1[1] - vVector[0] * tangentVector2[1]) * denominator;
 					tangent.z = (vVector[1] * tangentVector1[2] - vVector[0] * tangentVector2[2]) * denominator;
 
@@ -797,19 +800,16 @@ void COLLADALoader::generateTangents()
 					binormal.y = (uVector[0] * tangentVector2[1] - uVector[1] * tangentVector1[1]) * denominator;
 					binormal.z = (uVector[0] * tangentVector2[2] - uVector[1] * tangentVector1[2]) * denominator;
 
-					glm::normalize(tangent);
-					glm::normalize(binormal);
+					tangent.normalize();
+					binormal.normalize();
 
-					(*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i]].Tangent = tangent;
-					(*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i]].Bitangent = binormal;
-					(*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i + 1]].Tangent = tangent;
-					(*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i + 1]].Bitangent = binormal;
-					(*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i + 1]].Tangent = tangent;
-					(*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i + 1]].Bitangent = binormal;
+					for (int index = 0; index < 3; index++)
+					{
+						XMStoreFloat3(&(*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i + index]].Tangent, tangent.mBaseVector);
+						XMStoreFloat3(&(*meshIt)->mesh.Vertices[(*meshIt)->mesh.Indices[i + index]].Bitangent, binormal.mBaseVector);
+					}
 				}
-
-				i += 3;
 			}
 		}
-	}*/
+	}
 }

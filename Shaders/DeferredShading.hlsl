@@ -18,11 +18,12 @@ struct SURFACE_DATA
 {
 	float Depth;
 	float LinearDepth;
-	float3 Diffuse;
+	float4 Diffuse;
 	float3 Normal;
 	float3 Specular;
 	float SpecPow;
 	float3 Emissive;
+	float EmissiveMultiplier;
 };
 
 float ConvertZToLinearDepth(float depth)
@@ -64,7 +65,14 @@ SURFACE_DATA UnpackGBuffer(float2 UV)
 
 	Out.Depth = DepthTexture.Sample(PointSampler, UV).x;
 	Out.LinearDepth = ConvertZToLinearDepth(Out.Depth);
-
+	Out.Diffuse = DiffuseTexture.Sample(PointSampler, UV);
+	Out.Normal = normalize(NormalTexture.Sample(PointSampler, UV).xyz * 2.0 - 1.0);
+	float4 spec = SpecularTexture.Sample(PointSampler, UV);
+	Out.Specular = spec.xyz;
+	Out.SpecPow = spec.w * SPECULAR_POW_RANGE_MAX + SPECULAR_POW_RANGE_MIN;
+	float4 emissive = EmissiveTexture.Sample(PointSampler, UV);
+	Out.Emissive = emissive.xyz;
+	Out.EmissiveMultiplier = emissive.z * EMISSIVE_RANGE_MAX + EMISSIVE_RANGE_MIN;
 
 	return Out;
 }
