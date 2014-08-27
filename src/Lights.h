@@ -10,6 +10,11 @@ struct Material
 	XMFLOAT4 Diffuse;
 	XMFLOAT4 Specular;
 	//XMFLOAT4 Reflect;
+	//These are booleans, but are typed as ints for alignment
+	int HasDiffuseTex;
+	int HasNormalTex;
+	int HasSpecTex;
+	int HasEmissiveTex;
 };
 
 struct DirectionalLight

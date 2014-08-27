@@ -27,7 +27,7 @@ float4 PS(VS_OUTPUT In) : SV_TARGET
 
 	//return float4(depth, depth, depth, 1.0);
 	[branch]
-	if(surface.LinearDepth > 500.0)
+	if(surface.LinearDepth > 5000.0)
 		return float4(0.0, 0.125, 0.3, 1.0);
 
 

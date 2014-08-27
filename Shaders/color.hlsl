@@ -100,7 +100,35 @@ PS_GBUFFER_OUT PS(VertexOut pin)
 {
 	pin.Normal = normalize(pin.Normal);
 
-	return PackGBuffer(float4(1.0, 1.0, 1.0, 1.0), pin.Normal, float3(1.0, 1.0, 1.0), 80.0, float3(0.0, 0.0, 0.0), 0.0);
+	float4 diffuseColor = float4(1.0, 1.0, 1.0, 1.0);
+	float3 specularColor = float3(1.0, 1.0, 1.0);
+
+	[branch]
+	if (gMaterial.HasDiffuseTex)
+	{
+		diffuseColor = textureDiffuse.Sample(mainSampler, pin.Tex);
+	}
+
+	[branch]
+	if (gMaterial.HasNormalTex)
+	{
+		pin.Tangent = normalize(pin.Tangent);
+		pin.Bitangent = normalize(pin.Bitangent);
+
+		float4 bumpSample = textureNormal.Sample(mainSampler, pin.Tex);
+		bumpSample = (bumpSample * 2.0f) - 1.0f;
+	
+		pin.Normal += bumpSample.x * pin.Tangent + bumpSample.y * pin.Bitangent;
+		pin.Normal = normalize(pin.Normal);
+	}
+
+	[branch] 
+	if (gMaterial.HasSpecTex)
+	{
+		specularColor = textureSpecular.Sample(mainSampler, pin.Tex);
+	}
+
+	return PackGBuffer(diffuseColor, pin.Normal, specularColor, 80.0, float3(0.0, 0.0, 0.0), 0.0);
 }
 
 #endif

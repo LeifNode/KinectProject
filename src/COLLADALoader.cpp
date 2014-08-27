@@ -359,6 +359,8 @@ void COLLADALoader::constructModelGeometry(XMLElement* geometryElement)
 		int yOffset = mUpAxis == Y_UP ? 1 : 2;
 		int zOffset = mUpAxis == Y_UP ? 2 : 1;
 		float zMultiplier = mUpAxis == Y_UP ? 1.0f : -1.0f;
+		bool usesQuads = false;
+		int indexCounter = 0;
 
 		for (int i = 0; i < primitiveCount; i++)
 		{
@@ -366,8 +368,8 @@ void COLLADALoader::constructModelGeometry(XMLElement* geometryElement)
 			{
 				pCount = polyListvCount[i];
 
-				if (pCount != 3)
-					cout << "Non-triangle primitives are unsupported at this time." << endl;
+				if (pCount > 3)
+					usesQuads = true;
 			}
 
 			for (int p = 0; p < pCount; p++)
@@ -386,7 +388,7 @@ void COLLADALoader::constructModelGeometry(XMLElement* geometryElement)
 
 				if (accessorArray[2].source != NULL)
 					vert.TexCoord = XMFLOAT2(accessorArray[2].source->data[pList[currentIndex + accessorArray[2].offset] * accessorArray[2].source->stride],
-											 accessorArray[2].source->data[pList[currentIndex + accessorArray[2].offset] * accessorArray[2].source->stride + 1]);
+											 1.0f - accessorArray[2].source->data[pList[currentIndex + accessorArray[2].offset] * accessorArray[2].source->stride + 1]);
 
 				if (accessorArray[3].source != NULL)
 					vert.Tangent =  XMFLOAT3(accessorArray[3].source->data[pList[currentIndex + accessorArray[3].offset] * accessorArray[3].source->stride], 
@@ -402,7 +404,9 @@ void COLLADALoader::constructModelGeometry(XMLElement* geometryElement)
 				subMesh->mesh.Vertices.push_back(vert);
 
 				
-				subMesh->mesh.Indices.push_back(i * pCount + p);
+				subMesh->mesh.Indices.push_back(indexCounter);
+				indexCounter++;
+				
 			/*	else
 					subMesh->mesh.Indices.push_back((i + 1) * pCount - p - 1);*/
 			}
@@ -413,6 +417,11 @@ void COLLADALoader::constructModelGeometry(XMLElement* geometryElement)
 			}
 			else
 				baseIndex += primitiveInputStride * pCount;
+		}
+
+		if (usesQuads)
+		{
+			triangulateMesh(subMesh, polyListvCount);
 		}
 
 		newModel->subMeshes.push_back(subMesh);
@@ -810,6 +819,66 @@ void COLLADALoader::generateTangents()
 					}
 				}
 			}
+		}
+	}
+}
+
+void COLLADALoader::triangulateMesh(SubMesh* mesh, const std::vector<int>& polyListVCount)
+{
+	if (mesh == NULL)
+		return;
+
+	std::vector<Vertex> oldMesh = mesh->mesh.Vertices;
+	std::vector<UINT> oldIndices = mesh->mesh.Indices;
+
+	mesh->mesh.Vertices.clear();
+	mesh->mesh.Indices.clear();
+
+	int currentVertexPosition = 0;
+	int currentIndexPosition = 0;
+
+	for (auto it = polyListVCount.begin(); it != polyListVCount.end(); ++it)
+	{
+		if ((*it) == 3)
+		{
+			mesh->mesh.Vertices.push_back(oldMesh[oldIndices[currentIndexPosition]]);
+			mesh->mesh.Vertices.push_back(oldMesh[oldIndices[currentIndexPosition + 2]]);
+			mesh->mesh.Vertices.push_back(oldMesh[oldIndices[currentIndexPosition + 1]]);
+
+			mesh->mesh.Indices.push_back(currentVertexPosition);
+			mesh->mesh.Indices.push_back(currentVertexPosition + 2);
+			mesh->mesh.Indices.push_back(currentVertexPosition + 1);
+
+			currentVertexPosition += 3;
+			currentIndexPosition += 3;
+		}
+		else if ((*it) == 4)
+		{
+			//std::cout << "Vertex Pos: " << currentVertexPosition << "\nIndex Pos: " << currentIndexPosition << std::endl;
+
+			mesh->mesh.Vertices.push_back(oldMesh[oldIndices[currentIndexPosition]]);
+			mesh->mesh.Vertices.push_back(oldMesh[oldIndices[currentIndexPosition + 1]]);
+			mesh->mesh.Vertices.push_back(oldMesh[oldIndices[currentIndexPosition + 2]]);
+
+			mesh->mesh.Vertices.push_back(oldMesh[oldIndices[currentIndexPosition]]);
+			mesh->mesh.Vertices.push_back(oldMesh[oldIndices[currentIndexPosition + 2]]);
+			mesh->mesh.Vertices.push_back(oldMesh[oldIndices[currentIndexPosition + 3]]);
+
+			mesh->mesh.Indices.push_back(currentVertexPosition);
+			mesh->mesh.Indices.push_back(currentVertexPosition + 1);
+			mesh->mesh.Indices.push_back(currentVertexPosition + 2);
+
+			mesh->mesh.Indices.push_back(currentVertexPosition + 3);
+			mesh->mesh.Indices.push_back(currentVertexPosition + 4);
+			mesh->mesh.Indices.push_back(currentVertexPosition + 5);
+
+			currentVertexPosition += 6;
+			currentIndexPosition += 4;
+		}
+		else
+		{
+			std::cout << "Unsupported polygon with " << (*it) << " points\n";
+			throw -1;
 		}
 	}
 }

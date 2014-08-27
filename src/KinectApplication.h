@@ -3,6 +3,7 @@
 #include "d3dApp.h"
 #include "ConstantBuffers.h"
 #include "TransformTool.h"
+#include "AssetTypes.h"
 
 class OVRRenderer;
 class KinectRenderer;
@@ -16,6 +17,11 @@ struct Vertex;
 class TextRenderer;
 class LineRenderer;
 class LeapRenderer;
+namespace collada
+{
+	struct SceneNode;
+}
+class COLLADALoader;
 
 class KinectApplication : public D3DApp
 {
@@ -41,6 +47,11 @@ public:
 	void onMouseMove(IEventDataPtr eventData);
 
 private:
+	void loadModels(collada::SceneNode* node, COLLADALoader* loader);
+	void loadTextures(COLLADALoader* loader);
+	void bindTextures(MeshRenderer<Vertex>* mesh, Material& matOut);
+
+private:
 	TransformTool mRotationTool;
 	Transform mCubeRotation;
 
@@ -49,6 +60,7 @@ private:
 	Shader* mpMainShader;
 	MeshRenderer<Vertex>* mpPlaneRenderer;
 	std::vector<MeshRenderer<Vertex>*> mpCubeRendererArr;
+	std::map<MeshRenderer<Vertex>*, assettypes::Material*> mCubeMaterials;
 
 	KinectRenderer* mpKinectRenderer;
 

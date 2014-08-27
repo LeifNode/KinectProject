@@ -24,6 +24,8 @@ public:
 	std::map<std::string, collada::Model*>::const_iterator modelsBegin() const { return mModels.begin(); }
 	std::map<std::string, collada::Model*>::const_iterator modelsEnd() const { return mModels.end(); }
 
+	std::map<std::string, collada::Image> mImages;
+
 private:
 	void loadAssetParameters();
 	void loadModels();
@@ -52,6 +54,7 @@ private:
 
 
 	void generateTangents();
+	void triangulateMesh(collada::SubMesh* mesh, const std::vector<int>& polyListVCount);
 
 private:
 	collada::UpAxis mUpAxis;
@@ -64,7 +67,6 @@ private:
 
 	std::map<std::string, collada::Material> mMaterials;
 	std::map<std::string, collada::Effect*> mEffects;
-	std::map<std::string, collada::Image> mImages;
 
 	std::string mFilePath;
 	tinyxml2::XMLDocument mSceneDocument;

@@ -69,6 +69,8 @@ KinectApplication::~KinectApplication()
 
 	for (int i = 0; i < mpCubeRendererArr.size(); i++)
 		delete mpCubeRendererArr[i];
+	for (auto it = mCubeMaterials.begin(); it != mCubeMaterials.end(); ++it)
+		delete it->second;
 	//SAFE_DELETE(mpCubeRenderer);
 	SAFE_DELETE(mpCamera);
 	SAFE_DELETE(mpHydraRenderer);
@@ -104,7 +106,7 @@ bool KinectApplication::Initialize()
 
 	mpOVRRenderer->Initialize();
 
-	mpKinectRenderer->Initialize();
+	//mpKinectRenderer->Initialize();
 
 	hookInputEvents();
 
@@ -117,25 +119,15 @@ bool KinectApplication::Initialize()
 
 	//mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
 	//COLLADALoader loader("bunny_3ds.dae");
-	COLLADALoader loader("sponza.dae");
+	COLLADALoader loader("sponza2.dae");
 	loader.loadDocument();
 	loader.parse();
 
 	//mpCubeRenderer->Initialize(loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Vertices, loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Indices, mpRenderer);
 
-	int size = loader.getRootNode()->children.size();
-	for (int i = 0; i < size; i++)
-	{
-		if (loader.getRootNode()->children[i]->model != NULL)
-		{
-			MeshRenderer<Vertex>* meshRenderer = new MeshRenderer<Vertex>();
-
-			meshRenderer->Initialize(loader.getRootNode()->children[i]->model->subMeshes[0]->mesh.Vertices, loader.getRootNode()->children[i]->model->subMeshes[0]->mesh.Indices, mpRenderer);
-
-			mpCubeRendererArr.push_back(meshRenderer);
-		}
-	}
-
+	loadModels(loader.getRootNode(), &loader);
+	loadTextures(&loader);
+	
 	//mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
 	mRotationTool.setTargetTransform(&mCubeRotation);
 	//mRotationTool.setTargetTransform(&mpText->mTransform);
@@ -162,6 +154,93 @@ bool KinectApplication::Initialize()
 	mpLeapRenderer->Initialize();
 
 	return true;
+}
+
+void KinectApplication::loadModels(collada::SceneNode* node, COLLADALoader* loader)
+{
+	int size = node->children.size();
+	for (int i = 0; i < size; i++)
+	{
+		if (node->children[i]->model != NULL)
+		{
+			MeshRenderer<Vertex>* meshRenderer = new MeshRenderer<Vertex>();
+
+			meshRenderer->Initialize(node->children[i]->model->subMeshes[0]->mesh.Vertices, node->children[i]->model->subMeshes[0]->mesh.Indices, mpRenderer);
+
+			mpCubeRendererArr.push_back(meshRenderer);
+
+			if (node->children[i]->effectId != "")
+			{
+				const collada::Effect* effect = loader->getEffect(node->children[i]->effectId);
+
+				assettypes::Material* mat = new assettypes::Material();
+
+				if (effect->diffuseTextureId != "")
+					mat->texturePaths.insert(std::make_pair(assettypes::TextureType_DIFFUSE, effect->diffuseTextureId));
+				if (effect->bumpMapId != "")
+					mat->texturePaths.insert(std::make_pair(assettypes::TextureType_NORMAL, effect->bumpMapId));
+				if (effect->specularMapId != "")
+					mat->texturePaths.insert(std::make_pair(assettypes::TextureType_SPECULAR, effect->specularMapId));
+				if (effect->emissiveMapId != "")
+					mat->texturePaths.insert(std::make_pair(assettypes::TextureType_EMISSIVE, effect->emissiveMapId));
+
+				mCubeMaterials.insert(std::make_pair(meshRenderer, mat));
+			}
+
+			if (node->children[i]->children.size() > 0)
+				loadModels(node->children[i], loader);
+		}
+	}
+}
+
+void KinectApplication::loadTextures(COLLADALoader* loader)
+{
+	for (auto it = loader->mImages.begin(); it != loader->mImages.end(); ++it)
+	{
+		Texture* tex = getTextureManager()->getTexture(it->second.filePath);
+	}
+}
+
+void KinectApplication::bindTextures(MeshRenderer<Vertex>* mesh, Material& matOut)
+{
+	matOut.HasDiffuseTex = false;
+	matOut.HasNormalTex = false;
+	matOut.HasSpecTex = false;
+	matOut.HasEmissiveTex = false;
+
+	auto cubeMat = mCubeMaterials.find(mesh);
+	if (cubeMat != mCubeMaterials.end())
+	{
+		for (auto it = cubeMat->second->texturePaths.begin(); it != cubeMat->second->texturePaths.end(); ++it)
+		{
+			Texture* texture = mpTextureManager->getTexture(it->second);
+
+			if (texture != NULL)
+			{
+				switch(it->first)
+				{
+				case assettypes::TextureType_DIFFUSE:
+					matOut.HasDiffuseTex = true;
+					mpRenderer->setTextureResource(0, texture);
+					break;
+				case assettypes::TextureType_NORMAL:
+					matOut.HasNormalTex = true;
+					mpRenderer->setTextureResource(1, texture);
+					break;
+				case assettypes::TextureType_SPECULAR:
+					matOut.HasSpecTex = true;
+					mpRenderer->setTextureResource(2, texture);
+					break;
+				case assettypes::TextureType_EMISSIVE:
+					matOut.HasEmissiveTex = true;
+					//mpRenderer->setTextureResource(0, texture);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
 }
 
 void KinectApplication::hookInputEvents()
@@ -195,7 +274,7 @@ void KinectApplication::Update(float dt)
 {
 	mpCamera->Update(dt);
 
-	mpKinectRenderer->Update(dt);
+	//mpKinectRenderer->Update(dt);
 
 	mpOVRRenderer->Update(dt);
 
@@ -274,7 +353,13 @@ void KinectApplication::Draw()
 		
 		//Per object for the plane mesh
 		CBPerObject perObject;
+		Material objectMat = Material();
+		objectMat.HasDiffuseTex = false;
+		objectMat.HasNormalTex = false;
+		objectMat.HasSpecTex = false;
+		objectMat.HasEmissiveTex = false;
 
+		perObject.Material = objectMat;
 		perObject.World = XMMatrixIdentity();
 		perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
 		perObject.WorldViewProj = mpRenderer->getPerFrameBuffer()->ViewProj;
@@ -282,7 +367,7 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		mpPlaneRenderer->Render(mpRenderer);
+		//mpPlaneRenderer->Render(mpRenderer);
 
 		//Render cube
 		perObject.World = mCubeRotation.getTransform();
@@ -290,10 +375,13 @@ void KinectApplication::Draw()
 		perObject.WorldViewProj = perObject.World * mpRenderer->getPerFrameBuffer()->ViewProj;
 		perObject.TextureTransform = XMMatrixIdentity();
 
-		mpRenderer->setPerObjectBuffer(perObject);
-
 		for (int i = 0; i < mpCubeRendererArr.size(); i++)
 		{
+			bindTextures(mpCubeRendererArr[i], objectMat);
+			perObject.Material = objectMat;
+
+			mpRenderer->setPerObjectBuffer(perObject);
+
 			mpCubeRendererArr[i]->Render(mpRenderer);
 		}
 
@@ -302,7 +390,7 @@ void KinectApplication::Draw()
 		mpHydraRenderer->Render(mpRenderer);
 		mpPhysicsSystem->Render(mpRenderer);
 
-		mpKinectRenderer->Render(mpRenderer);
+		//mpKinectRenderer->Render(mpRenderer);
 
 		mpLeapRenderer->Render(mpRenderer);
 
