@@ -135,8 +135,8 @@ void OVRRenderer::PreRender(int eyeIndex)
 
 	OVR::Recti viewport = mEyeRenderViewport[eye];
 
-	//renderer->setRenderTarget(mpRenderTarget);
-	renderer->getGBuffer()->bindRenderTargets();
+	renderer->setRenderTarget(mpRenderTarget);
+	//renderer->getGBuffer()->bindRenderTargets();
 	
 	renderer->setViewport(viewport.w, viewport.h, viewport.x, viewport.y);
 #endif

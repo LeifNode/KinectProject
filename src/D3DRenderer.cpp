@@ -897,8 +897,8 @@ void D3DRenderer::preRender()
 
 	setBlendState(false);
 
-	mGBuffer->clearRenderTargets();
-	mGBuffer->bindRenderTargets();
+	//mGBuffer->clearRenderTargets();
+	//mGBuffer->bindRenderTargets();
 }
 
 void D3DRenderer::postRender()

@@ -394,13 +394,13 @@ void KinectApplication::Draw()
 
 		mpLeapRenderer->Render(mpRenderer);
 
-		//mpFontManager->bindRender(mpRenderer);
+		mpFontManager->bindRender(mpRenderer);
 
 		std::stringstream stream;
 		stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()) << " Points: " << mpLineRenderer->Points.List.size();
 
-		//mpText->setText(stream.str());
-		//mpText->Render(mpRenderer);
+		mpText->setText(stream.str());
+		mpText->Render(mpRenderer);
 
 		//mpLineRenderer->Render(mpRenderer);
 
@@ -414,7 +414,7 @@ void KinectApplication::Draw()
 	}
 #endif
 
-	mpRenderer->renderDeferredLighting();
+	//mpRenderer->renderDeferredLighting();
 
 	mpOVRRenderer->EndFrame();
 

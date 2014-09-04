@@ -70,6 +70,31 @@ float4 PS(VertexOut pin) : SV_Target
 	mat.Specular = float4(1.0f, 1.0f, 1.0f, 80.0f);
 	mat.Ambient = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
+	[branch]
+	if (gMaterial.HasDiffuseTex)
+	{
+		mat.Diffuse = textureDiffuse.Sample(mainSampler, pin.Tex);
+	}
+
+	[branch]
+	if (gMaterial.HasNormalTex)
+	{
+		pin.Tangent = normalize(pin.Tangent);
+		pin.Bitangent = normalize(pin.Bitangent);
+
+		float4 bumpSample = textureNormal.Sample(mainSampler, pin.Tex);
+		bumpSample = (bumpSample * 2.0f) - 1.0f;
+	
+		pin.Normal += bumpSample.x * pin.Tangent + bumpSample.y * pin.Bitangent;
+		pin.Normal = normalize(pin.Normal);
+	}
+
+	[branch] 
+	if (gMaterial.HasSpecTex)
+	{
+		mat.Specular = float4(textureSpecular.Sample(mainSampler, pin.Tex).xyz, 80.0f);
+	}
+
 	ComputeDirectionalLight(mat, light, pin.Normal, toEye, A, D, S);
 	ambient += A;
 	diffuse += D;

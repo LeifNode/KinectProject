@@ -48,4 +48,7 @@ float4 PS(VS_OUTPUT In) : SV_TARGET
 	ComputeDirectionalLight(mat, light, surface.Normal, toEye, ambient, diffuse, specular);
 
 	return float4(diffuse + specular + surface.Emissive.xyzz);
+	//return float4(surface.Specular, 1.0);
+	//return float4(surface.Normal * 0.5 + 0.5, 1.0);
+	//return float4(surface.Diffuse.rgb, 1.0);
 }
