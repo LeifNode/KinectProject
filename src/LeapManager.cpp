@@ -24,10 +24,15 @@ void LeapManager::DeInit()
 void LeapManager::onConnect(const Controller& controller)
 {
 	cout << "LEAP connected" << endl;
-	controller.enableGesture(Gesture::TYPE_CIRCLE);
+	/*controller.enableGesture(Gesture::TYPE_CIRCLE);
 	controller.enableGesture(Gesture::TYPE_KEY_TAP);
 	controller.enableGesture(Gesture::TYPE_SCREEN_TAP);
-	controller.enableGesture(Gesture::TYPE_SWIPE);
+	controller.enableGesture(Gesture::TYPE_SWIPE);*/
+	//controller.setPolicyFlags(Controller::POLICY_IMAGES);
+	Controller::PolicyFlag addImagePolicy =
+		(Controller::PolicyFlag)(Controller::PolicyFlag::POLICY_IMAGES | controller.policyFlags());
+
+	controller.setPolicyFlags(addImagePolicy);
 }
 
 void LeapManager::onDisconnect(const Controller& controller)
@@ -76,6 +81,16 @@ void LeapManager::Update(float dt)
 	{
 		mFrame = mController.frame();
 		//cout << "New Frame: " << mFrame.id() << endl;
+	}
+
+	Frame frame = mController.frame();
+
+	ImageList images = frame.images();
+	for (int i = 0; i < 2; i++)
+	{
+		Image image = images[i];
+
+
 	}
 }
 

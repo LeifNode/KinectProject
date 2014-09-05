@@ -154,8 +154,8 @@ bool KinectApplication::Initialize()
 	mpText->setFont(font);
 	mpText->setTextSize(40);
 
-	mpLeapRenderer->Initialize();
 	mpParticleSystem->Initialize();
+	mpLeapRenderer->Initialize();
 
 	return true;
 }
@@ -286,7 +286,7 @@ void KinectApplication::Update(float dt)
 
 	mpInputSystem->Update(dt);
 	
-	mpPhysicsSystem->Update(dt);
+	//mpPhysicsSystem->Update(dt);
 	mpParticleSystem->Update(dt);
 
 	/*mpLineRenderer->Points.clear();
@@ -341,6 +341,8 @@ void KinectApplication::Draw()
 		mPerFrameData.ProjectionInv = XMMatrixInverse(NULL, mPerFrameData.Projection);
 		XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position) + offset);
 #else
+		int i = 0;
+
 		XMMATRIX view = mpCamera->getView(XMVectorZero(), XMQuaternionIdentity());
 		mPerFrameData.EyePosition = mpCamera->getPosition();
 #endif
@@ -393,16 +395,16 @@ void KinectApplication::Draw()
 		//mpCubeRenderer->Render(mpRenderer);
 
 		mpHydraRenderer->Render(mpRenderer);
-		mpPhysicsSystem->Render(mpRenderer);
+		//mpPhysicsSystem->Render(mpRenderer);
 
 		//mpKinectRenderer->Render(mpRenderer);
 
-		mpLeapRenderer->Render(mpRenderer);
+		mpLeapRenderer->Render(mpRenderer, i);
 
 		mpFontManager->bindRender(mpRenderer);
 
 		std::stringstream stream;
-		stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()) << " Points: " << mpLineRenderer->Points.List.size();
+		stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()); //<< " Points: " << mpLineRenderer->Points.List.size();
 
 		mpText->setText(stream.str());
 		mpText->Render(mpRenderer);

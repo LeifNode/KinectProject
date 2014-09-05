@@ -28,8 +28,14 @@ struct PS_INPUT
 {
 	float4 PositionH : SV_POSITION;
 	float3 Velocity : VELOCITY;
+	float VelocityMagnitude : VELOCITY_MAG;
 	float2 Tex : TEXCOORD;
 };
+
+
+Texture2D textureDiffuse : register( t1 );
+
+SamplerState mainSampler : register( s0 );
 
 StructuredBuffer<Particle> gParticleBuffer : register(u0);
 
@@ -57,8 +63,8 @@ void GS(point GS_INPUT input[1], uint primId : SV_PrimitiveID, inout TriangleStr
 	{
 		float2(0.0f, 0.0f),
 		float2(0.0f, 1.0f),
-		float2(1.0f, 1.0f),
 		float2(1.0f, 0.0f),
+		float2(1.0f, 1.0f),
 	};
 
 	float particleHalfSize = gBaseParticleScale * 0.5f;
@@ -77,6 +83,7 @@ void GS(point GS_INPUT input[1], uint primId : SV_PrimitiveID, inout TriangleStr
 		output.PositionH = mul(gViewProj, float4(input[0].PositionW + offsets[i], 1.0f));
 		output.Tex = texCoords[i];
 		output.Velocity = input[0].Velocity;
+		output.VelocityMagnitude = length(input[0].Velocity);
 
 		triStream.Append(output);
 	}
@@ -84,5 +91,14 @@ void GS(point GS_INPUT input[1], uint primId : SV_PrimitiveID, inout TriangleStr
 
 float4 PS(PS_INPUT input) : SV_Target
 {
-	return float4(input.Tex.r, input.Tex.g, 0.0f, 1.0f);
+	float4 texColor = textureDiffuse.Sample(mainSampler, input.Tex);
+
+	texColor *= gParticleColor;
+
+	texColor.r -= input.VelocityMagnitude * 0.9f;
+	texColor.b += input.VelocityMagnitude * 0.6f;
+
+	clip(texColor.a < 0.01f ? -1:1);
+
+	return texColor;
 }

@@ -66,8 +66,8 @@ float4 PS(VertexOut pin) : SV_Target
 	light.Direction = normalize(float3(-1.0f, -1.0f, -1.0f));
 
 	Material mat;
-	mat.Diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
-	mat.Specular = float4(1.0f, 1.0f, 1.0f, 80.0f);
+	mat.Diffuse = float4(0.3f, 0.3f, 0.3f, 1.0f);
+	mat.Specular = float4(0.3f, 0.3f, 0.3f, 20.0f);
 	mat.Ambient = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	[branch]

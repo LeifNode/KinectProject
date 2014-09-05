@@ -2,6 +2,19 @@
 #include "d3dApp.h"
 #include "D3DRenderer.h"
 #include "MathHelper.h"
+#include "TextureManager.h"
+#include "InputSystem.h"
+#include "HydraManager.h"
+#include "LeapManager.h"
+
+struct ParticleAttractor
+{
+	XMFLOAT3 WorldPosition;
+	float Force;
+	XMFLOAT2 pad;
+	float LinearAtt;
+	float QuadraticAtt;
+};
 
 struct CBParticleSystemRender
 {
@@ -13,7 +26,8 @@ struct CBParticleSystemRender
 struct CBParticleSystemCompute
 {
 	float FrameDeltaTime;
-	XMFLOAT3 b2Pad1;
+	XMFLOAT3 pad;
+	ParticleAttractor ParticleAttractors[64];
 };
 
 ParticleSystem::ParticleSystem()
@@ -22,13 +36,18 @@ ParticleSystem::ParticleSystem()
 	mpParticleBuffer(NULL),
 	mpParticleSRV(NULL),
 	mpParticleRenderCB(NULL),
-	mpParticleComputeCB(NULL)
+	mpParticleComputeCB(NULL),
+	mpParticleTexture(NULL),
+	mpParticleBlendState(NULL),
+	mpParticleDepthStencilState(NULL)
 {
 
 }
 
 ParticleSystem::~ParticleSystem()
 {
+	ReleaseCOM(mpParticleBlendState);
+	ReleaseCOM(mpParticleDepthStencilState);
 	ReleaseCOM(mpParticleBuffer);
 	ReleaseCOM(mpParticleSRV);
 	ReleaseCOM(mpParticleUAV);
@@ -43,6 +62,8 @@ void ParticleSystem::Initialize()
 	InitShaders(renderer);
 	InitBuffers(renderer);
 	InitStates(renderer);
+
+	mpParticleTexture = gpApplication->getTextureManager()->getTexture("particle.dds");
 }
 
 void ParticleSystem::InitShaders(D3DRenderer* renderer)
@@ -79,8 +100,9 @@ void ParticleSystem::InitBuffers(D3DRenderer* renderer)
 	for (int i = 0; i < PARTICLE_COUNT; ++i)
 	{
 		ParticleData data;
-		XMStoreFloat3(&data.Position, MathHelper::RandUnitVec3() * 15.0f * MathHelper::RandF(0.0f, 1.0f));
-		XMStoreFloat3(&data.Velocity, MathHelper::RandUnitVec3() * 2.0f);
+		XMStoreFloat3(&data.Position, MathHelper::RandUnitVec3() * 1.0f * MathHelper::RandF(0.0f, 1.0f));
+		data.Position.y += 5.0f;
+		XMStoreFloat3(&data.Velocity, MathHelper::RandUnitVec3() * 1.0f);
 		//data.Velocity = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
 		particles.push_back(data);
@@ -136,7 +158,65 @@ void ParticleSystem::InitBuffers(D3DRenderer* renderer)
 
 void ParticleSystem::InitStates(D3DRenderer* renderer)
 {
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
+	/*blendDesc.IndependentBlendEnable = false;
+	blendDesc.AlphaToCoverageEnable	= false;
+	blendDesc.RenderTarget[0].BlendEnable = true;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;*/
 
+	/* Black blending */
+	/*blendDesc.RenderTarget[0].BlendEnable = true;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_INV_DEST_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.IndependentBlendEnable = false;*/
+
+	blendDesc.RenderTarget[0].BlendEnable = true;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC1_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.IndependentBlendEnable = false;
+
+	renderer->device()->CreateBlendState(&blendDesc, &mpParticleBlendState);
+
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	dsDesc.StencilEnable = false;
+	dsDesc.StencilReadMask = 0xFF;
+	dsDesc.StencilWriteMask = 0xFF;
+
+	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	renderer->device()->CreateDepthStencilState(&dsDesc, &mpParticleDepthStencilState);
 }
 
 void ParticleSystem::Update(float dt)
@@ -149,6 +229,41 @@ void ParticleSystem::Update(float dt)
 
 	CBParticleSystemCompute computeConstants;
 	computeConstants.FrameDeltaTime = dt;
+	//XMStoreFloat3(&computeConstants.AttractorWorldPos, InputSystem::get()->getHydra()->getPointerPosition(0));
+
+	const Leap::Frame* frame = LeapManager::getInstance().getFrame();
+	Leap::HandList hands = frame->hands();
+
+	ZeroMemory(&computeConstants.ParticleAttractors, sizeof(ParticleAttractor) * 64);
+
+	int index = 0;
+	for (auto handit = hands.begin(); handit != hands.end(); ++handit)
+	{
+		const Leap::Hand hand = *handit;
+
+		const Leap::FingerList fingers = hand.fingers();
+		for (auto fingerIt = fingers.begin(); fingerIt != fingers.end(); ++fingerIt)
+		{
+			const Leap::Finger finger = *fingerIt;
+
+			for (int b = 0; b < 4; b++)
+			{
+				Leap::Bone::Type boneType = static_cast<Leap::Bone::Type>(b);
+				Leap::Bone bone = finger.bone(boneType);
+
+				if (index < 64)
+				{
+					XMStoreFloat3(&computeConstants.ParticleAttractors[index].WorldPosition, LeapManager::getInstance().transformPosition(bone.nextJoint()));
+
+					computeConstants.ParticleAttractors[index].Force = (float)b;
+					computeConstants.ParticleAttractors[index].LinearAtt = 0.0f;
+					computeConstants.ParticleAttractors[index].QuadraticAtt = 0.0f;
+				}
+
+				index++;
+			}
+		}
+	}
 
 	renderer->context()->UpdateSubresource(mpParticleComputeCB, 0, NULL, &computeConstants, 0, 0);
 	renderer->setConstantBuffer(2, mpParticleComputeCB);
@@ -164,7 +279,12 @@ void ParticleSystem::Render(D3DRenderer* renderer)
 	renderer->setShader(mpParticleRenderShader);
 	renderer->unbindTextureResources();
 
-	renderer->context()->VSSetShaderResources(0, 1, &mpParticleSRV);
+	renderer->context()->VSSetShaderResources(0, 1, &mpParticleSRV); 
+
+	renderer->context()->OMSetBlendState(mpParticleBlendState, NULL, 0xffffffff);
+	renderer->context()->OMSetDepthStencilState(mpParticleDepthStencilState, 0);
+	renderer->resetSamplerState();
+	renderer->setTextureResource(1, mpParticleTexture);
 
 	const CBPerFrame* perFrame = renderer->getPerFrameBuffer();
 	CBPerObject perObject;
@@ -176,8 +296,8 @@ void ParticleSystem::Render(D3DRenderer* renderer)
 	renderer->setPerObjectBuffer(perObject);
 
 	CBParticleSystemRender particleConstants;
-	particleConstants.ParticleColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	particleConstants.BaseParticleScale = 0.08f;
+	particleConstants.ParticleColor = XMFLOAT4(1.0f, 0.3f, 0.3f, 0.1f);
+	particleConstants.BaseParticleScale = 0.003f;
 
 	renderer->context()->UpdateSubresource(mpParticleRenderCB, 0, NULL, &particleConstants, 0, 0);
 	renderer->setConstantBuffer(2, mpParticleRenderCB);

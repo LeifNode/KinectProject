@@ -102,6 +102,9 @@
     <Filter Include="Shaders\Particles">
       <UniqueIdentifier>{5e358da0-e6c8-4e41-981e-477d6b41041b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Leap">
+      <UniqueIdentifier>{08eb80d1-8073-4479-8a90-7f00a2db6536}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -554,6 +557,15 @@
     </FxCompile>
     <FxCompile Include="Shaders\particle_PS.hlsl">
       <Filter>Shaders\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\leap.hlsl">
+      <Filter>Shaders\Leap</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\leap_VS.hlsl">
+      <Filter>Shaders\Leap</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\leap_PS.hlsl">
+      <Filter>Shaders\Leap</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

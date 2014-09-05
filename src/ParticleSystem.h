@@ -2,12 +2,13 @@
 
 #include "d3dStd.h"
 #include "Shader.h"
+#include "Texture.h"
 
 class D3DRenderer;
 
 class ParticleSystem
 {
-	static const int PARTICLE_GROUP_COUNT = 10000;
+	static const int PARTICLE_GROUP_COUNT = 1000;
 	static const int PARTICLE_GROUP_SIZE = 512;
 	static const int PARTICLE_COUNT = PARTICLE_GROUP_COUNT * PARTICLE_GROUP_SIZE;
 
@@ -29,6 +30,11 @@ private:
 private:
 	Shader* mpParticleRenderShader;
 	Shader* mpParticleComputeShader;
+
+	ID3D11BlendState* mpParticleBlendState;
+	ID3D11DepthStencilState* mpParticleDepthStencilState;
+
+	Texture* mpParticleTexture;
 
 	ID3D11Buffer* mpParticleBuffer;
 	ID3D11ShaderResourceView* mpParticleSRV;

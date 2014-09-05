@@ -25,9 +25,14 @@ D3DRenderer::D3DRenderer()
 	mGBuffer(NULL),
 	mDeferredRenderer(NULL)
 {
-	mClearColor[0] = 0.0f;
+	/*mClearColor[0] = 0.0f;
 	mClearColor[1] = 0.125f;
 	mClearColor[2] = 0.3f;
+	mClearColor[3] = 1.0f;*/
+
+	mClearColor[0] = 0.0f;
+	mClearColor[1] = 0.0f;
+	mClearColor[2] = 0.0f;
 	mClearColor[3] = 1.0f;
 
 	ZeroMemory(&mScreenViewport, sizeof(D3D11_VIEWPORT));
@@ -888,9 +893,9 @@ void D3DRenderer::unbindShader()
 
 void D3DRenderer::resetSamplerState()
 {
-	setSampler(0, mSamplerState);
-	setSampler(1, mSamplerState);
-	setSampler(2, mSamplerState);
+	//setSampler(0, mSamplerState);
+	//setSampler(1, mSamplerState);
+	//setSampler(2, mSamplerState);
 
 	ID3D11SamplerState** samplerArr = new ID3D11SamplerState*[8];
 	for (int i = 0; i < 8; i++) samplerArr[i] = mSamplerState;
