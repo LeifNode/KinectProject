@@ -44,6 +44,10 @@ void ParticleRenderer::Render(D3DRenderer* renderer)
 	renderer->setShader(shader);
 	
 	CBPerObject perObject;
+	perObject.Material.HasDiffuseTex = false;
+	perObject.Material.HasNormalTex = false;
+	perObject.Material.HasSpecTex = false;
+	perObject.Material.HasEmissiveTex = false;
 
 	for (auto it = mTargetParticles.begin(); it != mTargetParticles.end(); ++it)
 	{

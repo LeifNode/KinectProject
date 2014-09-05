@@ -96,6 +96,12 @@
     <Filter Include="Source Files\Resource Manager\Models\Post Processing">
       <UniqueIdentifier>{87d1def4-579a-4d30-a645-0443098dccb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utils\Shaders">
+      <UniqueIdentifier>{3b4a9ff9-22c0-4a9f-b67f-637133e26d00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Particles">
+      <UniqueIdentifier>{5e358da0-e6c8-4e41-981e-477d6b41041b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -284,6 +290,12 @@
     <ClInclude Include="src\OBJLoader.h">
       <Filter>Source Files\Resource Manager\Models</Filter>
     </ClInclude>
+    <ClInclude Include="src\ShaderHelper.h">
+      <Filter>Source Files\Utils\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ParticleSystem.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp">
@@ -445,6 +457,12 @@
     <ClCompile Include="src\OBJLoader.cpp">
       <Filter>Source Files\Resource Manager\Models</Filter>
     </ClCompile>
+    <ClCompile Include="src\ShaderHelper.cpp">
+      <Filter>Source Files\Utils\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ParticleSystem.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\color_PS.hlsl">
@@ -518,6 +536,24 @@
     </FxCompile>
     <FxCompile Include="Shaders\DeferredDirectionalLight_PS.hlsl">
       <Filter>Shaders\Deferred Rendering</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Random.hlsl">
+      <Filter>Shaders\Utils</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\particle.hlsl">
+      <Filter>Shaders\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\particle_CS.hlsl">
+      <Filter>Shaders\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\particle_VS.hlsl">
+      <Filter>Shaders\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\particle_GS.hlsl">
+      <Filter>Shaders\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\particle_PS.hlsl">
+      <Filter>Shaders\Particles</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

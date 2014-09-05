@@ -69,6 +69,7 @@ public:
 	void resetSamplerState();
 
 	Shader* loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize);
+	Shader* loadShaderUnmanaged(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize);
 
 	void clear(RenderTarget* target);
 
@@ -118,6 +119,7 @@ private:
 	float mClearColor[4];
 
 	Shader* mpActiveShader;
+	//ID3D11SamplerState* mCurrentSamplerState;
 
 	std::map<std::string, Shader*> mLoadedShaders;
 

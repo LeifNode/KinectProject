@@ -22,6 +22,7 @@ namespace collada
 	struct SceneNode;
 }
 class COLLADALoader;
+class ParticleSystem;
 
 class KinectApplication : public D3DApp
 {
@@ -69,6 +70,7 @@ private:
 	TextRenderer* mpText;
 	LineRenderer* mpLineRenderer;
 	LeapRenderer* mpLeapRenderer;
+	ParticleSystem* mpParticleSystem;
 
 	Camera* mpCamera;
 

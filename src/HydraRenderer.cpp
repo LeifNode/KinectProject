@@ -37,6 +37,11 @@ void HydraRenderer::Initialize()
 void HydraRenderer::Render(D3DRenderer* renderer)
 {
 	CBPerObject perObject;
+	perObject.Material.HasDiffuseTex = false;
+	perObject.Material.HasNormalTex = false;
+	perObject.Material.HasSpecTex = false;
+	perObject.Material.HasEmissiveTex = false;
+
 	HydraManager* hydra = InputSystem::get()->getHydra();
 
 	for (int controller = 0; controller < sixenseGetMaxControllers(); controller++)

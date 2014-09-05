@@ -19,6 +19,7 @@
 #include "LeapManager.h"
 #include "PhysicsSystem.h"
 #include "COLLADALoader.h"
+#include "ParticleSystem.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd){
 	UNREFERENCED_PARAMETER( prevInstance );
@@ -59,6 +60,7 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	mpText = new TextRenderer(100);
 	mpLineRenderer = new LineRenderer();
 	mpLeapRenderer = new LeapRenderer();
+	mpParticleSystem = new ParticleSystem();
 }
 
 KinectApplication::~KinectApplication()
@@ -78,6 +80,7 @@ KinectApplication::~KinectApplication()
 	SAFE_DELETE(mpKinectRenderer);
 	SAFE_DELETE(mpText);
 	SAFE_DELETE(mpLineRenderer);
+	SAFE_DELETE(mpParticleSystem);
 }
 
 bool KinectApplication::Initialize()
@@ -119,14 +122,14 @@ bool KinectApplication::Initialize()
 
 	//mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
 	//COLLADALoader loader("bunny_3ds.dae");
-	COLLADALoader loader("sponza2.dae");
-	loader.loadDocument();
-	loader.parse();
+	//COLLADALoader loader("sponza2.dae");
+	//loader.loadDocument();
+	//loader.parse();
 
 	//mpCubeRenderer->Initialize(loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Vertices, loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Indices, mpRenderer);
 
-	loadModels(loader.getRootNode(), &loader);
-	loadTextures(&loader);
+	//loadModels(loader.getRootNode(), &loader);
+	//loadTextures(&loader);
 	
 	//mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
 	mRotationTool.setTargetTransform(&mCubeRotation);
@@ -152,6 +155,7 @@ bool KinectApplication::Initialize()
 	mpText->setTextSize(40);
 
 	mpLeapRenderer->Initialize();
+	mpParticleSystem->Initialize();
 
 	return true;
 }
@@ -283,6 +287,7 @@ void KinectApplication::Update(float dt)
 	mpInputSystem->Update(dt);
 	
 	mpPhysicsSystem->Update(dt);
+	mpParticleSystem->Update(dt);
 
 	/*mpLineRenderer->Points.clear();
 	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(0));
@@ -367,7 +372,7 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		//mpPlaneRenderer->Render(mpRenderer);
+		mpPlaneRenderer->Render(mpRenderer);
 
 		//Render cube
 		perObject.World = mCubeRotation.getTransform();
@@ -403,6 +408,8 @@ void KinectApplication::Draw()
 		mpText->Render(mpRenderer);
 
 		//mpLineRenderer->Render(mpRenderer);
+
+		mpParticleSystem->Render(mpRenderer);
 
 		mpRenderer->setShader(mpMainShader);
 		mpRenderer->setBlendState(false);

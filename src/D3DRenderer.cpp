@@ -385,7 +385,7 @@ HRESULT D3DRenderer::compileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoi
     return S_OK;
 }
 
-Shader* D3DRenderer::loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize)
+Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize)
 {
 	char* name = new char[MAX_PATH];
 
@@ -522,6 +522,23 @@ Shader* D3DRenderer::loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRI
 
 		ReleaseCOM(shaderBlob);
 	}
+
+	return newShader;
+}
+
+Shader* D3DRenderer::loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize)
+{
+	char* name = new char[MAX_PATH];
+
+	//Convert wchar* to char*
+	wcstombs(name, filePath, MAX_PATH);
+
+	std::string nameStr(name);
+
+	delete name;
+	name = nullptr;
+
+	Shader* newShader = loadShaderUnmanaged(filePath, shaderInfo, primitiveTopology, vertexDescription, vertexDescriptionSize);
 
 	mLoadedShaders[nameStr] = newShader;
 
@@ -874,6 +891,27 @@ void D3DRenderer::resetSamplerState()
 	setSampler(0, mSamplerState);
 	setSampler(1, mSamplerState);
 	setSampler(2, mSamplerState);
+
+	ID3D11SamplerState** samplerArr = new ID3D11SamplerState*[8];
+	for (int i = 0; i < 8; i++) samplerArr[i] = mSamplerState;
+
+	if (mpActiveShader)
+	{
+		if (mpActiveShader->hasVertexShader())
+			md3dImmediateContext->VSSetSamplers(0, 8, samplerArr);
+		if (mpActiveShader->hasPixelShader())
+			md3dImmediateContext->PSSetSamplers(0, 8, samplerArr);
+		if (mpActiveShader->hasGeometryShader())
+			md3dImmediateContext->GSSetSamplers(0, 8, samplerArr);
+		if (mpActiveShader->hasComputeShader())
+			md3dImmediateContext->CSSetSamplers(0, 8, samplerArr);
+		if (mpActiveShader->hasHullShader())
+			md3dImmediateContext->HSSetSamplers(0, 8, samplerArr);
+		if (mpActiveShader->hasDomainShader())
+			md3dImmediateContext->DSSetSamplers(0, 8, samplerArr);
+	}
+
+	delete [] samplerArr;
 }
 
 void D3DRenderer::clear(RenderTarget* target)

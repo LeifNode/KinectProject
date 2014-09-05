@@ -27,6 +27,8 @@ class Shader
 	friend class D3DRenderer;
 
 public:
+	~Shader();
+
 	std::string getName() const { return mName; }
 
 	bool hasVertexShader() const { return mpVertexShader != nullptr; }
@@ -38,7 +40,6 @@ public:
 
 private:
 	Shader(const std::string& name);
-	~Shader();
 
 	void bind(D3DRenderer* renderer);
 
