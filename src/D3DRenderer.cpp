@@ -210,11 +210,11 @@ bool D3DRenderer::initialize()
 	sd.BufferCount  = 1;
 	sd.OutputWindow = gpApplication->mainWnd();
 #if USE_RIFT
-	sd.Windowed     = false;
+	sd.Windowed     = true; //WAS FALSE
 #else
 	sd.Windowed     = true;
 #endif
-	//sd.SwapEffect   = DXGI_SWAP_EFFECT_DISCARD;
+	sd.SwapEffect   = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags        = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	// To correctly create the swap chain, we must use the IDXGIFactory that was

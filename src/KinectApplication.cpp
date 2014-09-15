@@ -336,10 +336,12 @@ void KinectApplication::Draw()
 									  0.0f);
 
 		XMMATRIX view = mpCamera->getView(offset, rotQuat);
+		//XMMATRIX view = mpCamera->getView(XMVectorZero(), rotQuat);
 
 		mPerFrameData.Projection = mpOVRRenderer->getProjection(i);
 		mPerFrameData.ProjectionInv = XMMatrixInverse(NULL, mPerFrameData.Projection);
 		XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position) + offset);
+		//XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position));
 #else
 		int i = 0;
 

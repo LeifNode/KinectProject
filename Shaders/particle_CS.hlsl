@@ -24,7 +24,7 @@ struct Particle
 
 RWStructuredBuffer<Particle> gParticles : register(u0);
 
-[numthreads(512, 1, 1)]
+[numthreads(1024, 1, 1)]
 void CS(int3 ID : SV_DispatchThreadID)
 {
 	Particle particle = gParticles[ID.x];

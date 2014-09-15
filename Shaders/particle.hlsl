@@ -80,7 +80,9 @@ void GS(point GS_INPUT input[1], uint primId : SV_PrimitiveID, inout TriangleStr
 	[unroll]
 	for (int i = 0; i < 4; ++i)
 	{
-		output.PositionH = mul(gViewProj, float4(input[0].PositionW + offsets[i], 1.0f));
+		output.PositionH = mul(gView, float4(input[0].PositionW + offsets[i], 1.0f));
+		//output.PositionH.z += 0.3f;
+		output.PositionH = mul(gProjection, output.PositionH);
 		output.Tex = texCoords[i];
 		output.Velocity = input[0].Velocity;
 		output.VelocityMagnitude = length(input[0].Velocity);

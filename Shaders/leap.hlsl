@@ -10,7 +10,6 @@ struct PS_INPUT
 	float4 PositionH : SV_POSITION;
 	float3 PositionV : POSITION;
 	float2 Tex : TEXCOORD;
-	float2 Ray : RAY;
 };
 
 cbuffer CBLeap : register( b2 )
@@ -46,12 +45,13 @@ PS_INPUT VS( uint VertexID : SV_VertexID )
 
 	output.PositionV = Positions[VertexID] * 4.0f;
 	output.PositionV.z = -gHandDistance;
+	//output.PositionV.z = -1.0f;
 	output.PositionV.xy *= gHandDistance;
-	output.PositionV.x += gOffsetX * gHandDistance;
+	//output.PositionV.z -= 0.06f;
+	output.PositionV.x += gOffsetX;
+	output.PositionV.y += 0.05f; //Compensation for messed up rift rendering on this program
 	output.Tex = TexCoords[VertexID];
 	output.PositionH = mul(gProjection, float4(output.PositionV, 1.0f));
-	output.Ray = float2(-output.PositionH.x / output.PositionH.z, -output.PositionH.y / output.PositionH.z);
-	output.Ray = output.Ray * gRayScale + gRayOffset;
 
 	return output;
 }

@@ -296,8 +296,8 @@ void ParticleSystem::Render(D3DRenderer* renderer)
 	renderer->setPerObjectBuffer(perObject);
 
 	CBParticleSystemRender particleConstants;
-	particleConstants.ParticleColor = XMFLOAT4(1.0f, 0.3f, 0.3f, 0.1f);
-	particleConstants.BaseParticleScale = 0.003f;
+	particleConstants.ParticleColor = XMFLOAT4(1.0f, 0.3f, 0.3f, 0.08f);
+	particleConstants.BaseParticleScale = 0.001f;
 
 	renderer->context()->UpdateSubresource(mpParticleRenderCB, 0, NULL, &particleConstants, 0, 0);
 	renderer->setConstantBuffer(2, mpParticleRenderCB);

@@ -108,7 +108,7 @@ XMVECTOR LeapManager::transformPosition(const Leap::Vector& input)
 {
 	XMVECTOR rotationQuat = XMQuaternionRotationAxis(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), XMConvertToRadians(-90.0f));
 
-	return XMVector3Transform(XMVector3Rotate(XMLoadFloat3(&XMFLOAT3(-input.x / 1000.0f, (input.y + 60.0f) / 1000.0f, -input.z / 1000.0f)), rotationQuat), mInverseTransform);
+	return XMVector3Transform(XMVector3Rotate(XMLoadFloat3(&XMFLOAT3(-input.x / 1000.0f, (input.y + 00.0f) / 1000.0f, -input.z / 1000.0f + 0.03)), rotationQuat), mInverseTransform);
 }
 
 XMVECTOR LeapManager::transformRotation(const Leap::Vector& input)
