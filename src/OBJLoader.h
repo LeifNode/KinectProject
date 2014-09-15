@@ -1,11 +1,15 @@
 #pragma once
 
 #include "d3dStd.h"
-#include "AssetTypes.h"
+#include "AssetLoader.h"
 
-class OBJLoader
+class OBJLoader : public AssetLoader
 {
 public:
+	OBJLoader();
+	~OBJLoader();
+
+	virtual assettypes::Scene* LoadFile(const std::string& path) override;
 
 private:
 };
