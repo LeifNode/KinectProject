@@ -299,6 +299,24 @@
     <ClInclude Include="src\ParticleSystem.h">
       <Filter>Source Files\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\AssetProcess.h">
+      <Filter>Source Files\Resource Manager\Models\Post Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AssetImporter.h">
+      <Filter>Source Files\Resource Manager\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AssetLoader.h">
+      <Filter>Source Files\Resource Manager\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TriangulateProcess.h">
+      <Filter>Source Files\Resource Manager\Models\Post Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CreateTangentsBitangentsProcess.h">
+      <Filter>Source Files\Resource Manager\Models\Post Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SmoothNormalsProcess.h">
+      <Filter>Source Files\Resource Manager\Models\Post Processing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp">
@@ -465,6 +483,9 @@
     </ClCompile>
     <ClCompile Include="src\ParticleSystem.cpp">
       <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AssetImporter.cpp">
+      <Filter>Source Files\Resource Manager\Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -154,7 +154,7 @@ bool KinectApplication::Initialize()
 	mpText->setFont(font);
 	mpText->setTextSize(40);
 
-	mpParticleSystem->Initialize();
+	//mpParticleSystem->Initialize();
 	mpLeapRenderer->Initialize();
 
 	return true;
@@ -287,7 +287,7 @@ void KinectApplication::Update(float dt)
 	mpInputSystem->Update(dt);
 	
 	//mpPhysicsSystem->Update(dt);
-	mpParticleSystem->Update(dt);
+	//mpParticleSystem->Update(dt);
 
 	/*mpLineRenderer->Points.clear();
 	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(0));
@@ -413,7 +413,7 @@ void KinectApplication::Draw()
 
 		//mpLineRenderer->Render(mpRenderer);
 
-		mpParticleSystem->Render(mpRenderer);
+		//mpParticleSystem->Render(mpRenderer);
 
 		mpRenderer->setShader(mpMainShader);
 		mpRenderer->setBlendState(false);

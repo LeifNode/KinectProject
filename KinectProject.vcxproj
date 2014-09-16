@@ -152,9 +152,13 @@
     <ClInclude Include="3rdParty\include\FastDelegate\FastDelegate.h" />
     <ClInclude Include="3rdParty\include\FastDelegate\FastDelegateBind.h" />
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h" />
+    <ClInclude Include="src\AssetImporter.h" />
+    <ClInclude Include="src\AssetProcess.h" />
     <ClInclude Include="src\ConstraintRenderer.h" />
+    <ClInclude Include="src\CreateTangentsBitangentsProcess.h" />
     <ClInclude Include="src\DeferredRenderer.h" />
     <ClInclude Include="src\GBuffer.h" />
+    <ClInclude Include="src\AssetLoader.h" />
     <ClInclude Include="src\OBJLoader.h" />
     <ClInclude Include="src\ParticleContactGenerators.h" />
     <ClInclude Include="src\ParticleContacts.h" />
@@ -205,6 +209,7 @@
     <ClInclude Include="src\AssetTypes.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\ShaderHelper.h" />
+    <ClInclude Include="src\SmoothNormalsProcess.h" />
     <ClInclude Include="src\StringUtils.h" />
     <ClInclude Include="src\TextRenderer.h" />
     <ClInclude Include="src\Texture.h" />
@@ -212,10 +217,12 @@
     <ClInclude Include="src\TextureManager.h" />
     <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\TransformTool.h" />
+    <ClInclude Include="src\TriangulateProcess.h" />
     <ClInclude Include="src\Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp" />
+    <ClCompile Include="src\AssetImporter.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\COLLADALoader.cpp" />
     <ClCompile Include="src\ConstraintRenderer.cpp" />
