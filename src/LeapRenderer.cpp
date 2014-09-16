@@ -210,6 +210,7 @@ void LeapRenderer::Update()
 	LeapManager& leapManager = LeapManager::getInstance();
 
 	mLineRenderer.Points.clear();
+	mLineRenderer.setLineThickness(0.005f);
 
 	HandList hands = leapManager.getFrame()->hands();
 
@@ -238,7 +239,7 @@ void LeapRenderer::Update()
 
 void LeapRenderer::Render(D3DRenderer* renderer, int index)
 {
-	mLineRenderer.Render(renderer);
+	//mLineRenderer.Render(renderer);
 
 	renderer->context()->IASetIndexBuffer(NULL, (DXGI_FORMAT)0, 0);
 	//renderer->context()->IASetVertexBuffers(0, 1, NULL, NULL, NULL);
@@ -254,7 +255,7 @@ void LeapRenderer::Render(D3DRenderer* renderer, int index)
 	if (handit != hands.end())
 	{
 		const Hand hand = *handit;	
-		leapConstants.HandDistance = (hand.palmPosition().y + 60.0f) / 1000.0f;
+		leapConstants.HandDistance = (hand.palmPosition().y + 30.0f) / 1000.0f;
 		//leapConstants.HandDistance = (hand.finger(2).bone(Leap::Bone::TYPE_DISTAL).nextJoint().y + 60.0f) / 1000.0f;
 	}
 	else
@@ -262,9 +263,8 @@ void LeapRenderer::Render(D3DRenderer* renderer, int index)
 
 	leapConstants.RayOffset = XMFLOAT2(0.5f, 0.5f);
 	leapConstants.RayScale = XMFLOAT2(0.125f, 0.125f);
-	leapConstants.OffsetX = index == 0 ? -0.02f : 0.02f;//Adjusting IPD of camera images
+	leapConstants.OffsetX = index == 0 ? -0.02f : 0.02f;//Adjusting IPD for camera images
 	leapConstants.OffsetX *= 1.0f;
-	//leapConstants.OffsetX = index == 0 ? -0.03f : 0.03f;
 
 	renderer->context()->UpdateSubresource(mpLeapConstantBuffer, 0, NULL, &leapConstants, 0, 0);
 	renderer->setConstantBuffer(2, mpLeapConstantBuffer);

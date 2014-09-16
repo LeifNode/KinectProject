@@ -44,7 +44,7 @@ PS_INPUT VS( uint VertexID : SV_VertexID )
 	PS_INPUT output;
 
 	output.PositionV = Positions[VertexID] * 4.0f;
-	output.PositionV.z = -gHandDistance;
+	output.PositionV.z = -gHandDistance - 0.06f;
 	//output.PositionV.z = -1.0f;
 	output.PositionV.xy *= gHandDistance;
 	//output.PositionV.z -= 0.06f;
