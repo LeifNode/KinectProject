@@ -23,7 +23,7 @@ void TransformTool::Update(float dt)
 
 	XMVECTOR hydraAveragePosition = (mHydraPositions[0] + mHydraPositions[1]) * 0.5f;
 
-	if (mpTargetTransform != NULL && hydra->getTrigger(0) > 0.2f && hydra->getTrigger(1) > 0.2f) //Rotation
+	if (mpTargetTransform != NULL && (hydra->getButtons(0) & (1 << 7)) && (hydra->getButtons(1) & (1 << 7))) //Rotation
 	{
 		XMVECTOR oldOrientationVector = XMVector3Normalize(mPreviousHydraPositions[0] - mPreviousHydraPositions[1]);
 		XMVECTOR orientationVector = XMVector3Normalize(mHydraPositions[0] - mHydraPositions[1]);
@@ -56,13 +56,13 @@ void TransformTool::Update(float dt)
 			mpTargetTransform->rotate(rotationQuaternion);
 		}
 	}
-	else if (mpTargetTransform != NULL && hydra->getTrigger(1) > 0.2f) //Translation
+	else if (mpTargetTransform != NULL && (hydra->getButtons(1) & (1 << 7))) //Translation
 	{
 		XMVECTOR offsetVector =  mHydraPositions[1] - mPreviousHydraPositions[1];
 
 		mpTargetTransform->translate(offsetVector);
 	}
-	else if (mpTargetTransform != NULL && hydra->getTrigger(0) > 0.2f) //Scaling
+	else if (mpTargetTransform != NULL && (hydra->getButtons(0) & (1 << 7))) //Scaling
 	{
 		float oldDistance = XMVectorGetX(XMVector3Length(mPreviousHydraPositions[0] - mPreviousHydraPositions[1]));
 		float newDistance = XMVectorGetX(XMVector3Length(mHydraPositions[0] - mHydraPositions[1]));

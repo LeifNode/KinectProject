@@ -1,6 +1,6 @@
 #pragma once
 
-#define USE_RIFT 0
+#define USE_RIFT 1
 #define OVR_D3D_VERSION 11
 
 #include "d3dStd.h"
@@ -33,6 +33,8 @@ public:
 	ovrPosef mEyeRenderPoses[2];
 	XMVECTOR mEyeOrientations[2];
 	XMMATRIX getProjection(int eyeIndex);
+
+	XMVECTOR getEyeOffset(int eyeIndex);
 
 private:
 	ovrHmd mHMD;

@@ -28,7 +28,7 @@ XMMATRIX Camera::getView(const XMVECTOR& offset, const XMVECTOR& rotationQuat)
 	XMVECTOR up = XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotationQuat);
 	XMVECTOR forward = XMVector3Rotate(XMLoadFloat3(&mDirection), rotationQuat);
 
-	return XMMatrixLookAtRH(pos + offset, pos + offset + forward, up);
+	return XMMatrixLookAtRH(pos + XMVector3Rotate(offset, rotationQuat), pos + XMVector3Rotate(offset, rotationQuat) + forward, up);
 }
 
 void Camera::OnMouseMove(int x, int y)

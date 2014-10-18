@@ -82,7 +82,7 @@ float4 PS(PS_INPUT input) : SV_Target
 {
 	float4 color = float2(1.0f, textAtlus.Sample(textSampler, input.TexUV).r).xxxy;
 
-	clip(color.r - 0.1f);//Handle transparency
+	clip(color.a < 0.01f ? -1:1);//Handle transparency
 
 	return color;
 }
@@ -93,7 +93,7 @@ PS_GBUFFER_OUT PS(PS_INPUT input)
 {
 	float4 color = float2(1.0f, textAtlus.Sample(textSampler, input.TexUV).r).xxxy;
 
-	clip(color.r - 0.1f);//Avoid blending on complete transparency
+	clip(color.a < 0.01f ? -1:1);//Avoid blending on complete transparency
 
 	return PackGBuffer(color, input.Normal, float3(0.0f, 0.0f, 0.0f), 1.0f, float3(0.0f, 0.0f, 0.0f), 0.0f);
 }

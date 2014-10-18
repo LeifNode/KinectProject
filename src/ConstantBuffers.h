@@ -22,10 +22,12 @@ struct CBPerFrame
 	XMMATRIX ViewProj;
 	XMMATRIX ViewProjInv;
 
-	XMFLOAT3 EyePosition;
+	XMFLOAT3 HeadPosition;
 	float pad;
-	XMFLOAT3 EyeDirection;
+	XMFLOAT3 EyePosition;
 	float pad2;
+	XMFLOAT3 EyeDirection;
+	float pad3;
 
 	DirectionalLight DirectionalLight;
 	PointLight PointLight;

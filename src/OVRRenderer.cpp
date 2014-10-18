@@ -77,6 +77,7 @@ void OVRRenderer::Initialize()
 		                           DistortionCaps,
 								   eyeFov, mEyeRenderDesc)) return;
 
+
 	ovrHmd_SetEnabledCaps(mHMD, ovrHmdCap_LowPersistence |
                                ovrHmdCap_LatencyTest |
 							   ovrHmdCap_NoVSync);
@@ -98,6 +99,11 @@ void OVRRenderer::OnResize()
 XMMATRIX OVRRenderer::getProjection(int eyeIndex)
 {
 	return XMMatrixTranspose(XMLoadFloat4x4(&XMFLOAT4X4(&ovrMatrix4f_Projection(mEyeRenderDesc[mHMDDesc.EyeRenderOrder[eyeIndex]].Fov, 0.01f, 10000.0f, true).M[0][0])));
+}
+
+XMVECTOR OVRRenderer::getEyeOffset(int eyeIndex)
+{
+	return XMVectorSet(mEyeRenderDesc[eyeIndex].ViewAdjust.x, mEyeRenderDesc[eyeIndex].ViewAdjust.y, mEyeRenderDesc[eyeIndex].ViewAdjust.z, 0.0f);
 }
 
 void OVRRenderer::Update(float dt)
@@ -139,6 +145,8 @@ void OVRRenderer::PreRender(int eyeIndex)
 	//renderer->getGBuffer()->bindRenderTargets();
 	
 	renderer->setViewport(viewport.w, viewport.h, viewport.x, viewport.y);
+
+	//std::cout << mEyeRenderDesc[0].ViewAdjust.x << std::endl;
 #endif
 }
 

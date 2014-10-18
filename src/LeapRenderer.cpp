@@ -239,7 +239,7 @@ void LeapRenderer::Update()
 
 void LeapRenderer::Render(D3DRenderer* renderer, int index)
 {
-	//mLineRenderer.Render(renderer);
+	mLineRenderer.Render(renderer);
 
 	renderer->context()->IASetIndexBuffer(NULL, (DXGI_FORMAT)0, 0);
 	//renderer->context()->IASetVertexBuffers(0, 1, NULL, NULL, NULL);

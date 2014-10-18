@@ -111,6 +111,8 @@ bool D3DApp::Initialize()
 	if (!mpRenderer->initialize())
 		return false;
 
+	LeapManager::getInstance().Initialize();
+
 	mpFontManager->Initialize();
 
 	LineRenderer::Initialize();

@@ -13,10 +13,12 @@ cbuffer cbPerFrame : register( b0 )
 	float4x4 gViewProj;
 	float4x4 gViewProjInv;
 
-	float3 gEyePosition;
+	float3 gHeadPosition;
 	float gpad;
-	float3 gEyeDirection;
+	float3 gEyePosition;
 	float gpad2;
+	float3 gEyeDirection;
+	float gpad3;
 
 	DirectionalLight gDirectionalLight;
 	PointLight gPointLight;

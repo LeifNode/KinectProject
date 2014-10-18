@@ -17,7 +17,7 @@ TextureManager::~TextureManager()
 Texture* TextureManager::loadTexture(const std::string& filePath)
 {
 	if (getExtensionFromPath(filePath.c_str()) != ".dds")
-		throw -1;
+		return NULL;
 
 	Texture* newTexture = new Texture();
 	

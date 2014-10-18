@@ -129,7 +129,8 @@ void TextRenderer::Render(D3DRenderer* renderer)
 	CBPerObject perObject;
 
 	//perObject.World =  XMMatrixScaling(-1.0f, 1.0f, 1.0f) * mTransform.getTransform();
-	perObject.World = XMMatrixScaling(-1.0f, 1.0f, 1.0f) * mTransform.getTransform() * XMMatrixTranslation(0.25f, -0.2f, 0.25f) * XMMatrixTranslationFromVector(XMLoadFloat3(&renderer->getPerFrameBuffer()->EyePosition));
+	XMVECTOR worldOffset = XMLoadFloat3(&renderer->getPerFrameBuffer()->HeadPosition);
+	perObject.World = XMMatrixScaling(-1.0f, 1.0f, 1.0f) * mTransform.getTransform() * XMMatrixTranslation(0.25f, -0.2f, 0.3f) * XMMatrixTranslationFromVector(worldOffset);
 	perObject.WorldInvTranspose = XMMatrixInverse(NULL, XMMatrixTranspose(perObject.World));
 	perObject.WorldViewProj = perObject.World * renderer->getPerFrameBuffer()->ViewProj;
 	//perObject.WorldViewProj = perObject.World * XMMatrixOrthographicLH(1.0f, 0.5625f, 0.0f, 1.0f);

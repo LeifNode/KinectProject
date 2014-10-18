@@ -5,7 +5,6 @@ using namespace std;
 
 LeapManager::LeapManager()
 {
-	mController.addListener(*this);
 }
 
 LeapManager::~LeapManager()
@@ -28,11 +27,18 @@ void LeapManager::onConnect(const Controller& controller)
 	controller.enableGesture(Gesture::TYPE_KEY_TAP);
 	controller.enableGesture(Gesture::TYPE_SCREEN_TAP);
 	controller.enableGesture(Gesture::TYPE_SWIPE);*/
-	//controller.setPolicyFlags(Controller::POLICY_IMAGES);
+
 	Controller::PolicyFlag addImagePolicy =
-		(Controller::PolicyFlag)(Controller::PolicyFlag::POLICY_IMAGES | controller.policyFlags());
+		(Controller::PolicyFlag)(/*Controller::PolicyFlag::POLICY_IMAGES |*/
+								 Controller::PolicyFlag::POLICY_OPTIMIZE_HMD |
+								 Controller::PolicyFlag::POLICY_BACKGROUND_FRAMES);
 
 	controller.setPolicyFlags(addImagePolicy);
+}
+
+void LeapManager::Initialize()
+{
+	mController.addListener(*this);
 }
 
 void LeapManager::onDisconnect(const Controller& controller)
@@ -45,6 +51,11 @@ void LeapManager::onExit(const Controller& controller)
 
 void LeapManager::onFrame(const Controller& controller)
 {
+	/*if (mController.frame().id() != mFrame.id())
+	{
+		mFrame = mController.frame();
+		cout << "New Frame: " << mFrame.id() << endl;
+	}*/
 }
 
 void LeapManager::onFocusGained(const Controller& controller)
@@ -70,11 +81,6 @@ void LeapManager::onServiceDisconnect(const Leap::Controller& controller)
 
 }
 
-void LeapManager::Initialize()
-{
-	
-}
-
 void LeapManager::Update(float dt)
 {
 	if (mController.frame().id() != mFrame.id())
@@ -83,15 +89,15 @@ void LeapManager::Update(float dt)
 		//cout << "New Frame: " << mFrame.id() << endl;
 	}
 
-	Frame frame = mController.frame();
+	//Frame frame = mController.frame();
 
-	ImageList images = frame.images();
-	for (int i = 0; i < 2; i++)
-	{
-		Image image = images[i];
+	//ImageList images = frame.images();
+	//for (int i = 0; i < 2; i++)
+	//{
+	//	Image image = images[i];
 
 
-	}
+	//}
 }
 
 void LeapManager::setRotation(const XMVECTOR& rotationQuat)

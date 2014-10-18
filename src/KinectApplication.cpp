@@ -109,7 +109,7 @@ bool KinectApplication::Initialize()
 
 	mpOVRRenderer->Initialize();
 
-	//mpKinectRenderer->Initialize();
+	mpKinectRenderer->Initialize();
 
 	hookInputEvents();
 
@@ -122,17 +122,18 @@ bool KinectApplication::Initialize()
 
 	//mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
 	//COLLADALoader loader("bunny_3ds.dae");
-	//COLLADALoader loader("sponza2.dae");
-	//loader.loadDocument();
-	//loader.parse();
+	COLLADALoader loader("sponza.dae");
+	//COLLADALoader loader("car.dae");
+	loader.loadDocument();
+	loader.parse();
 
 	//mpCubeRenderer->Initialize(loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Vertices, loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Indices, mpRenderer);
 
 	//loadModels(loader.getRootNode(), &loader);
 	//loadTextures(&loader);
 	
-	//mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
-	mRotationTool.setTargetTransform(&mCubeRotation);
+	mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
+	//mRotationTool.setTargetTransform(&mCubeRotation);
 	//mRotationTool.setTargetTransform(&mpText->mTransform);
 
 	mpHydraRenderer->Initialize();
@@ -154,7 +155,7 @@ bool KinectApplication::Initialize()
 	mpText->setFont(font);
 	mpText->setTextSize(40);
 
-	//mpParticleSystem->Initialize();
+	mpParticleSystem->Initialize();
 	mpLeapRenderer->Initialize();
 
 	return true;
@@ -278,7 +279,7 @@ void KinectApplication::Update(float dt)
 {
 	mpCamera->Update(dt);
 
-	//mpKinectRenderer->Update(dt);
+	mpKinectRenderer->Update(dt);
 
 	mpOVRRenderer->Update(dt);
 
@@ -287,7 +288,7 @@ void KinectApplication::Update(float dt)
 	mpInputSystem->Update(dt);
 	
 	//mpPhysicsSystem->Update(dt);
-	//mpParticleSystem->Update(dt);
+	mpParticleSystem->Update(dt);
 
 	/*mpLineRenderer->Points.clear();
 	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(0));
@@ -296,19 +297,21 @@ void KinectApplication::Update(float dt)
 */
 	static int pointCount = 0;
 
+	mpLineRenderer->setDrawMode(LineRenderer::LINE_DRAW_MODE_LINESTRIP);
+
 	if (mpInputSystem->getHydra()->getTrigger(1) > 0.8f)
 	{
-		pointCount++;
+		/*pointCount++;
 
 		if (pointCount % 20 == 0)
 		{
 			if (mpLineRenderer->Points.List.size() > 1)
 				mpLineRenderer->Points.addPoint(mpLineRenderer->Points.List[mpLineRenderer->Points.List.size() - 1]);
-
-			mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
+*/
+			//mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
 			mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
 			mpLineRenderer->reloadPoints();
-		}
+		//}
 	}
 
 	mpLeapRenderer->Update();
@@ -330,23 +333,28 @@ void KinectApplication::Draw()
 		//Convert quaterinon to correct axis
 		XMVECTOR rotQuat = mpOVRRenderer->mEyeOrientations[i];
 
-		XMVECTOR offset = XMVectorSet(mpOVRRenderer->mEyeRenderPoses[i].Position.x,
+		/*XMVECTOR offset = XMVectorSet(mpOVRRenderer->mEyeRenderPoses[i].Position.x,
 									  mpOVRRenderer->mEyeRenderPoses[i].Position.y,
 									  mpOVRRenderer->mEyeRenderPoses[i].Position.z,
-									  0.0f);
+									  0.0f);*/
+
+		//XMVECTOR offset = XMVectorSet(0.034 * (i == 0 ? 1.0f : -1.0f), 0.0f, mpOVRRenderer->mEyeRenderPoses[0].Position.z, 0.0f);
+		XMVECTOR offset = mpOVRRenderer->getEyeOffset(i);
 
 		XMMATRIX view = mpCamera->getView(offset, rotQuat);
 		//XMMATRIX view = mpCamera->getView(XMVectorZero(), rotQuat);
 
 		mPerFrameData.Projection = mpOVRRenderer->getProjection(i);
 		mPerFrameData.ProjectionInv = XMMatrixInverse(NULL, mPerFrameData.Projection);
-		XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position) + offset);
+		XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position) + XMVector3Rotate(offset, rotQuat));
+		mPerFrameData.HeadPosition = mpCamera->position;
 		//XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position));
 #else
 		int i = 0;
 
 		XMMATRIX view = mpCamera->getView(XMVectorZero(), XMQuaternionIdentity());
 		mPerFrameData.EyePosition = mpCamera->getPosition();
+		mPerFrameData.HeadPosition = mpCamera->position;
 #endif
 		
 		mPerFrameData.View = view;
@@ -399,21 +407,21 @@ void KinectApplication::Draw()
 		mpHydraRenderer->Render(mpRenderer);
 		//mpPhysicsSystem->Render(mpRenderer);
 
-		//mpKinectRenderer->Render(mpRenderer);
+		mpKinectRenderer->Render(mpRenderer);
 
 		mpLeapRenderer->Render(mpRenderer, i);
 
-		mpFontManager->bindRender(mpRenderer);
+		//mpFontManager->bindRender(mpRenderer);
 
-		std::stringstream stream;
-		stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()); //<< " Points: " << mpLineRenderer->Points.List.size();
+		//std::stringstream stream;
+		//stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()); //<< " Points: " << mpLineRenderer->Points.List.size();
 
-		mpText->setText(stream.str());
-		mpText->Render(mpRenderer);
+		//mpText->setText(stream.str());
+		//mpText->Render(mpRenderer);
 
 		//mpLineRenderer->Render(mpRenderer);
 
-		//mpParticleSystem->Render(mpRenderer);
+		mpParticleSystem->Render(mpRenderer);
 
 		mpRenderer->setShader(mpMainShader);
 		mpRenderer->setBlendState(false);

@@ -42,10 +42,10 @@ void CS(int3 ID : SV_DispatchThreadID)
 
 	particle.Position += particle.Velocity * gFrameDeltaTime;
 
-	if (length(particle.Position - float3(0.0f, 2.0f, 0.0f)) > 4.0f)
+	/*if (length(particle.Position - float3(0.0f, 2.0f, 0.0f)) > 4.0f)
 	{
 		particle.Position = normalize(particle.Position) * 4.0f + float3(0.0f, 2.0f, 0.0f);
-	}
+	}*/
 
 	gParticles[ID.x] = particle;
 }
