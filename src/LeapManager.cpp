@@ -4,6 +4,7 @@ using namespace Leap;
 using namespace std;
 
 LeapManager::LeapManager()
+	:mEyeRelief(0.0f)
 {
 }
 
@@ -29,9 +30,10 @@ void LeapManager::onConnect(const Controller& controller)
 	controller.enableGesture(Gesture::TYPE_SWIPE);*/
 
 	Controller::PolicyFlag addImagePolicy =
-		(Controller::PolicyFlag)(/*Controller::PolicyFlag::POLICY_IMAGES |*/
+		(Controller::PolicyFlag)(Controller::PolicyFlag::POLICY_IMAGES |
 								 Controller::PolicyFlag::POLICY_OPTIMIZE_HMD |
-								 Controller::PolicyFlag::POLICY_BACKGROUND_FRAMES);
+								 Controller::PolicyFlag::POLICY_BACKGROUND_FRAMES |
+								 controller.policyFlags());
 
 	controller.setPolicyFlags(addImagePolicy);
 }
@@ -114,7 +116,7 @@ XMVECTOR LeapManager::transformPosition(const Leap::Vector& input)
 {
 	XMVECTOR rotationQuat = XMQuaternionRotationAxis(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), XMConvertToRadians(-90.0f));
 
-	return XMVector3Transform(XMVector3Rotate(XMLoadFloat3(&XMFLOAT3(-input.x / 1000.0f, (input.y + 60.0f) / 1000.0f, -input.z / 1000.0f + 0.03)), rotationQuat), mInverseTransform);
+	return XMVector3Transform(XMVector3Rotate(XMLoadFloat3(&XMFLOAT3(-input.x / 1000.0f, (input.y + 36.0f) / 1000.0f, -input.z / 1000.0f)), rotationQuat), mInverseTransform);
 }
 
 XMVECTOR LeapManager::transformRotation(const Leap::Vector& input)

@@ -109,7 +109,7 @@ bool KinectApplication::Initialize()
 
 	mpOVRRenderer->Initialize();
 
-	mpKinectRenderer->Initialize();
+	//mpKinectRenderer->Initialize();
 
 	hookInputEvents();
 
@@ -122,18 +122,18 @@ bool KinectApplication::Initialize()
 
 	//mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
 	//COLLADALoader loader("bunny_3ds.dae");
-	COLLADALoader loader("sponza.dae");
+	COLLADALoader loader("sponza2.dae");
 	//COLLADALoader loader("car.dae");
 	loader.loadDocument();
 	loader.parse();
 
 	//mpCubeRenderer->Initialize(loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Vertices, loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Indices, mpRenderer);
 
-	//loadModels(loader.getRootNode(), &loader);
-	//loadTextures(&loader);
+	loadModels(loader.getRootNode(), &loader);
+	loadTextures(&loader);
 	
-	mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
-	//mRotationTool.setTargetTransform(&mCubeRotation);
+	//mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
+	mRotationTool.setTargetTransform(&mCubeRotation);
 	//mRotationTool.setTargetTransform(&mpText->mTransform);
 
 	mpHydraRenderer->Initialize();
@@ -279,7 +279,7 @@ void KinectApplication::Update(float dt)
 {
 	mpCamera->Update(dt);
 
-	mpKinectRenderer->Update(dt);
+	//mpKinectRenderer->Update(dt);
 
 	mpOVRRenderer->Update(dt);
 
@@ -295,26 +295,79 @@ void KinectApplication::Update(float dt)
 	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
 	mpLineRenderer->reloadPoints();
 */
+	updateLines(dt);
+
+	mpLeapRenderer->Update();
+}
+
+void KinectApplication::updateLines(float dt)
+{
 	static int pointCount = 0;
 
 	mpLineRenderer->setDrawMode(LineRenderer::LINE_DRAW_MODE_LINESTRIP);
+	mpLineRenderer->setLineThickness(0.01f);
+
+//	if (mpInputSystem->getHydra()->getTrigger(1) > 0.8f)
+//	{
+//		/*pointCount++;
+//
+//		if (pointCount % 20 == 0)
+//		{
+//			if (mpLineRenderer->Points.List.size() > 1)
+//				mpLineRenderer->Points.addPoint(mpLineRenderer->Points.List[mpLineRenderer->Points.List.size() - 1]);
+//*/
+//			//mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
+//			mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
+//			mpLineRenderer->reloadPoints();
+//		//}
+//	}
+
+	static std::vector<XMFLOAT3> velocities;
+	static float timeToDelete = 0.5f;
+
+	std::vector<XMFLOAT3> tempVelocities;
+	std::vector<XMFLOAT3> tempPoints;
 
 	if (mpInputSystem->getHydra()->getTrigger(1) > 0.8f)
 	{
-		/*pointCount++;
+		mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
 
-		if (pointCount % 20 == 0)
-		{
-			if (mpLineRenderer->Points.List.size() > 1)
-				mpLineRenderer->Points.addPoint(mpLineRenderer->Points.List[mpLineRenderer->Points.List.size() - 1]);
-*/
-			//mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
-			mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(1));
-			mpLineRenderer->reloadPoints();
-		//}
+		XMVECTOR direction = XMVector3Normalize(mpInputSystem->getHydra()->getPointerPosition(1) - mpInputSystem->getHydra()->getPosition(1)) * 0.002f;
+		XMFLOAT3 velocity;
+		XMStoreFloat3(&velocity, direction);
+
+		velocities.push_back(velocity);
 	}
 
-	mpLeapRenderer->Update();
+	for (int i = 0; i < mpLineRenderer->Points.List.size(); i++)
+	{
+		mpLineRenderer->Points.List[i].x = mpLineRenderer->Points.List[i].x + velocities[i].x;
+		mpLineRenderer->Points.List[i].y = mpLineRenderer->Points.List[i].y + velocities[i].y;
+		mpLineRenderer->Points.List[i].z = mpLineRenderer->Points.List[i].z + velocities[i].z;
+
+		XMVECTOR newVel = XMLoadFloat3(&velocities[i]);
+		newVel += newVel * dt * 0.01f;
+
+		XMStoreFloat3(&velocities[i], newVel);
+	}
+
+	timeToDelete -= dt;
+
+	if (timeToDelete <= 0.0f)
+	{
+		timeToDelete = 0.03f;
+
+		for (int i = 2; i < mpLineRenderer->Points.List.size(); i++)
+		{
+			tempVelocities.push_back(velocities[i]);
+			tempPoints.push_back(mpLineRenderer->Points.List[i]);
+		}
+
+		velocities = tempVelocities;
+		mpLineRenderer->Points.List = tempPoints;
+	}
+
+	mpLineRenderer->reloadPoints();
 }
 
 void KinectApplication::Draw()
@@ -349,10 +402,14 @@ void KinectApplication::Draw()
 		XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position) + XMVector3Rotate(offset, rotQuat));
 		mPerFrameData.HeadPosition = mpCamera->position;
 		//XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position));
+
+		LeapManager::getInstance().mEyeRelief = XMVectorGetZ(offset);
+		LeapManager::getInstance().setViewTransform(mpCamera->getView(XMVectorZero(), rotQuat));
 #else
 		int i = 0;
 
 		XMMATRIX view = mpCamera->getView(XMVectorZero(), XMQuaternionIdentity());
+		LeapManager::getInstance().setViewTransform(view);
 		mPerFrameData.EyePosition = mpCamera->getPosition();
 		mPerFrameData.HeadPosition = mpCamera->position;
 #endif
@@ -366,7 +423,7 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerFrameBuffer(mPerFrameData);
 
-		LeapManager::getInstance().setViewTransform(mPerFrameData.View);
+		
 		
 		//Per object for the plane mesh
 		CBPerObject perObject;
@@ -407,19 +464,19 @@ void KinectApplication::Draw()
 		mpHydraRenderer->Render(mpRenderer);
 		//mpPhysicsSystem->Render(mpRenderer);
 
-		mpKinectRenderer->Render(mpRenderer);
+		//mpKinectRenderer->Render(mpRenderer);
 
 		mpLeapRenderer->Render(mpRenderer, i);
 
-		//mpFontManager->bindRender(mpRenderer);
+		mpFontManager->bindRender(mpRenderer);
 
-		//std::stringstream stream;
-		//stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()); //<< " Points: " << mpLineRenderer->Points.List.size();
+		std::stringstream stream;
+		stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()); //<< " Points: " << mpLineRenderer->Points.List.size();
 
-		//mpText->setText(stream.str());
-		//mpText->Render(mpRenderer);
+		mpText->setText(stream.str());
+		mpText->Render(mpRenderer);
 
-		//mpLineRenderer->Render(mpRenderer);
+		mpLineRenderer->Render(mpRenderer);
 
 		mpParticleSystem->Render(mpRenderer);
 

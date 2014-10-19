@@ -37,6 +37,8 @@ public:
 	XMVECTOR transformPosition(const Leap::Vector&);
 	XMVECTOR transformRotation(const Leap::Vector&);
 
+	float mEyeRelief;
+
 private:
 	LeapManager();
 	~LeapManager();

@@ -210,7 +210,7 @@ void LeapRenderer::Update()
 	LeapManager& leapManager = LeapManager::getInstance();
 
 	mLineRenderer.Points.clear();
-	mLineRenderer.setLineThickness(0.005f);
+	mLineRenderer.setLineThickness(0.012f);
 
 	HandList hands = leapManager.getFrame()->hands();
 
@@ -256,15 +256,14 @@ void LeapRenderer::Render(D3DRenderer* renderer, int index)
 	{
 		const Hand hand = *handit;	
 		leapConstants.HandDistance = (hand.palmPosition().y + 30.0f) / 1000.0f;
-		//leapConstants.HandDistance = (hand.finger(2).bone(Leap::Bone::TYPE_DISTAL).nextJoint().y + 60.0f) / 1000.0f;
 	}
 	else
 		leapConstants.HandDistance = 1.0f;
 
 	leapConstants.RayOffset = XMFLOAT2(0.5f, 0.5f);
 	leapConstants.RayScale = XMFLOAT2(0.125f, 0.125f);
-	leapConstants.OffsetX = index == 0 ? -0.02f : 0.02f;//Adjusting IPD for camera images
-	leapConstants.OffsetX *= 1.0f;
+	leapConstants.OffsetX = index == 0 ? 0.0345f : -0.0345f;//Adjusting IPD for camera images
+	leapConstants.OffsetX *= 1.1f;
 
 	renderer->context()->UpdateSubresource(mpLeapConstantBuffer, 0, NULL, &leapConstants, 0, 0);
 	renderer->setConstantBuffer(2, mpLeapConstantBuffer);
@@ -275,5 +274,5 @@ void LeapRenderer::Render(D3DRenderer* renderer, int index)
 	renderer->resetSamplerState();
 	
 
-	renderer->context()->Draw(4, 0);
+	//renderer->context()->Draw(4, 0);
 }

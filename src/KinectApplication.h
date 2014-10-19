@@ -52,6 +52,8 @@ private:
 	void loadTextures(COLLADALoader* loader);
 	void bindTextures(MeshRenderer<Vertex>* mesh, Material& matOut);
 
+	void updateLines(float dt);
+
 private:
 	TransformTool mRotationTool;
 	Transform mCubeRotation;

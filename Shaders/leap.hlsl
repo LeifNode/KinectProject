@@ -43,13 +43,16 @@ PS_INPUT VS( uint VertexID : SV_VertexID )
 {
 	PS_INPUT output;
 
+	float adjustedHandDistance = gHandDistance * 1.0f;
+
 	output.PositionV = Positions[VertexID] * 4.0f;
-	output.PositionV.z = -gHandDistance - 0.06f;
+	//output.PositionV.z = -1.0f - 0.06f;
+	output.PositionV.z = -gHandDistance + 0.00f;
 	//output.PositionV.z = -1.0f;
-	output.PositionV.xy *= gHandDistance;
+	output.PositionV.xy *= gHandDistance - 0.00f;
 	//output.PositionV.z -= 0.06f;
-	output.PositionV.x += gOffsetX;
-	output.PositionV.y += 0.05f; //Compensation for messed up rift rendering on this program
+	output.PositionV.x += gOffsetX * gHandDistance;
+	output.PositionV.y += 0.05f * gHandDistance; //Compensation for messed up rift rendering on this program
 	output.Tex = TexCoords[VertexID];
 	output.PositionH = mul(gProjection, float4(output.PositionV, 1.0f));
 

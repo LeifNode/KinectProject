@@ -103,7 +103,7 @@ XMMATRIX OVRRenderer::getProjection(int eyeIndex)
 
 XMVECTOR OVRRenderer::getEyeOffset(int eyeIndex)
 {
-	return XMVectorSet(mEyeRenderDesc[eyeIndex].ViewAdjust.x, mEyeRenderDesc[eyeIndex].ViewAdjust.y, mEyeRenderDesc[eyeIndex].ViewAdjust.z, 0.0f);
+	return XMVectorSet(mEyeRenderDesc[eyeIndex].ViewAdjust.x, mEyeRenderDesc[eyeIndex].ViewAdjust.y, -mEyeRenderDesc[eyeIndex].ViewAdjust.z, 0.0f);
 }
 
 void OVRRenderer::Update(float dt)
