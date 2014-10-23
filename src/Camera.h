@@ -11,9 +11,9 @@ public:
 	~Camera();
 
 	XMMATRIX getView(const XMVECTOR& offset, const XMVECTOR& rotationQuat);
-	XMMATRIX getProj() const { return mProjection; }
+	virtual XMMATRIX getProj() const { return mProjection; }
 
-	__declspec(property(get = getPosition, put = setPosition)) XMFLOAT3 position;
+	//__declspec(property(get = getPosition, put = setPosition)) XMFLOAT3 position; //Causes runtime errors when this class has virtual functions
 	XMFLOAT3 getPosition() const { return mPosition; }
 	void setPosition(const XMFLOAT3& newPosition) { mPosition = newPosition; }
 

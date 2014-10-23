@@ -1,0 +1,37 @@
+#include "ConstantBuffers.hlsl"
+#include "DeferredRendering.hlsl"
+#include "FullscreenQuad.hlsl"
+
+struct PS_INPUT
+{
+	float4 PositionH : SV_POSITION;
+	float2 TexCoord : TEXCOORD;
+	float Id : VERTEXID;
+};
+
+PS_INPUT VS( uint VertexID : SV_VertexID )
+{
+	PS_INPUT output;
+
+	GetQuadVertex(VertexID, output.PositionH, output.TexCoord);
+
+	return output;
+}
+
+#ifndef RENDERER_DEFERRED
+
+float4 PS(PS_INPUT input) : SV_Target
+{
+
+
+	return float4(0.0f, 0.0f, 1.0f, 1.0f);
+}
+
+#else
+
+PS_GBUFFER_OUT PS(PS_INPUT input)
+{
+	return PackGBuffer(float4(0.0, 0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), 1, float3(1.0, 0.0, 0.0), 1);
+}
+
+#endif

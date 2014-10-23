@@ -5,18 +5,10 @@
 #include "TransformTool.h"
 #include "AssetTypes.h"
 
-class OVRRenderer;
-class KinectRenderer;
-class Shader;
-class Camera;
-class HydraRenderer;
-
 template <class T>
 class MeshRenderer;
 struct Vertex;
-class TextRenderer;
-class LineRenderer;
-class LeapRenderer;
+
 namespace collada
 {
 	struct SceneNode;
@@ -55,26 +47,28 @@ private:
 	void updateLines(float dt);
 
 private:
+	class FlowField* mpFlowField;
+
 	TransformTool mRotationTool;
 	Transform mCubeRotation;
 
-	OVRRenderer* mpOVRRenderer;
+	class OVRRenderer* mpOVRRenderer;
 
-	Shader* mpMainShader;
+	class Shader* mpMainShader;
 	MeshRenderer<Vertex>* mpPlaneRenderer;
 	std::vector<MeshRenderer<Vertex>*> mpCubeRendererArr;
 	std::map<MeshRenderer<Vertex>*, assettypes::Material*> mCubeMaterials;
 
-	KinectRenderer* mpKinectRenderer;
+	class KinectRenderer* mpKinectRenderer;
 
-	HydraRenderer* mpHydraRenderer;
+	class HydraRenderer* mpHydraRenderer;
 
-	TextRenderer* mpText;
-	LineRenderer* mpLineRenderer;
-	LeapRenderer* mpLeapRenderer;
-	ParticleSystem* mpParticleSystem;
+	class TextRenderer* mpText;
+	class LineRenderer* mpLineRenderer;
+	class LeapRenderer* mpLeapRenderer;
+	class ParticleSystem* mpParticleSystem;
 
-	Camera* mpCamera;
+	class Camera* mpCamera;
 
 	CBPerFrame mPerFrameData;
 };
