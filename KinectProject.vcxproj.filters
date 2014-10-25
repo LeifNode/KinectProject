@@ -117,6 +117,12 @@
     <Filter Include="Shaders\Flow Fields\Render">
       <UniqueIdentifier>{78f0db58-237d-4fb7-b186-4b16a8cc840c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Flow Fields\Splatting">
+      <UniqueIdentifier>{57610ca9-6bd7-4281-adc8-64309f17d0e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Flow Fields\Compute\Particles">
+      <UniqueIdentifier>{af3676e2-e6a7-460e-8501-c442db1aad88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -332,6 +338,9 @@
     <ClInclude Include="src\FlowField.h">
       <Filter>Source Files\Graphics\Flow Fields</Filter>
     </ClInclude>
+    <ClInclude Include="src\FlowFieldRenderer.h">
+      <Filter>Source Files\Graphics\Flow Fields</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp">
@@ -503,6 +512,9 @@
       <Filter>Source Files\Resource Manager\Models</Filter>
     </ClCompile>
     <ClCompile Include="src\FlowField.cpp">
+      <Filter>Source Files\Graphics\Flow Fields</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FlowFieldRenderer.cpp">
       <Filter>Source Files\Graphics\Flow Fields</Filter>
     </ClCompile>
   </ItemGroup>

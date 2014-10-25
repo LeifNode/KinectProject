@@ -21,6 +21,7 @@
 #include "COLLADALoader.h"
 #include "ParticleSystem.h"
 #include "FlowField.h"
+#include "FlowFieldRenderer.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd){
 	UNREFERENCED_PARAMETER( prevInstance );
@@ -64,6 +65,7 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	//mpParticleSystem = new ParticleSystem();
 
 	mpFlowField = new FlowField();
+	mpFlowFieldRenderer = new FlowFieldRenderer(mpFlowField);
 }
 
 KinectApplication::~KinectApplication()
@@ -86,6 +88,7 @@ KinectApplication::~KinectApplication()
 	//SAFE_DELETE(mpParticleSystem);
 
 	SAFE_DELETE(mpFlowField);
+	SAFE_DELETE(mpFlowFieldRenderer);
 }
 
 bool KinectApplication::Initialize()
@@ -164,6 +167,7 @@ bool KinectApplication::Initialize()
 	//mpLeapRenderer->Initialize();
 
 	mpFlowField->Initialize();
+	mpFlowFieldRenderer->Initialize();
 
 	return true;
 }
@@ -486,6 +490,8 @@ void KinectApplication::Draw()
 		//mpLineRenderer->Render(mpRenderer);
 
 		//mpParticleSystem->Render(mpRenderer);
+
+		mpFlowFieldRenderer->Render(mpRenderer);
 
 		mpRenderer->setShader(mpMainShader);
 		mpRenderer->setBlendState(false);

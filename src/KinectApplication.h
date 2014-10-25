@@ -48,6 +48,7 @@ private:
 
 private:
 	class FlowField* mpFlowField;
+	class FlowFieldRenderer* mpFlowFieldRenderer;
 
 	TransformTool mRotationTool;
 	Transform mCubeRotation;

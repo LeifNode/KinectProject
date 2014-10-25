@@ -898,6 +898,7 @@ void D3DRenderer::resetSamplerState()
 	//setSampler(2, mSamplerState);
 
 	ID3D11SamplerState** samplerArr = new ID3D11SamplerState*[8];
+
 	for (int i = 0; i < 8; i++) samplerArr[i] = mSamplerState;
 
 	if (mpActiveShader)

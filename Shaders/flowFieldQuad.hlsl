@@ -2,6 +2,10 @@
 #include "DeferredRendering.hlsl"
 #include "FullscreenQuad.hlsl"
 
+Texture2D flowFieldTexture : register( t0 );
+
+SamplerState texSampler : register( s0 );
+
 struct PS_INPUT
 {
 	float4 PositionH : SV_POSITION;
@@ -15,6 +19,9 @@ PS_INPUT VS( uint VertexID : SV_VertexID )
 
 	GetQuadVertex(VertexID, output.PositionH, output.TexCoord);
 
+	output.PositionH = mul(gWorldViewProj, output.PositionH);
+	output.Id = VertexID;
+
 	return output;
 }
 
@@ -22,9 +29,7 @@ PS_INPUT VS( uint VertexID : SV_VertexID )
 
 float4 PS(PS_INPUT input) : SV_Target
 {
-
-
-	return float4(0.0f, 0.0f, 1.0f, 1.0f);
+	return float4(flowFieldTexture.Sample(texSampler, input.TexCoord).xy, 0.0f, 1.0f);
 }
 
 #else

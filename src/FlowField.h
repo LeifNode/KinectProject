@@ -20,6 +20,7 @@ public:
 	ID3D11ShaderResourceView* getFlowFieldSRV() const { return mpFlowFieldSRV; };
 	ID3D11ShaderResourceView* getVelocitySRV() const { return mpVelocityFieldSRV; };
 	ID3D11ShaderResourceView* getWavefrontSRV() const { return mpWavefrontSRV; };
+	ID3D11ShaderResourceView* getSurfaceSRV() const { return mpRenderSurfaceSRV; };
 
 	ID3D11UnorderedAccessView* getDensityUAV() const { return mpDensityMapUAV; }
 	ID3D11UnorderedAccessView* getFlowFieldUAV() const { return mpFlowFieldUAV; }
