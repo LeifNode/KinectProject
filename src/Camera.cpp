@@ -9,7 +9,7 @@ Camera::Camera(const XMFLOAT3& position)
 	mVelocity(5.0f),
 	mFreeRoam(true)
 {
-	mDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	mDirection = XMFLOAT3(0.0f, 0.0f, -1.0f);
 	mUp = XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f));
 	mRotation = XMQuaternionIdentity();
 	mNear = 0.01f;

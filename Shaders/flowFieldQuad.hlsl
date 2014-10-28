@@ -29,7 +29,8 @@ PS_INPUT VS( uint VertexID : SV_VertexID )
 
 float4 PS(PS_INPUT input) : SV_Target
 {
-	return float4(flowFieldTexture.Sample(texSampler, input.TexCoord).xy, 0.0f, 1.0f);
+	return flowFieldTexture.Sample(texSampler, input.TexCoord);
+	//return float4(input.TexCoord, 0.0f, 1.0f);
 }
 
 #else

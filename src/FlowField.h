@@ -1,13 +1,16 @@
 #include "d3dStd.h"
 
+#define FLOW_FIELD_DEFAULT_RESOLUTION 1024
+
 class D3DRenderer;
 
 //Handles all textures used by the flow field
 
-class FlowField
+
+class FlowField 
 {
 public:
-	FlowField(unsigned int resolution = 1024, unsigned int downsampling = 8);
+	FlowField(unsigned int resolution = FLOW_FIELD_DEFAULT_RESOLUTION, unsigned int downsampling = 8);
 	~FlowField();
 
 	void Initialize();
@@ -27,6 +30,7 @@ public:
 	ID3D11UnorderedAccessView* getVelocityUAV() const { return mpVelocityFieldUAV; }
 	ID3D11UnorderedAccessView* getWavefrontUAV() const { return mpWavefrontUAV; }
 
+	ID3D11Texture2D* getSurfaceResource() const { return mpRenderSurfaceTexture; }
 	ID3D11RenderTargetView* getSurfaceRTV() const { return mpRenderSurfaceRTV; }
 
 private:

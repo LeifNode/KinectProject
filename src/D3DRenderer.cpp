@@ -307,9 +307,9 @@ bool D3DRenderer::initialize()
     ZeroMemory( &sampDesc, sizeof(sampDesc) );
     sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
 	sampDesc.MaxAnisotropy = 4;
-    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
@@ -918,6 +918,11 @@ void D3DRenderer::resetSamplerState()
 	}
 
 	delete [] samplerArr;
+}
+
+void D3DRenderer::resetRenderTarget()
+{
+	md3dImmediateContext->OMSetRenderTargets(1, &mRenderTarget, mDepthStencilView);
 }
 
 void D3DRenderer::clear(RenderTarget* target)

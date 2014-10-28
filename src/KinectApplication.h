@@ -47,8 +47,7 @@ private:
 	void updateLines(float dt);
 
 private:
-	class FlowField* mpFlowField;
-	class FlowFieldRenderer* mpFlowFieldRenderer;
+	class PaintingSystem* mpPaintingSystem;
 
 	TransformTool mRotationTool;
 	Transform mCubeRotation;

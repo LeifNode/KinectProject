@@ -20,8 +20,7 @@
 #include "PhysicsSystem.h"
 #include "COLLADALoader.h"
 #include "ParticleSystem.h"
-#include "FlowField.h"
-#include "FlowFieldRenderer.h"
+#include "PaintingSystem.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd){
 	UNREFERENCED_PARAMETER( prevInstance );
@@ -57,15 +56,14 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	//mpOVRRenderer = new OVRRenderer();
 	mpKinectRenderer = new KinectRenderer();
 
-	mpCamera = new Camera(XMFLOAT3(0.0f, 1.66f, -2.0f));
+	mpCamera = new Camera(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	//mpHydraRenderer = new HydraRenderer();
 	mpText = new TextRenderer(100);
 	//mpLineRenderer = new LineRenderer();
 	//mpLeapRenderer = new LeapRenderer();
 	//mpParticleSystem = new ParticleSystem();
 
-	mpFlowField = new FlowField();
-	mpFlowFieldRenderer = new FlowFieldRenderer(mpFlowField);
+	mpPaintingSystem = new PaintingSystem();
 }
 
 KinectApplication::~KinectApplication()
@@ -87,8 +85,7 @@ KinectApplication::~KinectApplication()
 	//SAFE_DELETE(mpLineRenderer);
 	//SAFE_DELETE(mpParticleSystem);
 
-	SAFE_DELETE(mpFlowField);
-	SAFE_DELETE(mpFlowFieldRenderer);
+	SAFE_DELETE(mpPaintingSystem);
 }
 
 bool KinectApplication::Initialize()
@@ -166,8 +163,7 @@ bool KinectApplication::Initialize()
 	//mpParticleSystem->Initialize();
 	//mpLeapRenderer->Initialize();
 
-	mpFlowField->Initialize();
-	mpFlowFieldRenderer->Initialize();
+	mpPaintingSystem->Initialize();
 
 	return true;
 }
@@ -297,6 +293,8 @@ void KinectApplication::Update(float dt)
 	mRotationTool.Update(dt);
 
 	mpInputSystem->Update(dt);
+
+	mpPaintingSystem->Update(dt);
 	
 	//mpPhysicsSystem->Update(dt);
 	//mpParticleSystem->Update(dt);
@@ -452,7 +450,7 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		mpPlaneRenderer->Render(mpRenderer);
+		//mpPlaneRenderer->Render(mpRenderer);
 
 		//Render cube
 		perObject.World = mCubeRotation.getTransform();
@@ -491,7 +489,7 @@ void KinectApplication::Draw()
 
 		//mpParticleSystem->Render(mpRenderer);
 
-		mpFlowFieldRenderer->Render(mpRenderer);
+		mpPaintingSystem->Render(mpRenderer);
 
 		mpRenderer->setShader(mpMainShader);
 		mpRenderer->setBlendState(false);

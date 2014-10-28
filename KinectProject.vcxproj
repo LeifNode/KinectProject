@@ -154,6 +154,7 @@
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h" />
     <ClInclude Include="src\AssetImporter.h" />
     <ClInclude Include="src\AssetProcess.h" />
+    <ClInclude Include="src\BrushSplatter.h" />
     <ClInclude Include="src\ConstraintRenderer.h" />
     <ClInclude Include="src\CreateTangentsBitangentsProcess.h" />
     <ClInclude Include="src\DeferredRenderer.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="src\GBuffer.h" />
     <ClInclude Include="src\AssetLoader.h" />
     <ClInclude Include="src\OBJLoader.h" />
+    <ClInclude Include="src\PaintingSystem.h" />
     <ClInclude Include="src\ParticleContactGenerators.h" />
     <ClInclude Include="src\ParticleContacts.h" />
     <ClInclude Include="src\ParticleRenderer.h" />
@@ -225,6 +227,7 @@
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="src\AssetImporter.cpp" />
+    <ClCompile Include="src\BrushSplatter.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\COLLADALoader.cpp" />
     <ClCompile Include="src\ConstraintRenderer.cpp" />
@@ -259,6 +262,7 @@
     <ClCompile Include="src\MouseState.cpp" />
     <ClCompile Include="src\OBJLoader.cpp" />
     <ClCompile Include="src\OVRRenderer.cpp" />
+    <ClCompile Include="src\PaintingSystem.cpp" />
     <ClCompile Include="src\Particle.cpp" />
     <ClCompile Include="src\ParticleContactGenerators.cpp" />
     <ClCompile Include="src\ParticleContacts.cpp" />
@@ -496,6 +500,26 @@
     <FxCompile Include="Shaders\Random.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Shaders\testSplat.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Shaders\testSplat_PS.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\testSplat_VS.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\text.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

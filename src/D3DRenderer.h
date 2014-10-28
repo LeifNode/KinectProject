@@ -67,6 +67,7 @@ public:
 	void unbindShader();
 
 	void resetSamplerState();
+	void resetRenderTarget();
 
 	Shader* loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize);
 	Shader* loadShaderUnmanaged(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize);

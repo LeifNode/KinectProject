@@ -99,22 +99,22 @@ void GameTimer::Tick()
 
 void GameTimer::SleepForDuration(const float& ms)
 {
-	LARGE_INTEGER currentTime, previousTime;
-	QueryPerformanceCounter(&currentTime);
-	double remainingTime = ms - (double)(currentTime.QuadPart - mBaseTime) * mSecondsPerCount * 1000;
+	__int64 currentTime, previousTime;
+	QueryPerformanceCounter((LARGE_INTEGER*)&currentTime);
+	double remainingTime = ms - (double)(currentTime - mPrevTime) * mSecondsPerCount * 1000.0;
 
 	while(remainingTime > 0.0)
 	{
 		previousTime = currentTime;
-		QueryPerformanceCounter(&currentTime);
+		QueryPerformanceCounter((LARGE_INTEGER*)&currentTime);
 
-		double elapsedTime = (double)(currentTime.QuadPart - previousTime.QuadPart) * mSecondsPerCount * 1000;
-		std::cout << elapsedTime << std::endl;
+		double elapsedTime = (double)(currentTime - previousTime) * mSecondsPerCount * 1000.0;
+		//std::cout << elapsedTime << std::endl;
 		remainingTime -= elapsedTime;
 
-		if (remainingTime > 10.0)
+		if (remainingTime > 4.0)
 		{
-			Sleep(10);
+			Sleep(4);
 		}
 	}
 }

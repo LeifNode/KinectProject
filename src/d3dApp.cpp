@@ -89,6 +89,7 @@ int D3DApp::Run()
 				LeapManager::getInstance().Update(0.0f);
 				Update((float)mTimer.DeltaTime());	
 				Draw();
+				mTimer.SleepForDuration(16.66f);
 			}
 			else
 			{

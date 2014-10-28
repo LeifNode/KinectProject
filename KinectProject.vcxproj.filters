@@ -105,9 +105,6 @@
     <Filter Include="Shaders\Leap">
       <UniqueIdentifier>{08eb80d1-8073-4479-8a90-7f00a2db6536}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Graphics\Flow Fields">
-      <UniqueIdentifier>{e6fb792a-2c64-4771-80ab-2a543f37d97e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders\Flow Fields">
       <UniqueIdentifier>{4df9ad4d-0d57-43b0-9cfb-cb3e8f10e01f}</UniqueIdentifier>
     </Filter>
@@ -122,6 +119,9 @@
     </Filter>
     <Filter Include="Shaders\Flow Fields\Compute\Particles">
       <UniqueIdentifier>{af3676e2-e6a7-460e-8501-c442db1aad88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Painting">
+      <UniqueIdentifier>{e6fb792a-2c64-4771-80ab-2a543f37d97e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -336,10 +336,16 @@
       <Filter>Source Files\Resource Manager\Models\Post Processing</Filter>
     </ClInclude>
     <ClInclude Include="src\FlowField.h">
-      <Filter>Source Files\Graphics\Flow Fields</Filter>
+      <Filter>Source Files\Graphics\Painting</Filter>
     </ClInclude>
     <ClInclude Include="src\FlowFieldRenderer.h">
-      <Filter>Source Files\Graphics\Flow Fields</Filter>
+      <Filter>Source Files\Graphics\Painting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BrushSplatter.h">
+      <Filter>Source Files\Graphics\Painting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaintingSystem.h">
+      <Filter>Source Files\Graphics\Painting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -512,10 +518,16 @@
       <Filter>Source Files\Resource Manager\Models</Filter>
     </ClCompile>
     <ClCompile Include="src\FlowField.cpp">
-      <Filter>Source Files\Graphics\Flow Fields</Filter>
+      <Filter>Source Files\Graphics\Painting</Filter>
     </ClCompile>
     <ClCompile Include="src\FlowFieldRenderer.cpp">
-      <Filter>Source Files\Graphics\Flow Fields</Filter>
+      <Filter>Source Files\Graphics\Painting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BrushSplatter.cpp">
+      <Filter>Source Files\Graphics\Painting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaintingSystem.cpp">
+      <Filter>Source Files\Graphics\Painting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -629,6 +641,15 @@
     </FxCompile>
     <FxCompile Include="Shaders\flowFieldQuad_PS.hlsl">
       <Filter>Shaders\Flow Fields\Render</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\testSplat.hlsl">
+      <Filter>Shaders\Flow Fields\Splatting</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\testSplat_VS.hlsl">
+      <Filter>Shaders\Flow Fields\Splatting</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\testSplat_PS.hlsl">
+      <Filter>Shaders\Flow Fields\Splatting</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

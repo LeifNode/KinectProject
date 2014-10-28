@@ -7,7 +7,16 @@
 
 FlowFieldRenderer::FlowFieldRenderer(FlowField* source)
 	:mpSource(source),
-	mpRenderShader(NULL)
+	mpRenderShader(NULL),
+	mpInternalSource(NULL)
+{
+
+}
+
+FlowFieldRenderer::FlowFieldRenderer(ID3D11ShaderResourceView* source)
+	:mpRenderShader(NULL),
+	mpInternalSource(source),
+	mpSource(NULL)
 {
 
 }
@@ -39,12 +48,18 @@ void FlowFieldRenderer::Render(D3DRenderer* renderer)
 	renderer->setShader(mpRenderShader);
 	renderer->unbindTextureResources();
 
-	ID3D11ShaderResourceView* textureResource = mpSource->getSurfaceSRV();
+	ID3D11ShaderResourceView* textureResource;
 
-	renderer->context()->PSSetShaderResources(0, 1, &textureResource);
+	if (mpSource)
+		textureResource = mpSource->getSurfaceSRV();
+	else if (mpInternalSource)
+		textureResource = mpInternalSource;
+
 	renderer->resetSamplerState();
 	renderer->setDepthStencilState(D3DRenderer::Depth_Stencil_State_Default);
 	renderer->setBlendState(false);
+	renderer->context()->PSSetShaderResources(0, 1, &textureResource);
+	
 
 	const CBPerFrame* perFrame = renderer->getPerFrameBuffer();
 	CBPerObject perObject;
