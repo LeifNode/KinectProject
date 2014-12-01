@@ -274,5 +274,5 @@ void LeapRenderer::Render(D3DRenderer* renderer, int index)
 	renderer->resetSamplerState();
 	
 
-	//renderer->context()->Draw(4, 0);
+	renderer->context()->Draw(4, 0);
 }

@@ -5,11 +5,22 @@ Content     :   Distortion renderer header for GL
 Created     :   November 11, 2013
 Authors     :   David Borel, Lee Cooper
 
-Copyright   :   Copyright 2013 Oculus VR, Inc. All Rights reserved.
+Copyright   :   Copyright 2014 Oculus VR, LLC All Rights reserved.
 
-Use of this software is subject to the terms of the Oculus Inc license
-agreement provided at the time of installation or download, or which
+Licensed under the Oculus VR Rift SDK License Version 3.2 (the "License");
+you may not use the Oculus VR Rift SDK except in compliance with the License,
+which is provided at the time of installation or download, or which
 otherwise accompanies this software in either electronic or hard copy form.
+
+You may obtain a copy of the License at
+
+http://www.oculusvr.com/licenses/LICENSE-3.2
+
+Unless required by applicable law or agreed to in writing, the Oculus VR SDK
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 ************************************************************************************/
 
@@ -44,12 +55,11 @@ public:
 
     // ***** Public DistortionRenderer interface
 	
-    virtual bool Initialize(const ovrRenderAPIConfig* apiConfig,
-                            unsigned distortionCaps);
+    virtual bool Initialize(const ovrRenderAPIConfig* apiConfig) OVR_OVERRIDE;
 
-    virtual void SubmitEye(int eyeId, ovrTexture* eyeTexture);
+    virtual void SubmitEye(int eyeId, const ovrTexture* eyeTexture);
 
-    virtual void EndFrame(bool swapBuffers, unsigned char* latencyTesterDrawColor, unsigned char* latencyTester2DrawColor);
+    virtual void EndFrame(bool swapBuffers);
 
     void         WaitUntilGpuIdle();
 
@@ -67,22 +77,29 @@ protected:
         virtual void Save();
         virtual void Restore();
         
+#ifdef OVR_OS_MAC
+        // Asking for Core Profile is equivalent to asking whether we have a
+        // 3.2+ context on mac.
+        bool isAtLeastOpenGL3();
+#endif
+
     protected:
-        void ApplyBool(GLenum Name, GLint Value);
+        void ApplyBool(GLenum Name, GLint Value, GLint index = -1);
         
     public:
-        GLint GlMajorVersion;
-        GLint GlMinorVersion;
-        bool SupportsVao;
+        GLVersionAndExtensions GLVersionInfo;
         
         GLint Viewport[4];
         GLfloat ClearColor[4];
         GLint DepthTest;
         GLint CullFace;
+        GLint SRGB;
         GLint Program;
         GLint ActiveTexture;
         GLint TextureBinding;
-        GLint VertexArray;
+        GLint VertexArrayBinding;
+        GLint ElementArrayBufferBinding;
+        GLint ArrayBufferBinding;
         GLint FrameBufferBinding;
         
         GLint Blend;
@@ -97,9 +114,6 @@ protected:
         GLfloat ZoomX;
         GLfloat ZoomY;
     };
-
-    // TBD: Should we be using oe from RState instead?
-    unsigned            DistortionCaps;
 
 	struct FOR_EACH_EYE
 	{
@@ -119,10 +133,15 @@ protected:
         Recti                     RenderViewport;
 	} eachEye[2];
 
+    Ptr<Texture>    pOverdriveTextures[NumOverdriveTextures];
+    Ptr<Texture>    OverdriveBackBufferTexture;
+
     // GL context and utility variables.
-    RenderParams        RParams;    
+    RenderParams        RParams;
+    Context             distortionContext;
 
 	// Helpers
+    void initOverdrive();
     void initBuffersAndShaders();
     void initShaders();
     void initFullscreenQuad();
@@ -140,6 +159,8 @@ protected:
     void renderLatencyQuad(unsigned char* latencyTesterDrawColor);
     void renderLatencyPixel(unsigned char* latencyTesterPixelColor);
 	
+    void renderEndFrame();
+
     Ptr<Texture>        pEyeTextures[2];
 
 	Ptr<Buffer>         DistortionMeshVBs[2];    // one per-eye
@@ -147,6 +168,8 @@ protected:
 	GLuint              DistortionMeshVAOs[2];   // one per-eye
 
 	Ptr<ShaderSet>      DistortionShader;
+
+    bool                RotateCCW90;
 
     struct StandardUniformData
     {
@@ -157,10 +180,9 @@ protected:
 	GLuint              LatencyVAO;
     Ptr<Buffer>         LatencyTesterQuadVB;
     Ptr<ShaderSet>      SimpleQuadShader;
+    Ptr<ShaderSet>      SimpleQuadGammaShader;
 
-    Ptr<Texture>             CurRenderTarget;
-    Array<Ptr<Texture> >     DepthBuffers;
-    GLuint                   CurrentFbo;
+    GLuint              OverdriveFbo;
 
 	GLint SavedViewport[4];
 	GLfloat SavedClearColor[4];

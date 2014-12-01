@@ -112,7 +112,7 @@ float4 PS(VertexOut pin) : SV_Target
 
 	//float4 color = textureDiffuse.Sample(mainSampler, pin.Tex) * (ambient + diffuse) + specular;
 
-	float4 color = diffuse + specular;
+	float4 color = diffuse + specular + ambient;
 
 	color.a = gMaterial.Diffuse.a;
 

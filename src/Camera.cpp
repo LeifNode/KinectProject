@@ -1,7 +1,9 @@
 #include "Camera.h"
 #include "MathHelper.h"
 #include "InputSystem.h"
-#include "OVRRenderer.h"
+#include "OVRManager.h"
+#include "d3dApp.h"
+#include "D3DRenderer.h"
 
 Camera::Camera(const XMFLOAT3& position)
 	:mPosition(position),
@@ -22,13 +24,13 @@ Camera::~Camera()
 
 }
 
-XMMATRIX Camera::getView(const XMVECTOR& offset, const XMVECTOR& rotationQuat)
+XMMATRIX Camera::getView(const XMVECTOR& localOffset, const XMVECTOR& rotationQuat, const XMVECTOR& worldOffset) const
 {
 	XMVECTOR pos = XMLoadFloat3(&mPosition);
 	XMVECTOR up = XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), rotationQuat);
 	XMVECTOR forward = XMVector3Rotate(XMLoadFloat3(&mDirection), rotationQuat);
 
-	return XMMatrixLookAtRH(pos + XMVector3Rotate(offset, rotationQuat), pos + XMVector3Rotate(offset, rotationQuat) + forward, up);
+	return XMMatrixLookAtRH(pos + XMVector3Rotate(localOffset, rotationQuat) + worldOffset, pos + XMVector3Rotate(localOffset, rotationQuat) + worldOffset + forward, up);
 }
 
 void Camera::OnMouseMove(int x, int y)
@@ -43,12 +45,12 @@ void Camera::OnMouseMove(int x, int y)
 
 		XMVECTOR direction = XMLoadFloat3(&mDirection);
 		XMVECTOR right = XMVector3Normalize(XMVector3Cross(direction, mUp));
+		XMVECTOR rotationQuat;
 
-#if !USE_RIFT
-		XMVECTOR rotationQuat =  XMQuaternionMultiply(XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx), XMQuaternionRotationAxis(right, dy));
-#else
-		XMVECTOR rotationQuat =  XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx);
-#endif
+		if (gpApplication->getRenderer()->isUsingHMD())
+			rotationQuat = XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx);
+		else
+			rotationQuat = XMQuaternionMultiply(XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx), XMQuaternionRotationAxis(right, dy));
 
 		mRotation = XMQuaternionNormalize(XMQuaternionMultiply(mRotation, rotationQuat));
 
@@ -147,12 +149,13 @@ void Camera::updateOrientation(float dt)
 
 	XMVECTOR direction = XMLoadFloat3(&mDirection);
 	XMVECTOR right = XMVector3Normalize(XMVector3Cross(direction, mUp));
+	XMVECTOR rotationQuat;
 
-#if !USE_RIFT
-	XMVECTOR rotationQuat =  XMQuaternionMultiply(XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx), XMQuaternionRotationAxis(right, dy));
-#else
-	XMVECTOR rotationQuat =  XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx);
-#endif
+	
+	if (gpApplication->getRenderer()->isUsingHMD())
+		rotationQuat = XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx);
+	else
+		rotationQuat = XMQuaternionMultiply(XMQuaternionRotationAxis(XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f)), dx), XMQuaternionRotationAxis(right, dy));
 
 	mRotation = XMQuaternionNormalize(XMQuaternionMultiply(mRotation, rotationQuat));
 

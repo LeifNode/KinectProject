@@ -191,7 +191,7 @@ void LineRenderer::Render(D3DRenderer* renderer)
 		CBPerLine perLine;
 		perLine.Color = mLineColor;
 		perLine.Thickness = mLineThickness;
-		perLine.PointCount = Points.List.size();
+		perLine.PointCount = (int)Points.List.size();
 
 		renderer->context()->UpdateSubresource(pPerLineBuffer, 0, NULL, &perLine, 0, 0);
 		renderer->setConstantBuffer(2, pPerLineBuffer);

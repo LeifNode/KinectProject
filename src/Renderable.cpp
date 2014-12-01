@@ -20,3 +20,18 @@ void Renderable::deleteChildren()
 
 	mChildren.clear();
 }
+
+void Renderable::PreRender(D3DRenderer* renderer)
+{
+	renderer->pushTransform(transform);
+}
+
+void Renderable::Render(D3DRenderer* renderer)
+{
+	renderChildren(renderer);
+}
+
+void Renderable::PostRender(D3DRenderer* renderer)
+{
+	renderer->popTransform();
+}

@@ -99,6 +99,9 @@ float4 PS(PS_INPUT input) : SV_Target
 
 	texColor.r -= input.VelocityMagnitude * 0.9f;
 	texColor.b += input.VelocityMagnitude * 0.6f;
+	/*texColor.r += (input.Velocity.x - 0.5f) * 2.0f;
+	texColor.g += (input.Velocity.y - 0.5f) * 2.0f;
+	texColor.b += (input.Velocity.z - 0.5f) * 2.0f;*/
 
 	clip(texColor.a < 0.01f ? -1:1);
 

@@ -108,7 +108,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sixensed_x64.lib;sixense_utilsd_x64.lib;libovr64d.lib;winmm.lib;Kinect10.lib;freetype253_D.lib;DirectXTex.lib;Leapd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sixensed_x64.lib;sixense_utilsd_x64.lib;libovr64d.lib;Kinect10.lib;freetype253_D.lib;DirectXTex.lib;Leapd.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -145,7 +145,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>sixense_x64.lib;sixense_utils_x64.lib;libovr64.lib;winmm.lib;Kinect10.lib;freetype253.lib;DirectXTex.lib;Leap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sixense_x64.lib;sixense_utils_x64.lib;Kinect10.lib;freetype253.lib;DirectXTex.lib;Leap.lib;ws2_32.lib;Dbghelp.lib;libovr64.lib;dxgi.lib;dxguid.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -162,6 +162,7 @@
     <ClInclude Include="src\FlowFieldRenderer.h" />
     <ClInclude Include="src\GBuffer.h" />
     <ClInclude Include="src\AssetLoader.h" />
+    <ClInclude Include="src\LoggingSystem.h" />
     <ClInclude Include="src\OBJLoader.h" />
     <ClInclude Include="src\PaintingSystem.h" />
     <ClInclude Include="src\ParticleContactGenerators.h" />
@@ -170,7 +171,7 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\COLLADALoader.h" />
     <ClInclude Include="src\COLLADATypes.h" />
-    <ClInclude Include="src\ObjectComponent.h" />
+    <ClInclude Include="src\ActorComponent.h" />
     <ClInclude Include="src\ConstantBuffers.h" />
     <ClInclude Include="src\d3dApp.h" />
     <ClInclude Include="src\D3DRenderer.h" />
@@ -181,7 +182,7 @@
     <ClInclude Include="src\EventSystem.h" />
     <ClInclude Include="src\Font.h" />
     <ClInclude Include="src\FontManager.h" />
-    <ClInclude Include="src\GameObject.h" />
+    <ClInclude Include="src\Actor.h" />
     <ClInclude Include="src\GameTimer.h" />
     <ClInclude Include="src\Geometry.h" />
     <ClInclude Include="src\HydraManager.h" />
@@ -199,7 +200,7 @@
     <ClInclude Include="src\MatrixStack.h" />
     <ClInclude Include="src\MeshRenderer.h" />
     <ClInclude Include="src\MouseState.h" />
-    <ClInclude Include="src\OVRRenderer.h" />
+    <ClInclude Include="src\OVRManager.h" />
     <ClInclude Include="src\Particle.h" />
     <ClInclude Include="src\ParticleForceGen.h" />
     <ClInclude Include="src\ParticleSystem.h" />
@@ -223,6 +224,7 @@
     <ClInclude Include="src\TransformTool.h" />
     <ClInclude Include="src\TriangulateProcess.h" />
     <ClInclude Include="src\Vector3.h" />
+    <ClInclude Include="src\World.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp" />
@@ -242,7 +244,7 @@
     <ClCompile Include="src\FlowFieldRenderer.cpp" />
     <ClCompile Include="src\Font.cpp" />
     <ClCompile Include="src\FontManager.cpp" />
-    <ClCompile Include="src\GameObject.cpp" />
+    <ClCompile Include="src\Actor.cpp" />
     <ClCompile Include="src\GameTimer.cpp" />
     <ClCompile Include="src\GBuffer.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
@@ -261,7 +263,7 @@
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\MouseState.cpp" />
     <ClCompile Include="src\OBJLoader.cpp" />
-    <ClCompile Include="src\OVRRenderer.cpp" />
+    <ClCompile Include="src\OVRManager.cpp" />
     <ClCompile Include="src\PaintingSystem.cpp" />
     <ClCompile Include="src\Particle.cpp" />
     <ClCompile Include="src\ParticleContactGenerators.cpp" />
@@ -356,6 +358,7 @@
     </FxCompile>
     <FxCompile Include="Shaders\flowFieldQuad.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Shaders\flowFieldQuad_PS.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>

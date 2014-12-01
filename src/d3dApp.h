@@ -11,6 +11,7 @@ class InputSystem;
 class TextureManager;
 class FontManager;
 class PhysicsSystem;
+class World;
 
 class D3DApp
 {
@@ -60,6 +61,7 @@ protected:
 	bool      mResizing;
 	bool	  mRunning;
 
+	World* mpWorld;
 	D3DRenderer* mpRenderer;
 	InputSystem* mpInputSystem;
 	PhysicsSystem* mpPhysicsSystem;

@@ -52,8 +52,6 @@ private:
 	TransformTool mRotationTool;
 	Transform mCubeRotation;
 
-	class OVRRenderer* mpOVRRenderer;
-
 	class Shader* mpMainShader;
 	MeshRenderer<Vertex>* mpPlaneRenderer;
 	std::vector<MeshRenderer<Vertex>*> mpCubeRendererArr;
@@ -71,4 +69,8 @@ private:
 	class Camera* mpCamera;
 
 	CBPerFrame mPerFrameData;
+
+	bool mSimluateParticles;
+	bool mRenderSponza;
+	float mParticleSimulationSpeed;
 };

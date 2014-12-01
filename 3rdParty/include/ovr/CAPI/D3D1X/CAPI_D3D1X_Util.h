@@ -5,16 +5,16 @@ Content     :   D3DX 10/11 utility classes for rendering
 Created     :   September 10, 2012
 Authors     :   Andrew Reisse
 
-Copyright   :   Copyright 2014 Oculus VR, Inc. All Rights reserved.
+Copyright   :   Copyright 2014 Oculus VR, LLC All Rights reserved.
 
-Licensed under the Oculus VR Rift SDK License Version 3.1 (the "License"); 
+Licensed under the Oculus VR Rift SDK License Version 3.2 (the "License"); 
 you may not use the Oculus VR Rift SDK except in compliance with the License, 
 which is provided at the time of installation or download, or which 
 otherwise accompanies this software in either electronic or hard copy form.
 
 You may obtain a copy of the License at
 
-http://www.oculusvr.com/licenses/LICENSE-3.1 
+http://www.oculusvr.com/licenses/LICENSE-3.2 
 
 Unless required by applicable law or agreed to in writing, the Oculus VR SDK 
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,6 +42,7 @@ limitations under the License.
 #include "../../Kernel/OVR_Math.h"
 
 #if defined(OVR_OS_WIN32)
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <comdef.h> // for _COM_SMARTPTR_TYPEDEF()
 
@@ -107,6 +108,12 @@ typedef D3D1X_(VIEWPORT)                        D3D1x_VIEWPORT;
 typedef D3D1X_(QUERY_DESC)                      D3D1x_QUERY_DESC;
 typedef D3D1X_(SHADER_BUFFER_DESC)              D3D1x_SHADER_BUFFER_DESC;
 typedef D3D1X_(SHADER_VARIABLE_DESC)            D3D1x_SHADER_VARIABLE_DESC;
+typedef D3D1X_(PRIMITIVE_TOPOLOGY)            D3D1x_PRIMITIVE_TOPOLOGY;
+static const int D3D1x_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT = D3D1X_(COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+static const int D3D1x_COMMONSHADER_SAMPLER_SLOT_COUNT = D3D1X_(COMMONSHADER_SAMPLER_SLOT_COUNT);
+static const int D3D1x_SIMULTANEOUS_RENDER_TARGET_COUNT = D3D1X_(SIMULTANEOUS_RENDER_TARGET_COUNT);
+static const int D3D1x_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT = D3D1X_(IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT);
+static const int D3D1x_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT = D3D1X_(COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
 // Blob is the same
 typedef ID3D10Blob                 ID3D1xBlob;
 
@@ -339,11 +346,12 @@ public:
 	struct Uniform
 	{
 		const char* Name;
-		VarType Type;
-		int     Offset, Size;
+		VarType     Type;
+        int         Offset;
+        int         Size;
 	};
-    const Uniform* UniformRefl;
-    size_t UniformReflSize;
+    const Uniform*  UniformRefl;
+    size_t          UniformReflSize;
 
 	ShaderBase(RenderParams* rp, ShaderStage stage);
 	~ShaderBase();
@@ -395,7 +403,7 @@ public:
     bool              Dynamic;
 
 public:
-    Buffer(RenderParams* rp) : pParams(rp), Size(0), Use(0) {}
+    Buffer(RenderParams* rp) : pParams(rp), D3DBuffer(), Size(0), Use(0), Dynamic(false) {}
     ~Buffer();
 
     ID3D1xBuffer* GetBuffer() const { return D3DBuffer; }

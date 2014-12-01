@@ -72,9 +72,6 @@
     <Filter Include="Source Files\Physics">
       <UniqueIdentifier>{e0c92ce8-b817-4010-b04c-15943594ff1f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\GameObjects">
-      <UniqueIdentifier>{ce87f1d5-1d07-4c63-8335-10c37000a0fd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Resource Manager\Textures">
       <UniqueIdentifier>{e1d15343-d552-44a7-982b-d451cb9c53c1}</UniqueIdentifier>
     </Filter>
@@ -122,6 +119,21 @@
     </Filter>
     <Filter Include="Source Files\Graphics\Painting">
       <UniqueIdentifier>{e6fb792a-2c64-4771-80ab-2a543f37d97e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\Memory">
+      <UniqueIdentifier>{ab5ee44b-b6ee-45a1-a381-8eef30fe1030}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\Logging">
+      <UniqueIdentifier>{cd36ecdc-8aff-4b33-9130-a265087f5adc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{ce87f1d5-1d07-4c63-8335-10c37000a0fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Actor">
+      <UniqueIdentifier>{07711f61-9031-4e47-8e00-acb7b7b4969a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\World">
+      <UniqueIdentifier>{4279868a-5ea0-4641-8773-07ef893ef83c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -197,9 +209,6 @@
     <ClInclude Include="src\HydraManager.h">
       <Filter>Source Files\Input</Filter>
     </ClInclude>
-    <ClInclude Include="src\OVRRenderer.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="src\RenderTarget.h">
       <Filter>Source Files\Graphics</Filter>
     </ClInclude>
@@ -256,12 +265,6 @@
     </ClInclude>
     <ClInclude Include="src\LeapRenderer.h">
       <Filter>Source Files\Graphics\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameObject.h">
-      <Filter>Source Files\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ObjectComponent.h">
-      <Filter>Source Files\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="src\PhysicsSystem.h">
       <Filter>Source Files\Physics</Filter>
@@ -347,6 +350,21 @@
     <ClInclude Include="src\PaintingSystem.h">
       <Filter>Source Files\Graphics\Painting</Filter>
     </ClInclude>
+    <ClInclude Include="src\OVRManager.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Actor.h">
+      <Filter>Source Files\Core\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ActorComponent.h">
+      <Filter>Source Files\Core\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World.h">
+      <Filter>Source Files\Core\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoggingSystem.h">
+      <Filter>Source Files\Utils\Logging</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp">
@@ -402,9 +420,6 @@
     </ClCompile>
     <ClCompile Include="src\HydraManager.cpp">
       <Filter>Source Files\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="src\OVRRenderer.cpp">
-      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\RenderTarget.cpp">
       <Filter>Source Files\Graphics</Filter>
@@ -462,9 +477,6 @@
     </ClCompile>
     <ClCompile Include="src\LeapRenderer.cpp">
       <Filter>Source Files\Graphics\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GameObject.cpp">
-      <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="src\DDSTextureLoader.cpp">
       <Filter>Source Files\Resource Manager\Textures</Filter>
@@ -528,6 +540,12 @@
     </ClCompile>
     <ClCompile Include="src\PaintingSystem.cpp">
       <Filter>Source Files\Graphics\Painting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OVRManager.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Actor.cpp">
+      <Filter>Source Files\Core\Actor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

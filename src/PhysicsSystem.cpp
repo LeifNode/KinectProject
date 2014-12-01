@@ -178,7 +178,7 @@ void PhysicsSystem::createBox()
 				Particle* boxParticle = new Particle();
 				boxParticle->setMass(0.01f);
 				boxParticle->setDamping(0.9f);
-				boxParticle->setPosition(Vector3(x + 0.1f * y, y + 1, z));
+				boxParticle->setPosition(Vector3((float)x + 0.1f * (float)y, (float)y + 1, (float)z));
 
 				mParticleRenderer.addParticle(boxParticle);
 				mParticles.push_back(boxParticle);

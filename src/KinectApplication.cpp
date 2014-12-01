@@ -4,12 +4,10 @@
 #include "Events.h"
 #include <iostream>
 #include <DirectXMath.h>
-#include "..\3rdParty\include\FastDelegate\FastDelegate.h"
 #include "TextureManager.h"
 #include "Geometry.h"
 #include "MeshRenderer.h"
 #include "Camera.h"
-#include "OVRRenderer.h"
 #include "KinectRenderer.h"
 #include "HydraRenderer.h"
 #include "FontManager.h"
@@ -53,17 +51,20 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 	//mpCubeRenderer = new MeshRenderer<Vertex>();
 	ZeroMemory(&mPerFrameData, sizeof(CBPerFrame));
 
-	//mpOVRRenderer = new OVRRenderer();
 	mpKinectRenderer = new KinectRenderer();
 
-	mpCamera = new Camera(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	mpCamera = new Camera(XMFLOAT3(0.0f, 1.6f, 0.0f));
 	//mpHydraRenderer = new HydraRenderer();
 	mpText = new TextRenderer(100);
 	//mpLineRenderer = new LineRenderer();
-	//mpLeapRenderer = new LeapRenderer();
-	//mpParticleSystem = new ParticleSystem();
+	mpLeapRenderer = new LeapRenderer();
+	mpParticleSystem = new ParticleSystem();
 
 	mpPaintingSystem = new PaintingSystem();
+
+	mSimluateParticles = true;
+	mRenderSponza = false;
+	mParticleSimulationSpeed = 1.0f;
 }
 
 KinectApplication::~KinectApplication()
@@ -79,11 +80,11 @@ KinectApplication::~KinectApplication()
 	//SAFE_DELETE(mpCubeRenderer);
 	SAFE_DELETE(mpCamera);
 	//SAFE_DELETE(mpHydraRenderer);
-	//SAFE_DELETE(mpOVRRenderer);
 	SAFE_DELETE(mpKinectRenderer);
 	SAFE_DELETE(mpText);
 	//SAFE_DELETE(mpLineRenderer);
-	//SAFE_DELETE(mpParticleSystem);
+	SAFE_DELETE(mpParticleSystem);
+	SAFE_DELETE(mpLeapRenderer);
 
 	SAFE_DELETE(mpPaintingSystem);
 }
@@ -112,8 +113,6 @@ bool KinectApplication::Initialize()
 
 	mpMainShader = mpRenderer->loadShader(L"Shaders/color.hlsl", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, vertexDescription, ARRAYSIZE(vertexDescription)); 
 
-	mpOVRRenderer->Initialize();
-
 	//mpKinectRenderer->Initialize();
 
 	hookInputEvents();
@@ -127,15 +126,15 @@ bool KinectApplication::Initialize()
 
 	//mpCubeRenderer->Initialize(mesh.Vertices, mesh.Indices, mpRenderer);
 	//COLLADALoader loader("bunny_3ds.dae");
-	//COLLADALoader loader("sponza2.dae");
+	COLLADALoader loader("sponza2.dae");
 	//COLLADALoader loader("car.dae");
-	//loader.loadDocument();
-	//loader.parse();
+	loader.loadDocument();
+	loader.parse();
 
 	//mpCubeRenderer->Initialize(loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Vertices, loader.getRootNode()->children[100]->model->subMeshes[0]->mesh.Indices, mpRenderer);
 
-	//loadModels(loader.getRootNode(), &loader);
-	//loadTextures(&loader);
+	loadModels(loader.getRootNode(), &loader);
+	loadTextures(&loader);
 	
 	//mRotationTool.setTargetTransform(&mpKinectRenderer->mTransform);
 	mRotationTool.setTargetTransform(&mCubeRotation);
@@ -160,8 +159,8 @@ bool KinectApplication::Initialize()
 	mpText->setFont(font);
 	mpText->setTextSize(40);
 
-	//mpParticleSystem->Initialize();
-	//mpLeapRenderer->Initialize();
+	mpParticleSystem->Initialize();
+	mpLeapRenderer->Initialize();
 
 	mpPaintingSystem->Initialize();
 
@@ -170,7 +169,7 @@ bool KinectApplication::Initialize()
 
 void KinectApplication::loadModels(collada::SceneNode* node, COLLADALoader* loader)
 {
-	int size = node->children.size();
+	int size = (int)node->children.size();
 	for (int i = 0; i < size; i++)
 	{
 		if (node->children[i]->model != NULL)
@@ -288,16 +287,20 @@ void KinectApplication::Update(float dt)
 
 	//mpKinectRenderer->Update(dt);
 
-	//mpOVRRenderer->Update(dt);
-
 	mRotationTool.Update(dt);
 
 	mpInputSystem->Update(dt);
 
-	mpPaintingSystem->Update(dt);
+	//mpPaintingSystem->Update(dt);
 	
 	//mpPhysicsSystem->Update(dt);
-	//mpParticleSystem->Update(dt);
+	if (InputSystem::get()->getKeyboardState()->isKeyPressed(KEY_UP))
+		mParticleSimulationSpeed = MathHelper::Clamp(mParticleSimulationSpeed + 0.3f * dt, 0.05f, 2.0f);
+	if (InputSystem::get()->getKeyboardState()->isKeyPressed(KEY_DOWN))
+		mParticleSimulationSpeed = MathHelper::Clamp(mParticleSimulationSpeed - 0.3f * dt, 0.05f, 2.0f);
+
+	if (mSimluateParticles)
+		mpParticleSystem->Update(dt * mParticleSimulationSpeed);
 
 	/*mpLineRenderer->Points.clear();
 	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(0));
@@ -306,7 +309,7 @@ void KinectApplication::Update(float dt)
 */
 	//updateLines(dt);
 
-	//mpLeapRenderer->Update();
+	mpLeapRenderer->Update();
 }
 
 void KinectApplication::updateLines(float dt)
@@ -385,43 +388,47 @@ void KinectApplication::Draw()
 	mpRenderer->setShader(mpMainShader);
 	mpRenderer->setPerFrameBuffer(mPerFrameData);
 	
-#if USE_RIFT
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < (mpRenderer->isUsingHMD() ? 2 : 1); i++)
 	{
-		mpOVRRenderer->PreRender(i);
+		XMVECTOR rotQuat = XMQuaternionIdentity();
+		XMVECTOR offset;
+		XMMATRIX view;
+		XMVECTOR headPosition = XMVectorZero();
 
-		//Per frame buffer update
+		if (mpRenderer->isUsingHMD())
+		{
+			mpRenderer->getHMD()->PreRender(i);
 
-		//Convert quaterinon to correct axis
-		XMVECTOR rotQuat = mpOVRRenderer->mEyeOrientations[i];
+			headPosition = mpRenderer->getHMD()->getHeadPosition();
 
-		/*XMVECTOR offset = XMVectorSet(mpOVRRenderer->mEyeRenderPoses[i].Position.x,
-									  mpOVRRenderer->mEyeRenderPoses[i].Position.y,
-									  mpOVRRenderer->mEyeRenderPoses[i].Position.z,
-									  0.0f);*/
+			//Per frame buffer update
 
-		//XMVECTOR offset = XMVectorSet(0.034 * (i == 0 ? 1.0f : -1.0f), 0.0f, mpOVRRenderer->mEyeRenderPoses[0].Position.z, 0.0f);
-		XMVECTOR offset = mpOVRRenderer->getEyeOffset(i);
+			//Convert quaterinon to correct axis
+			rotQuat = mpRenderer->getHMD()->getHeadOrientation();
 
-		XMMATRIX view = mpCamera->getView(offset, rotQuat);
-		//XMMATRIX view = mpCamera->getView(XMVectorZero(), rotQuat);
+			offset = mpRenderer->getHMD()->getEyeOffset(i);
 
-		mPerFrameData.Projection = mpOVRRenderer->getProjection(i);
-		mPerFrameData.ProjectionInv = XMMatrixInverse(NULL, mPerFrameData.Projection);
-		XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position) + XMVector3Rotate(offset, rotQuat));
-		mPerFrameData.HeadPosition = mpCamera->position;
-		//XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position));
+			view = mpCamera->getView(offset, rotQuat, mpRenderer->getHMD()->getHeadPosition());
 
-		LeapManager::getInstance().mEyeRelief = XMVectorGetZ(offset);
-		LeapManager::getInstance().setViewTransform(mpCamera->getView(XMVectorZero(), rotQuat));
-#else
-		int i = 0;
+			mPerFrameData.Projection = mpRenderer->getHMD()->getProjection(i);
+			mPerFrameData.ProjectionInv = XMMatrixInverse(NULL, mPerFrameData.Projection);
+			mPerFrameData.EyePosition = mpCamera->getPosition();
+			mPerFrameData.HeadPosition = mpCamera->getPosition();
+			XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->getPosition()) + mpRenderer->getHMD()->getHeadPosition() + XMVector3Rotate(offset, rotQuat));
+			//XMStoreFloat3(&mPerFrameData.HeadPosition, XMLoadFloat3(&mpCamera->getPosition()) + mpRenderer->getHMD()->getHeadPosition());
+			
+			//XMStoreFloat3(&mPerFrameData.EyePosition, XMLoadFloat3(&mpCamera->position));
+			
+			LeapManager::getInstance().mEyeRelief = XMVectorGetZ(offset);
+		}
+		else
+		{
+			view = mpCamera->getView(XMVectorZero(), XMQuaternionIdentity(), XMVectorZero());
+			mPerFrameData.EyePosition = mpCamera->getPosition();
+			mPerFrameData.HeadPosition = mpCamera->getPosition();
+		}
 
-		XMMATRIX view = mpCamera->getView(XMVectorZero(), XMQuaternionIdentity());
-		LeapManager::getInstance().setViewTransform(view);
-		mPerFrameData.EyePosition = mpCamera->getPosition();
-		mPerFrameData.HeadPosition = mpCamera->getPosition();
-#endif
+		LeapManager::getInstance().setViewTransform(mpCamera->getView(XMVectorZero(), rotQuat, headPosition));
 		
 		mPerFrameData.View = view;
 		mPerFrameData.ViewInv = XMMatrixInverse(NULL, mPerFrameData.View);
@@ -450,7 +457,7 @@ void KinectApplication::Draw()
 
 		mpRenderer->setPerObjectBuffer(perObject);
 
-		//mpPlaneRenderer->Render(mpRenderer);
+		mpPlaneRenderer->Render(mpRenderer);
 
 		//Render cube
 		perObject.World = mCubeRotation.getTransform();
@@ -458,14 +465,17 @@ void KinectApplication::Draw()
 		perObject.WorldViewProj = perObject.World * mpRenderer->getPerFrameBuffer()->ViewProj;
 		perObject.TextureTransform = XMMatrixIdentity();
 
-		for (int i = 0; i < mpCubeRendererArr.size(); i++)
+		if (mRenderSponza)
 		{
-			bindTextures(mpCubeRendererArr[i], objectMat);
-			perObject.Material = objectMat;
+			for (int j = 0; j < mpCubeRendererArr.size(); j++)
+			{
+				bindTextures(mpCubeRendererArr[j], objectMat);
+				perObject.Material = objectMat;
 
-			mpRenderer->setPerObjectBuffer(perObject);
+				mpRenderer->setPerObjectBuffer(perObject);
 
-			mpCubeRendererArr[i]->Render(mpRenderer);
+				mpCubeRendererArr[j]->Render(mpRenderer);
+			}
 		}
 
 		//mpCubeRenderer->Render(mpRenderer);
@@ -475,35 +485,29 @@ void KinectApplication::Draw()
 
 		//mpKinectRenderer->Render(mpRenderer);
 
-		//mpLeapRenderer->Render(mpRenderer, i);
+		mpLeapRenderer->Render(mpRenderer, i);
 
 		mpFontManager->bindRender(mpRenderer);
 
 		std::stringstream stream;
-		stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()); //<< " Points: " << mpLineRenderer->Points.List.size();
+		stream << std::string(mMainWndCaptionFull.begin(), mMainWndCaptionFull.end()) << " Simulation speed: " << mParticleSimulationSpeed; //<< " Points: " << mpLineRenderer->Points.List.size();
 
 		mpText->setText(stream.str());
 		mpText->Render(mpRenderer);
 
 		//mpLineRenderer->Render(mpRenderer);
 
-		//mpParticleSystem->Render(mpRenderer);
+		mpParticleSystem->Render(mpRenderer);
 
-		mpPaintingSystem->Render(mpRenderer);
+		//mpPaintingSystem->Render(mpRenderer);
 
 		mpRenderer->setShader(mpMainShader);
 		mpRenderer->setBlendState(false);
 		mpRenderer->setDepthStencilState(D3DRenderer::Depth_Stencil_State_Default);
 		mpRenderer->resetSamplerState();
-		
-#if USE_RIFT
-		mpOVRRenderer->PostRender(i);
 	}
-#endif
 
 	//mpRenderer->renderDeferredLighting();
-
-	mpOVRRenderer->EndFrame();
 
 	mpRenderer->postRender();
 }
@@ -516,6 +520,10 @@ void KinectApplication::onKeyDown(IEventDataPtr eventData)
 	{
 		mRunning = false;
 	}
+	else if (dataPtr->getKey() == KEY_F)
+		mSimluateParticles = !mSimluateParticles;
+	else if (dataPtr->getKey() == KEY_R)
+		mRenderSponza = !mRenderSponza;
 }
 
 void KinectApplication::onMouseDown(IEventDataPtr eventData)

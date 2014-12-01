@@ -94,8 +94,8 @@ void TextRenderer::updateVertexBuffer()
 			}
 
 			int index = i - skippedCount;
-			float width = mpFont->getTextureWidth();
-			float height = mpFont->getTextureHeight();
+			float width = (float)mpFont->getTextureWidth();
+			float height = (float)mpFont->getTextureHeight();
 			
 			pVertArray[index].TexTL = XMFLOAT2(glyph->left / width, glyph->top / height);
 			pVertArray[index].TexBR = XMFLOAT2((glyph->left + glyph->width) / width, (glyph->top + glyph->height) / height);

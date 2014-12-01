@@ -8,7 +8,7 @@ class D3DRenderer;
 
 class ParticleSystem
 {
-	static const int PARTICLE_GROUP_COUNT = 1400;
+	static const int PARTICLE_GROUP_COUNT = 1000;
 	static const int PARTICLE_GROUP_SIZE = 1024;
 	static const int PARTICLE_COUNT = PARTICLE_GROUP_COUNT * PARTICLE_GROUP_SIZE;
 

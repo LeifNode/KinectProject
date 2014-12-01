@@ -9,6 +9,7 @@
 #include "GBuffer.h"
 #include "Transform.h"
 #include "DeferredRenderer.h"
+#include "OVRManager.h"
 
 class D3DApp;
 
@@ -35,6 +36,8 @@ public:
 
 	ID3D11Device* device() const { return md3dDevice; }
 	ID3D11DeviceContext* context() const { return md3dImmediateContext; }
+	ID3D11RenderTargetView* renderTarget() const { return mRenderTarget; }
+	IDXGISwapChain* swapChain() const { return mSwapChain; }
 
 	void setTextureResource(int index, Texture*);
 	void setTextureResources(int index, Texture** texArray, unsigned count);
@@ -84,6 +87,8 @@ public:
 	XMMATRIX getTopTransformInverse() const;
 
 	GBuffer* getGBuffer() const { return mGBuffer; }
+	OVRManager* getHMD() const { return mpOVRManager; }
+	bool isUsingHMD() const;
 
 private:
 	static HRESULT compileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut );
@@ -91,6 +96,9 @@ private:
 	void initializeDepthStencilStates();
 
 private:
+	OVRManager* mpOVRManager;
+	bool mUseHMD;
+
 	GBuffer* mGBuffer;
 	DeferredRenderer* mDeferredRenderer;
 

@@ -6,6 +6,7 @@
 #include "LineRenderer.h"
 #include "LeapManager.h"
 #include "PhysicsSystem.h"
+#include "World.h"
 
 #pragma comment(lib, "d3d11")
 #pragma comment(lib, "d3dcompiler")
@@ -28,8 +29,8 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 	:
 	mhAppInstance(hInstance),
 	mMainWndCaption(L"Direct 3D 11 Application"),
-	mClientWidth(1280),
-	mClientHeight(720),
+	mClientWidth(1980),
+	mClientHeight(1080),
 	mhWnd(0),
 	mAppPaused(false),
 	mMinimized(false),
@@ -89,7 +90,7 @@ int D3DApp::Run()
 				LeapManager::getInstance().Update(0.0f);
 				Update((float)mTimer.DeltaTime());	
 				Draw();
-				mTimer.SleepForDuration(16.66f);
+				//mTimer.SleepForDuration(16.66f);
 			}
 			else
 			{
@@ -265,14 +266,16 @@ bool D3DApp::initWindow()
 		return false;
 	}
 
+	DWORD wsStyle = WS_POPUP | WS_OVERLAPPEDWINDOW;
+
 	// Compute window rectangle dimensions based on requested client area dimensions.
 	RECT R = { 0, 0, mClientWidth, mClientHeight };
-    AdjustWindowRect(&R, WS_OVERLAPPEDWINDOW, false);
+    AdjustWindowRect(&R, wsStyle, false);
 	int width  = R.right - R.left;
 	int height = R.bottom - R.top;
 
-	mhWnd = CreateWindow(L"D3DWndClassName", mMainWndCaption.c_str(), 
-		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, mhAppInstance, 0); 
+	mhWnd = CreateWindowW(L"D3DWndClassName", mMainWndCaption.c_str(), 
+		wsStyle | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, width / 2, height / 2, NULL, NULL, mhAppInstance, NULL); 
 	if( !mhWnd )
 	{
 		MessageBox(0, L"CreateWindow Failed.", 0, 0);

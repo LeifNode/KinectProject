@@ -2,7 +2,7 @@
 #include "d3dApp.h"
 #include "Geometry.h"
 #include "ConstantBuffers.h"
-#include "OVRRenderer.h"
+#include "OVRManager.h"
 
 extern D3DApp* gpApplication;
 
@@ -23,7 +23,9 @@ D3DRenderer::D3DRenderer()
 	mBlendStateAlpha(NULL),
 	mBlendStateOpaque(NULL),
 	mGBuffer(NULL),
-	mDeferredRenderer(NULL)
+	mDeferredRenderer(NULL),
+	mpOVRManager(NULL),
+	mUseHMD(true)
 {
 	/*mClearColor[0] = 0.0f;
 	mClearColor[1] = 0.125f;
@@ -37,6 +39,8 @@ D3DRenderer::D3DRenderer()
 
 	ZeroMemory(&mScreenViewport, sizeof(D3D11_VIEWPORT));
 	ZeroMemory(&mDepthStencilStates[0], sizeof(ID3D11DepthStencilState*) * Depth_Stencil_State_Count);
+	
+	mpOVRManager = new OVRManager();
 }
 
 D3DRenderer::~D3DRenderer()
@@ -44,6 +48,7 @@ D3DRenderer::~D3DRenderer()
 	mGBuffer->DeInit();
 	SAFE_DELETE(mGBuffer);
 	SAFE_DELETE(mDeferredRenderer);
+	SAFE_DELETE(mpOVRManager);
 
 	for (auto it = mLoadedShaders.begin(); it != mLoadedShaders.end(); ++it)
 	{
@@ -75,6 +80,20 @@ D3DRenderer::~D3DRenderer()
 
 void D3DRenderer::onResize()
 {
+	int width = 0, height = 0;
+
+	if (isUsingHMD())
+	{
+		OVR::Sizei textureSize = mpOVRManager->getRenderTargetSize();
+		width = 1920;
+		height = 1080;
+	}
+	else
+	{
+		width = gpApplication->getClientWidth();
+		height = gpApplication->getClientHeight();
+	}
+
 	assert(md3dImmediateContext);
 	assert(md3dDevice);
 	assert(mSwapChain);
@@ -89,7 +108,7 @@ void D3DRenderer::onResize()
 
 	// Resize the swap chain and recreate the render target view.
 
-	HR(mSwapChain->ResizeBuffers(1, gpApplication->getClientWidth(), gpApplication->getClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, 0));
+	HR(mSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
 	ID3D11Texture2D* backBuffer;
 	HR(mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer)));
 	HR(md3dDevice->CreateRenderTargetView(backBuffer, 0, &mRenderTarget));
@@ -99,8 +118,8 @@ void D3DRenderer::onResize()
 
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 	
-	depthStencilDesc.Width     = gpApplication->getClientWidth();
-	depthStencilDesc.Height    = gpApplication->getClientHeight();
+	depthStencilDesc.Width     = width;
+	depthStencilDesc.Height    = height;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
 	depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -135,9 +154,11 @@ void D3DRenderer::onResize()
 
 	// Set the viewport transform.
 
-	setViewport(gpApplication->getClientWidth(), gpApplication->getClientHeight(), 0, 0);
+	setViewport(width, height, 0, 0);
 
-	mGBuffer->OnResize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
+	mpOVRManager->OnResize();
+
+	mGBuffer->OnResize(width, height);
 }
 
 bool D3DRenderer::initialize()
@@ -209,11 +230,7 @@ bool D3DRenderer::initialize()
 	sd.BufferUsage  = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount  = 1;
 	sd.OutputWindow = gpApplication->mainWnd();
-#if USE_RIFT
-	sd.Windowed     = false; 
-#else
-	sd.Windowed     = true;
-#endif
+	sd.Windowed     = true; 
 	sd.SwapEffect   = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags        = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
@@ -307,9 +324,9 @@ bool D3DRenderer::initialize()
     ZeroMemory( &sampDesc, sizeof(sampDesc) );
     sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
 	sampDesc.MaxAnisotropy = 4;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
@@ -322,6 +339,8 @@ bool D3DRenderer::initialize()
 	mDeferredRenderer->Initialize();
 
 	onResize();
+
+	mpOVRManager->Initialize();
 
 	initializeDepthStencilStates();
 
@@ -575,7 +594,7 @@ void D3DRenderer::setTextureResources(int index, Texture** texArray, unsigned co
 	{
 		ID3D11ShaderResourceView** resourceArray = new ID3D11ShaderResourceView*[count];
 
-		for (int i = 0; i < count; i++)
+		for (unsigned int i = 0; i < count; i++)
 			resourceArray[i] = texArray[i]->mpResourceView;
 
 		if (mpActiveShader->hasVertexShader())
@@ -673,11 +692,11 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 	if (format & Texture_RGBA && format & Texture_KinectDynamic)
 		d3dformat = DXGI_FORMAT_B8G8R8A8_UNORM;
 	else if (format & Texture_RGBA)
-		d3dformat = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		d3dformat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	else if (format & Texture_Depth && format & Texture_KinectDynamic)
 		d3dformat = DXGI_FORMAT_R16_SINT;
 	else if (format & Texture_Depth)
-		d3dformat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		d3dformat = DXGI_FORMAT_D32_FLOAT;
 		//d3dformat = DXGI_FORMAT_D32_FLOAT;
 	else 
 		return NULL;
@@ -788,7 +807,7 @@ RenderTarget* D3DRenderer::createRenderTarget(int width, int height, bool useDep
 
 	D3D11_RENDER_TARGET_VIEW_DESC renderViewDesc;
 
-	renderViewDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	renderViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	renderViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderViewDesc.Texture2D.MipSlice = 0;
 
@@ -893,10 +912,6 @@ void D3DRenderer::unbindShader()
 
 void D3DRenderer::resetSamplerState()
 {
-	//setSampler(0, mSamplerState);
-	//setSampler(1, mSamplerState);
-	//setSampler(2, mSamplerState);
-
 	ID3D11SamplerState** samplerArr = new ID3D11SamplerState*[8];
 
 	for (int i = 0; i < 8; i++) samplerArr[i] = mSamplerState;
@@ -933,8 +948,11 @@ void D3DRenderer::clear(RenderTarget* target)
 
 void D3DRenderer::preRender()
 {
-	md3dImmediateContext->ClearRenderTargetView(mRenderTarget, mClearColor);
-	md3dImmediateContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+	if (!isUsingHMD())
+	{
+		md3dImmediateContext->ClearRenderTargetView(mRenderTarget, mClearColor);
+		md3dImmediateContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+	}
 	md3dImmediateContext->VSSetSamplers(0, 1, &mSamplerState);
 	md3dImmediateContext->PSSetSamplers(0, 1, &mSamplerState);
 	md3dImmediateContext->GSSetSamplers(0, 1, &mSamplerState);
@@ -946,6 +964,9 @@ void D3DRenderer::preRender()
 
 	setBlendState(false);
 
+	mpOVRManager->UpdateTrackingState();
+	mpOVRManager->BeginFrame();
+
 	//mGBuffer->clearRenderTargets();
 	//mGBuffer->bindRenderTargets();
 }
@@ -954,10 +975,10 @@ void D3DRenderer::postRender()
 {
 	md3dImmediateContext->OMSetRenderTargets(1, &mRenderTarget, mDepthStencilView);
 
-#if !USE_RIFT
-	mSwapChain->Present(0, 0);
-#endif
+	mpOVRManager->PostRender();
 
+	if (!isUsingHMD())
+		mSwapChain->Present(0, 0);
 }
 
 void D3DRenderer::renderDeferredLighting()
@@ -985,4 +1006,9 @@ XMMATRIX D3DRenderer::getTopTransform() const
 XMMATRIX D3DRenderer::getTopTransformInverse() const
 {
 	return mMatrixStack.getTopInverse();
+}
+
+bool D3DRenderer::isUsingHMD() const
+{
+	return mUseHMD && mpOVRManager != NULL && mpOVRManager->IsDeviceConnected();
 }

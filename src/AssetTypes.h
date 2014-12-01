@@ -183,7 +183,7 @@ namespace assettypes
 		{
 			if (mpChildren != NULL)
 			{
-				for (int i = 0; i < mNumChildren; i++)
+				for (unsigned int i = 0; i < mNumChildren; i++)
 				{
 					delete mpChildren[i];
 				}

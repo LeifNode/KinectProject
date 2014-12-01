@@ -19,6 +19,8 @@ Texture* TextureManager::loadTexture(const std::string& filePath)
 	if (getExtensionFromPath(filePath.c_str()) != ".dds")
 		return NULL;
 
+	//return NULL;
+
 	Texture* newTexture = new Texture();
 	
 	D3DRenderer* renderer = gpApplication->getRenderer();
@@ -31,6 +33,9 @@ Texture* TextureManager::loadTexture(const std::string& filePath)
 	{
 		std::cout << "[TextureManager] Failed to load texture from " << filePath << std::endl; 
 		//MessageBox(NULL, L"Could not load texture.", L"Error", 0);
+
+		ReleaseCOM(texture);
+		ReleaseCOM(textureResource);
 		return NULL;
 	}
 

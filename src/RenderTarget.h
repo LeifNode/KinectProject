@@ -6,12 +6,13 @@
 class RenderTarget
 {
 	friend class D3DRenderer;
-	friend class OVRRenderer;
+	friend class OVRManager;
 
 public:
 	~RenderTarget();
 	
 	Texture* getRenderTargetTexture() const { return mpRenderTargetTexture; }
+
 
 private:
 	RenderTarget();

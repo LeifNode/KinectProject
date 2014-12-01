@@ -181,10 +181,10 @@ Rect Font::measureString(const std::string& str, int pointSize, FONT_TYPE type, 
 {
 	Rect totalSize;
 
-	int size = str.size();
+	unsigned int size = (unsigned int)str.size();
 	int maxCharHeight = 0;
 
-	for (int i = 0; i < size; i++)
+	for (unsigned int i = 0; i < size; i++)
 	{
 		const Glyph* character = getCharacter(str[i], pointSize, type);
 

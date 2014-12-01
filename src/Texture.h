@@ -27,7 +27,7 @@ class Texture
 	friend class D3DRenderer;
 	friend class TextureManager;
 	friend class RenderTarget;
-	friend class OVRRenderer;
+	friend class OVRManager;
 
 public:
 	~Texture();

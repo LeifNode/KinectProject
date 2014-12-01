@@ -21,8 +21,10 @@
 #include <list>
 #include <string>
 #include <algorithm>
+#include "..\3rdParty\include\FastDelegate\FastDelegate.h"
 #include "dxerr.h"
 #include <NuiApi.h> //Kinect API
+#include "LoggingSystem.h"
 
 using namespace DirectX;
 
