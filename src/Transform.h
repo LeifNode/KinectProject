@@ -11,7 +11,7 @@ public:
 	void rotate(const XMVECTOR& rotationQuaternion);
 
 	XMVECTOR getRotation() const { return mRotationQuat; }
-	void setRotation(const XMVECTOR& rotation) { mRotationQuat = rotation; }
+	void setRotation(const XMVECTOR& rotation) { mTransformDirty = true; mRotationQuat = rotation; }
 	
 	XMVECTOR getScale() const { return mScaling; }
 
@@ -33,6 +33,8 @@ public:
 	void reset();
 
 private:
+	mutable bool mTransformDirty;
+
 	XMMATRIX mTransformation;
 	XMVECTOR mRotationQuat;
 	XMVECTOR mRotationOrigin;

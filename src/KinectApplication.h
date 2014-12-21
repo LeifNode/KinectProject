@@ -65,6 +65,7 @@ private:
 	class LineRenderer* mpLineRenderer;
 	class LeapRenderer* mpLeapRenderer;
 	class ParticleSystem* mpParticleSystem;
+	class FractalRenderer* mpFractalRenderer;
 
 	class Camera* mpCamera;
 

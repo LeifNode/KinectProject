@@ -30,6 +30,8 @@ public:
 
 	unsigned int getButtons(int controllerIndex) const;
 
+	//bool isButtonPressed(int controllerIndex, )
+
 	float getTrigger(int controllerIndex) const;
 
 	XMFLOAT2 getJoystick(int controllerIndex) const;

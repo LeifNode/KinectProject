@@ -8,7 +8,7 @@ class D3DRenderer;
 class Renderable 
 {
 public:
-	Renderable() : mRenderEnabled(true) { }
+	Renderable() : mRenderEnabled(true), mpParent(NULL) { }
 	virtual ~Renderable() { }
 
 	virtual void PreRender(D3DRenderer* renderer);
@@ -16,6 +16,9 @@ public:
 	virtual void PostRender(D3DRenderer* renderer);
 
 	std::list<Renderable*>* getChildren() { return &mChildren; }
+
+	void addChild(Renderable* child);
+	void removeChild(Renderable* child);
 
 public:
 	Transform transform;
@@ -25,6 +28,8 @@ protected:
 	void renderChildren(D3DRenderer* renderer);
 
 protected:
+	Renderable* mpParent;
+
 	std::list<Renderable*> mChildren;
 
 private:

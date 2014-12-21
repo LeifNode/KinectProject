@@ -33,10 +33,10 @@ void FlowFieldRenderer::Initialize()
 
 	if (mpRenderShader == NULL)
 	{
-		ShaderInfo shaderInfo[] = {
-			{ SHADER_TYPE_VERTEX, "VS" },
-			{ SHADER_TYPE_PIXEL, "PS" },
-			{ SHADER_TYPE_NONE, NULL }
+		Shader::ShaderInfo shaderInfo[] = {
+			{ Shader::SHADER_TYPE_VERTEX, "VS" },
+			{ Shader::SHADER_TYPE_PIXEL, "PS" },
+			{ Shader::SHADER_TYPE_NONE, NULL }
 		};
 
 		mpRenderShader = gpApplication->getRenderer()->loadShader(L"Shaders/flowFieldQuad.hlsl", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, NULL, 0);

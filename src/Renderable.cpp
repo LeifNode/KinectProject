@@ -35,3 +35,25 @@ void Renderable::PostRender(D3DRenderer* renderer)
 {
 	renderer->popTransform();
 }
+
+void Renderable::addChild(Renderable* child)
+{
+	if (child->mpParent == this)
+		return;
+	else if (child->mpParent != NULL)
+		child->mpParent->removeChild(child);
+
+	mChildren.push_back(child);
+
+	child->mpParent = this;
+}
+
+void Renderable::removeChild(Renderable* child)
+{
+	if (child->mpParent != this)
+		return;
+
+	mChildren.remove(child);
+
+	child->mpParent = NULL;
+}

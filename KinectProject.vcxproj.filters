@@ -66,9 +66,6 @@
     <Filter Include="Source Files\Resource Manager\Fonts">
       <UniqueIdentifier>{8cab157f-4b7c-4242-a4a4-68e783a4d26b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Graphics\Input">
-      <UniqueIdentifier>{18f5d889-bc0e-41bd-985a-e412390f81a2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Physics">
       <UniqueIdentifier>{e0c92ce8-b817-4010-b04c-15943594ff1f}</UniqueIdentifier>
     </Filter>
@@ -77,9 +74,6 @@
     </Filter>
     <Filter Include="Source Files\Resource Manager\Models">
       <UniqueIdentifier>{0ccfb976-9f60-4c0c-a3ff-677934f8a700}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Graphics\Physics">
-      <UniqueIdentifier>{b90579ac-799f-41ea-b159-ebaf5e5e1bcb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Graphics\Post Processing">
       <UniqueIdentifier>{68b8194b-9cc7-4eb9-9629-619c06459746}</UniqueIdentifier>
@@ -134,6 +128,24 @@
     </Filter>
     <Filter Include="Source Files\Core\World">
       <UniqueIdentifier>{4279868a-5ea0-4641-8773-07ef893ef83c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Fractals">
+      <UniqueIdentifier>{90f69a52-4c92-4810-b207-7747171a4dac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Fractals">
+      <UniqueIdentifier>{0c034cdb-1647-40cc-bb5c-3d85064f0d69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Post Processing\Deferred Shading">
+      <UniqueIdentifier>{ff15d6fc-597d-4c64-83fe-8fe3d4369227}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Input Visualization">
+      <UniqueIdentifier>{18f5d889-bc0e-41bd-985a-e412390f81a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Physics Visualization">
+      <UniqueIdentifier>{b90579ac-799f-41ea-b159-ebaf5e5e1bcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\HMD">
+      <UniqueIdentifier>{973941ee-e93d-4229-95cf-adf782b369a3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -261,10 +273,10 @@
       <Filter>Source Files\Input</Filter>
     </ClInclude>
     <ClInclude Include="src\HydraRenderer.h">
-      <Filter>Source Files\Graphics\Input</Filter>
+      <Filter>Source Files\Graphics\Input Visualization</Filter>
     </ClInclude>
     <ClInclude Include="src\LeapRenderer.h">
-      <Filter>Source Files\Graphics\Input</Filter>
+      <Filter>Source Files\Graphics\Input Visualization</Filter>
     </ClInclude>
     <ClInclude Include="src\PhysicsSystem.h">
       <Filter>Source Files\Physics</Filter>
@@ -291,19 +303,16 @@
       <Filter>Source Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="src\ParticleRenderer.h">
-      <Filter>Source Files\Graphics\Physics</Filter>
+      <Filter>Source Files\Graphics\Physics Visualization</Filter>
     </ClInclude>
     <ClInclude Include="src\ConstraintRenderer.h">
-      <Filter>Source Files\Graphics\Physics</Filter>
+      <Filter>Source Files\Graphics\Physics Visualization</Filter>
     </ClInclude>
     <ClInclude Include="src\ParticleContacts.h">
       <Filter>Source Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="src\ParticleContactGenerators.h">
       <Filter>Source Files\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DeferredRenderer.h">
-      <Filter>Source Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\GBuffer.h">
       <Filter>Source Files\Graphics</Filter>
@@ -350,9 +359,6 @@
     <ClInclude Include="src\PaintingSystem.h">
       <Filter>Source Files\Graphics\Painting</Filter>
     </ClInclude>
-    <ClInclude Include="src\OVRManager.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="src\Actor.h">
       <Filter>Source Files\Core\Actor</Filter>
     </ClInclude>
@@ -364,6 +370,15 @@
     </ClInclude>
     <ClInclude Include="src\LoggingSystem.h">
       <Filter>Source Files\Utils\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FractalRenderer.h">
+      <Filter>Source Files\Graphics\Fractals</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DeferredRenderer.h">
+      <Filter>Source Files\Graphics\Post Processing\Deferred Shading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OVRManager.h">
+      <Filter>Source Files\Graphics\HMD</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -473,10 +488,10 @@
       <Filter>Source Files\Input</Filter>
     </ClCompile>
     <ClCompile Include="src\HydraRenderer.cpp">
-      <Filter>Source Files\Graphics\Input</Filter>
+      <Filter>Source Files\Graphics\Input Visualization</Filter>
     </ClCompile>
     <ClCompile Include="src\LeapRenderer.cpp">
-      <Filter>Source Files\Graphics\Input</Filter>
+      <Filter>Source Files\Graphics\Input Visualization</Filter>
     </ClCompile>
     <ClCompile Include="src\DDSTextureLoader.cpp">
       <Filter>Source Files\Resource Manager\Textures</Filter>
@@ -497,10 +512,10 @@
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
     <ClCompile Include="src\ConstraintRenderer.cpp">
-      <Filter>Source Files\Graphics\Physics</Filter>
+      <Filter>Source Files\Graphics\Physics Visualization</Filter>
     </ClCompile>
     <ClCompile Include="src\ParticleRenderer.cpp">
-      <Filter>Source Files\Graphics\Physics</Filter>
+      <Filter>Source Files\Graphics\Physics Visualization</Filter>
     </ClCompile>
     <ClCompile Include="src\PhysicsSystem.cpp">
       <Filter>Source Files\Physics</Filter>
@@ -512,9 +527,6 @@
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
     <ClCompile Include="src\GBuffer.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DeferredRenderer.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\OBJLoader.cpp">
@@ -541,11 +553,17 @@
     <ClCompile Include="src\PaintingSystem.cpp">
       <Filter>Source Files\Graphics\Painting</Filter>
     </ClCompile>
-    <ClCompile Include="src\OVRManager.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="src\Actor.cpp">
       <Filter>Source Files\Core\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FractalRenderer.cpp">
+      <Filter>Source Files\Graphics\Fractals</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DeferredRenderer.cpp">
+      <Filter>Source Files\Graphics\Post Processing\Deferred Shading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OVRManager.cpp">
+      <Filter>Source Files\Graphics\HMD</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -668,6 +686,15 @@
     </FxCompile>
     <FxCompile Include="Shaders\testSplat_PS.hlsl">
       <Filter>Shaders\Flow Fields\Splatting</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\fractalQuad.hlsl">
+      <Filter>Shaders\Fractals</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\fractalQuad_VS.hlsl">
+      <Filter>Shaders\Fractals</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\fractalQuad_PS.hlsl">
+      <Filter>Shaders\Fractals</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

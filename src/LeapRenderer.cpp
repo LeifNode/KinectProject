@@ -61,10 +61,10 @@ void LeapRenderer::Initialize()
 {
 	D3DRenderer* renderer = gpApplication->getRenderer();
 
-	ShaderInfo shaderInfo[] = {
-		{ SHADER_TYPE_VERTEX, "VS" },
-		{ SHADER_TYPE_PIXEL, "PS" },
-		{ SHADER_TYPE_NONE, NULL }
+	Shader::ShaderInfo shaderInfo[] = {
+		{ Shader::SHADER_TYPE_VERTEX, "VS" },
+		{ Shader::SHADER_TYPE_PIXEL, "PS" },
+		{ Shader::SHADER_TYPE_NONE, NULL }
 	};
 
 	mpImageShader = renderer->loadShader(L"Shaders/leap.hlsl", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, NULL, 0);

@@ -142,11 +142,11 @@ void LineRenderer::Initialize()
 {
 	D3DRenderer* renderer = gpApplication->getRenderer();
 
-	ShaderInfo shaderInfo[] = {
-		{ SHADER_TYPE_VERTEX, "VS" },
-		{ SHADER_TYPE_GEOMETRY, "GS" },
-		{ SHADER_TYPE_PIXEL, "PS" },
-		{ SHADER_TYPE_NONE, NULL }
+	Shader::ShaderInfo shaderInfo[] = {
+		{ Shader::SHADER_TYPE_VERTEX, "VS" },
+		{ Shader::SHADER_TYPE_GEOMETRY, "GS" },
+		{ Shader::SHADER_TYPE_PIXEL, "PS" },
+		{ Shader::SHADER_TYPE_NONE, NULL }
 	};
 
 	D3D11_INPUT_ELEMENT_DESC vertexDescription[] =

@@ -2,30 +2,29 @@
 
 #include "d3dStd.h"
 
-enum SHADER_TYPE
-{
-	SHADER_TYPE_NONE = -1,
-	SHADER_TYPE_PIXEL,
-	SHADER_TYPE_VERTEX,
-	SHADER_TYPE_GEOMETRY,
-	SHADER_TYPE_HULL,
-	SHADER_TYPE_DOMAIN,
-	SHADER_TYPE_COMPUTE,
-	SHADER_TYPE_COUNT,
-};
-
-struct ShaderInfo
-{
-	SHADER_TYPE type;
-	const char* entrypoint;
-};
-
 class D3DRenderer;
 
 class Shader
 {
 	friend class D3DRenderer;
-
+public:
+	enum SHADER_TYPE
+	{
+		SHADER_TYPE_NONE = -1,
+		SHADER_TYPE_PIXEL,
+		SHADER_TYPE_VERTEX,
+		SHADER_TYPE_GEOMETRY,
+		SHADER_TYPE_HULL,
+		SHADER_TYPE_DOMAIN,
+		SHADER_TYPE_COMPUTE,
+		SHADER_TYPE_COUNT,
+	};
+	
+	struct ShaderInfo
+	{
+		SHADER_TYPE type;
+		const char* entrypoint;
+	};
 public:
 	~Shader();
 

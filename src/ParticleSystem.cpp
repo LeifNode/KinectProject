@@ -68,18 +68,18 @@ void ParticleSystem::Initialize()
 
 void ParticleSystem::InitShaders(D3DRenderer* renderer)
 {
-	ShaderInfo shaderInfo[] = {
-		{ SHADER_TYPE_VERTEX, "VS" },
-		{ SHADER_TYPE_GEOMETRY, "GS" },
-		{ SHADER_TYPE_PIXEL, "PS" },
-		{ SHADER_TYPE_NONE, NULL }
+	Shader::ShaderInfo shaderInfo[] = {
+		{ Shader::SHADER_TYPE_VERTEX, "VS" },
+		{ Shader::SHADER_TYPE_GEOMETRY, "GS" },
+		{ Shader::SHADER_TYPE_PIXEL, "PS" },
+		{ Shader::SHADER_TYPE_NONE, NULL }
 	};
 
 	mpParticleRenderShader = renderer->loadShader(L"Shaders/particle.hlsl", shaderInfo, D3D_PRIMITIVE_TOPOLOGY_POINTLIST, NULL, 0); 
 
-	ShaderInfo computeShaderInfo[] = {
-		{ SHADER_TYPE_COMPUTE, "CS" },
-		{ SHADER_TYPE_NONE, NULL }
+	Shader::ShaderInfo computeShaderInfo[] = {
+		{ Shader::SHADER_TYPE_COMPUTE, "CS" },
+		{ Shader::SHADER_TYPE_NONE, NULL }
 	};
 
 	mpParticleComputeShader = renderer->loadShader(L"Shaders/particle_CS.hlsl", computeShaderInfo, D3D_PRIMITIVE_TOPOLOGY_POINTLIST, NULL, 0);
@@ -246,8 +246,25 @@ void ParticleSystem::Update(float dt)
 		for (auto fingerIt = fingers.begin(); fingerIt != fingers.end(); ++fingerIt)
 		{
 			const Leap::Finger finger = *fingerIt;
+			float weight = 1.0f;
 
-			for (int b = 0; b < 4; b++)
+			/*for (int b = 1; b < 3; b++)
+			{
+				Leap::Bone::Type boneType = static_cast<Leap::Bone::Type>(b);
+				Leap::Bone bone = finger.bone(boneType);
+				Leap::Bone::Type nextBoneType = static_cast<Leap::Bone::Type>(b + 1);
+				Leap::Bone nextBone = finger.bone(nextBoneType);
+
+				XMVECTOR toNext = XMVector3Normalize(LeapManager::getInstance().transformPosition(bone.nextJoint()) - LeapManager::getInstance().transformPosition(bone.prevJoint()));
+				XMVECTOR nextBoneToNext = XMVector3Normalize(LeapManager::getInstance().transformPosition(nextBone.nextJoint()) - LeapManager::getInstance().transformPosition(nextBone.prevJoint()));
+
+				weight *= XMVectorGetX(XMVector3Dot(toNext, nextBoneToNext));
+			}*/
+
+			//weight = MathHelper::Clamp(weight, 0.0f, 1.0f);
+			weight = 1.0f;
+
+			for (int b = 2; b < 4; b++)
 			{
 				Leap::Bone::Type boneType = static_cast<Leap::Bone::Type>(b);
 				Leap::Bone bone = finger.bone(boneType);
@@ -256,7 +273,7 @@ void ParticleSystem::Update(float dt)
 				{
 					XMStoreFloat3(&computeConstants.ParticleAttractors[index].WorldPosition, LeapManager::getInstance().transformPosition(bone.nextJoint()));
 
-					computeConstants.ParticleAttractors[index].Force = (float)b;
+					computeConstants.ParticleAttractors[index].Force = (float)b * (float)b * weight;
 					computeConstants.ParticleAttractors[index].LinearAtt = 0.0f;
 					computeConstants.ParticleAttractors[index].QuadraticAtt = 0.0f;
 				}

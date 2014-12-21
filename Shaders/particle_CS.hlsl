@@ -30,10 +30,18 @@ void CS(int3 ID : SV_DispatchThreadID)
 	Particle particle = gParticles[ID.x];
 
 	float3 acceleration = float3(0.0f, 0.0f, 0.0f);
+	float3 toVector = float3(0.0f, 0.0f, 0.0f);
+	float att = 1.0f;
+	float distance = 0.0f;
 
 	for (int i = 0; i < 64; i++)
 	{
-		acceleration += normalize(gParticleAttractors[i].WorldPosition - particle.Position) * gFrameDeltaTime * gParticleAttractors[i].Force;
+		toVector = gParticleAttractors[i].WorldPosition - particle.Position;
+		distance = length(toVector);
+
+		//att = 1.0f / dot(float3(1.0f, gParticleAttractors[i].LinearAtt, gParticleAttractors[i].QuadraticAtt), float3(1.0f, distance, distance*distance));
+
+		acceleration += (toVector / distance) * gFrameDeltaTime * gParticleAttractors[i].Force * att;
 	}
 
 	particle.Velocity += acceleration;
@@ -41,11 +49,6 @@ void CS(int3 ID : SV_DispatchThreadID)
 	particle.Velocity *= pow(0.5f, gFrameDeltaTime);
 
 	particle.Position += particle.Velocity * gFrameDeltaTime;
-
-	/*if (length(particle.Position - float3(0.0f, 2.0f, 0.0f)) > 4.0f)
-	{
-		particle.Position = normalize(particle.Position) * 4.0f + float3(0.0f, 2.0f, 0.0f);
-	}*/
 
 	gParticles[ID.x] = particle;
 }

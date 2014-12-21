@@ -19,6 +19,7 @@
 #include "COLLADALoader.h"
 #include "ParticleSystem.h"
 #include "PaintingSystem.h"
+#include "FractalRenderer.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd){
 	UNREFERENCED_PARAMETER( prevInstance );
@@ -62,8 +63,10 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 
 	mpPaintingSystem = new PaintingSystem();
 
+	mpFractalRenderer = new FractalRenderer();
+
 	mSimluateParticles = true;
-	mRenderSponza = false;
+	mRenderSponza = true;
 	mParticleSimulationSpeed = 1.0f;
 }
 
@@ -96,10 +99,10 @@ bool KinectApplication::Initialize()
 
 	onResize();
 
-	ShaderInfo shaderInfo[] = {
-		{ SHADER_TYPE_VERTEX, "VS" },
-		{ SHADER_TYPE_PIXEL, "PS" },
-		{ SHADER_TYPE_NONE, NULL }
+	Shader::ShaderInfo shaderInfo[] = {
+		{ Shader::SHADER_TYPE_VERTEX, "VS" },
+		{ Shader::SHADER_TYPE_PIXEL, "PS" },
+		{ Shader::SHADER_TYPE_NONE, NULL }
 	};
 
 	D3D11_INPUT_ELEMENT_DESC vertexDescription[] =
@@ -159,10 +162,15 @@ bool KinectApplication::Initialize()
 	mpText->setFont(font);
 	mpText->setTextSize(40);
 
-	mpParticleSystem->Initialize();
+	//mpParticleSystem->Initialize();
 	mpLeapRenderer->Initialize();
 
-	mpPaintingSystem->Initialize();
+	//mpPaintingSystem->Initialize();
+
+	mpFractalRenderer->Initialize();
+	mpFractalRenderer->transform.setTranslation(XMVectorSet(0.f, 1.7f, 1.0f, 0.0f));
+	mpFractalRenderer->transform.setRotation(XMVectorSet(0.0f, MathHelper::Pi, 0.0f, 0.0f));
+	mpFractalRenderer->transform.setScale(0.7f);
 
 	return true;
 }
@@ -299,8 +307,8 @@ void KinectApplication::Update(float dt)
 	if (InputSystem::get()->getKeyboardState()->isKeyPressed(KEY_DOWN))
 		mParticleSimulationSpeed = MathHelper::Clamp(mParticleSimulationSpeed - 0.3f * dt, 0.05f, 2.0f);
 
-	if (mSimluateParticles)
-		mpParticleSystem->Update(dt * mParticleSimulationSpeed);
+	//if (mSimluateParticles)
+		//mpParticleSystem->Update(dt * mParticleSimulationSpeed);
 
 	/*mpLineRenderer->Points.clear();
 	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(0));
@@ -487,6 +495,8 @@ void KinectApplication::Draw()
 
 		mpLeapRenderer->Render(mpRenderer, i);
 
+		mpFractalRenderer->Render(mpRenderer);
+
 		mpFontManager->bindRender(mpRenderer);
 
 		std::stringstream stream;
@@ -497,7 +507,7 @@ void KinectApplication::Draw()
 
 		//mpLineRenderer->Render(mpRenderer);
 
-		mpParticleSystem->Render(mpRenderer);
+		//mpParticleSystem->Render(mpRenderer);
 
 		//mpPaintingSystem->Render(mpRenderer);
 

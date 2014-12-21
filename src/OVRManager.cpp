@@ -24,8 +24,6 @@ OVRManager::~OVRManager()
 void OVRManager::Initialize()
 {
 	D3DRenderer* renderer = gpApplication->getRenderer();
-
-	
 	
 	if (mInitialized)
 	{
@@ -138,6 +136,7 @@ XMMATRIX OVRManager::getOffsetView(const Camera& camera, int eyeIndex, float IPD
 XMVECTOR OVRManager::getEyeOffset(int eyeIndex)
 {
 	return XMVectorSet(mIPD * 0.5f * (eyeIndex == 0 ? -1.0f : 1.0f), 0.0f, 0.0f, 0.0f);
+	//return XMVectorSet(-mEyeRenderPoses[eyeIndex].Position.x, mEyeRenderPoses[eyeIndex].Position.y, -mEyeRenderPoses[eyeIndex].Position.z, 0.0f);
 }
 
 void OVRManager::Update(float dt)
@@ -147,27 +146,35 @@ void OVRManager::Update(float dt)
 
 void OVRManager::UpdateTrackingState()
 {
-	D3DRenderer* renderer = gpApplication->getRenderer();
+	if (IsDeviceConnected())
+	{
+		D3DRenderer* renderer = gpApplication->getRenderer();
 
-	ovrVector3f hmdToEyeViewOffset[2] = { mEyeRenderDesc[0].HmdToEyeViewOffset, mEyeRenderDesc[1].HmdToEyeViewOffset };
-	ovrHmd_GetEyePoses(mHMD, 0, hmdToEyeViewOffset, mEyeRenderPoses, &mHmdState);
+		ovrVector3f hmdToEyeViewOffset[2] = { mEyeRenderDesc[0].HmdToEyeViewOffset, mEyeRenderDesc[1].HmdToEyeViewOffset };
+		ovrHmd_GetEyePoses(mHMD, 0, hmdToEyeViewOffset, mEyeRenderPoses, &mHmdState);
 
-	XMVECTOR rotQuat = XMLoadFloat4(&XMFLOAT4(mHmdState.HeadPose.ThePose.Orientation.x,
-											  mHmdState.HeadPose.ThePose.Orientation.y,
-											  mHmdState.HeadPose.ThePose.Orientation.z,
-											  mHmdState.HeadPose.ThePose.Orientation.w));
+		XMVECTOR rotQuat = XMLoadFloat4(&XMFLOAT4(mHmdState.HeadPose.ThePose.Orientation.x,
+												  mHmdState.HeadPose.ThePose.Orientation.y,
+												  mHmdState.HeadPose.ThePose.Orientation.z,
+												  mHmdState.HeadPose.ThePose.Orientation.w));
 		
-	XMVECTOR axis;
-	float angle;
+		XMVECTOR axis;
+		float angle;
 	
-	XMQuaternionToAxisAngle(&axis, &angle, rotQuat);
+		XMQuaternionToAxisAngle(&axis, &angle, rotQuat);
 
-	axis = XMVectorSet(XMVectorGetX(axis), -XMVectorGetY(axis), XMVectorGetZ(axis), 0.0f);
+		axis = XMVectorSet(XMVectorGetX(axis), -XMVectorGetY(axis), XMVectorGetZ(axis), 0.0f);
 
-	rotQuat = XMQuaternionRotationAxis(axis, -angle);
+		rotQuat = XMQuaternionRotationAxis(axis, -angle);
 
-	mHeadPosition = XMVectorSet(-mHmdState.HeadPose.ThePose.Position.x, mHmdState.HeadPose.ThePose.Position.y, -mHmdState.HeadPose.ThePose.Position.z, 0.0f);
-	mHeadOrientation = rotQuat;
+		mHeadPosition = XMVectorSet(-mHmdState.HeadPose.ThePose.Position.x, mHmdState.HeadPose.ThePose.Position.y, -mHmdState.HeadPose.ThePose.Position.z, 0.0f);
+		mHeadOrientation = rotQuat;
+	}
+	else
+	{
+		mHeadPosition = XMVectorZero();
+		mHeadOrientation = XMQuaternionIdentity();
+	}
 }
 
 void OVRManager::ClearRenderTarget()
@@ -177,12 +184,15 @@ void OVRManager::ClearRenderTarget()
 
 void OVRManager::PreRender(int eyeIndex)
 {
-	ovrEyeType eye = mHMD->EyeRenderOrder[eyeIndex];
+	if (IsDeviceConnected())
+	{
+		ovrEyeType eye = mHMD->EyeRenderOrder[eyeIndex];
 
-	gpApplication->getRenderer()->setRenderTarget(mpRenderTarget);
-	//renderer->getGBuffer()->bindRenderTargets();
-	
-	gpApplication->getRenderer()->setViewport(mEyeRenderViewport[eye].Size.w, mEyeRenderViewport[eye].Size.h, mEyeRenderViewport[eye].Pos.x, mEyeRenderViewport[eye].Pos.y);
+		gpApplication->getRenderer()->setRenderTarget(mpRenderTarget);
+		//renderer->getGBuffer()->bindRenderTargets();
+
+		gpApplication->getRenderer()->setViewport(mEyeRenderViewport[eye].Size.w, mEyeRenderViewport[eye].Size.h, mEyeRenderViewport[eye].Pos.x, mEyeRenderViewport[eye].Pos.y); 
+	}
 }
 
 void OVRManager::Render(D3DRenderer* renderer)
@@ -192,23 +202,29 @@ void OVRManager::Render(D3DRenderer* renderer)
 
 void OVRManager::PostRender()
 {
-	D3DRenderer* renderer = gpApplication->getRenderer();
+	if (IsDeviceConnected())
+	{
+		D3DRenderer* renderer = gpApplication->getRenderer();
 
-	//renderer->setBlendState(false);
-	//renderer->setDepthStencilState(D3DRenderer::Depth_Stencil_State_Default);
+		//renderer->setBlendState(false);
+		//renderer->setDepthStencilState(D3DRenderer::Depth_Stencil_State_Default);
 
-	int width = gpApplication->getClientWidth();
-	int height = gpApplication->getClientHeight();
+		int width = gpApplication->getClientWidth();
+		int height = gpApplication->getClientHeight();
 
-	renderer->setViewport(width, height, 0, 0);
+		renderer->setViewport(width, height, 0, 0);
 
-	ovrHmd_EndFrame(mHMD, mEyeRenderPoses, &mEyeTextures[0].Texture);
+		ovrHmd_EndFrame(mHMD, mEyeRenderPoses, &mEyeTextures[0].Texture);
+	}
 }
 
 void OVRManager::BeginFrame()
 {
-	gpApplication->getRenderer()->clear(mpRenderTarget);
-	ovrHmd_BeginFrame(mHMD, 0);
+	if (IsDeviceConnected())
+	{
+		gpApplication->getRenderer()->clear(mpRenderTarget);
+		ovrHmd_BeginFrame(mHMD, 0); 
+	}
 }
 
 void OVRManager::EndFrame()

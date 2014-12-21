@@ -409,7 +409,7 @@ HRESULT D3DRenderer::compileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoi
     return S_OK;
 }
 
-Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize)
+Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, Shader::ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize)
 {
 	char* name = new char[MAX_PATH];
 
@@ -427,17 +427,17 @@ Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, ShaderInfo* shaderInfo
 	HRESULT hr = S_OK;
 	ID3DBlob* shaderBlob = nullptr;
 
-	for (int i = 0; shaderInfo[i].type != SHADER_TYPE_NONE; i++)
+	for (int i = 0; shaderInfo[i].type != Shader::SHADER_TYPE_NONE; i++)
 	{
 		shaderBlob = nullptr;
 
 		switch (shaderInfo[i].type)
 		{
-		case SHADER_TYPE_VERTEX:
+		case Shader::SHADER_TYPE_VERTEX:
 			hr = compileShaderFromFile(filePath, shaderInfo[i].entrypoint, "vs_5_0", &shaderBlob);
 			if (FAILED(hr))
 			{
-				MessageBox(0, L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+				MessageBox(0, L"The FX file cannot be compiled.", L"Error", MB_OK );
 
 				return NULL;
 			}
@@ -457,11 +457,11 @@ Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, ShaderInfo* shaderInfo
 				newShader->mpInputLayout = NULL;
 
 			break;
-		case SHADER_TYPE_PIXEL:
+		case Shader::SHADER_TYPE_PIXEL:
 			hr = compileShaderFromFile(filePath, shaderInfo[i].entrypoint, "ps_5_0", &shaderBlob);
 			if (FAILED(hr))
 			{
-				MessageBox(0, L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+				MessageBox(0, L"The FX file cannot be compiled.", L"Error", MB_OK );
 
 				return NULL;
 			}
@@ -474,11 +474,11 @@ Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, ShaderInfo* shaderInfo
 				MessageBox(0, L"Unable to create pixel shader.", L"Error", MB_OK);
 			}
 			break;
-		case SHADER_TYPE_GEOMETRY:
+		case Shader::SHADER_TYPE_GEOMETRY:
 			hr = compileShaderFromFile(filePath, shaderInfo[i].entrypoint, "gs_5_0", &shaderBlob);
 			if (FAILED(hr))
 			{
-				MessageBox(0, L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+				MessageBox(0, L"The FX file cannot be compiled.", L"Error", MB_OK );
 
 				return NULL;
 			}
@@ -491,11 +491,11 @@ Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, ShaderInfo* shaderInfo
 				MessageBox(0, L"Unable to create geometry shader.", L"Error", MB_OK);
 			}
 			break;
-		case SHADER_TYPE_COMPUTE:
+		case Shader::SHADER_TYPE_COMPUTE:
 			hr = compileShaderFromFile(filePath, shaderInfo[i].entrypoint, "cs_5_0", &shaderBlob);
 			if (FAILED(hr))
 			{
-				MessageBox(0, L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+				MessageBox(0, L"The FX file cannot be compiled.", L"Error", MB_OK );
 
 				return NULL;
 			}
@@ -508,11 +508,11 @@ Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, ShaderInfo* shaderInfo
 				MessageBox(0, L"Unable to create compute shader.", L"Error", MB_OK);
 			}
 			break;
-		case SHADER_TYPE_HULL:
+		case Shader::SHADER_TYPE_HULL:
 			hr = compileShaderFromFile(filePath, shaderInfo[i].entrypoint, "hs_5_0", &shaderBlob);
 			if (FAILED(hr))
 			{
-				MessageBox(0, L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+				MessageBox(0, L"The FX file cannot be compiled.", L"Error", MB_OK );
 
 				return NULL;
 			}
@@ -525,11 +525,11 @@ Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, ShaderInfo* shaderInfo
 				MessageBox(0, L"Unable to create hull shader.", L"Error", MB_OK);
 			}
 			break;
-		case SHADER_TYPE_DOMAIN:
+		case Shader::SHADER_TYPE_DOMAIN:
 			hr = compileShaderFromFile(filePath, shaderInfo[i].entrypoint, "ds_5_0", &shaderBlob);
 			if (FAILED(hr))
 			{
-				MessageBox(0, L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+				MessageBox(0, L"The FX file cannot be compiled.", L"Error", MB_OK );
 
 				return NULL;
 			}
@@ -550,7 +550,7 @@ Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, ShaderInfo* shaderInfo
 	return newShader;
 }
 
-Shader* D3DRenderer::loadShader(WCHAR* filePath, ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize)
+Shader* D3DRenderer::loadShader(WCHAR* filePath, Shader::ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize)
 {
 	char* name = new char[MAX_PATH];
 
@@ -964,8 +964,11 @@ void D3DRenderer::preRender()
 
 	setBlendState(false);
 
-	mpOVRManager->UpdateTrackingState();
-	mpOVRManager->BeginFrame();
+	if (isUsingHMD())
+	{
+		mpOVRManager->UpdateTrackingState();
+		mpOVRManager->BeginFrame();
+	}
 
 	//mGBuffer->clearRenderTargets();
 	//mGBuffer->bindRenderTargets();
@@ -975,9 +978,9 @@ void D3DRenderer::postRender()
 {
 	md3dImmediateContext->OMSetRenderTargets(1, &mRenderTarget, mDepthStencilView);
 
-	mpOVRManager->PostRender();
-
-	if (!isUsingHMD())
+	if (isUsingHMD())
+		mpOVRManager->PostRender();
+	else
 		mSwapChain->Present(0, 0);
 }
 
