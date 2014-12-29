@@ -32,6 +32,8 @@ public:
 
 	int Run();
 
+	void Exit();
+
 	virtual bool Initialize();
 	virtual void onResize();
 	virtual void Update(float dt)=0;

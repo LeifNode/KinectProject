@@ -162,7 +162,7 @@ bool KinectApplication::Initialize()
 	mpText->setFont(font);
 	mpText->setTextSize(40);
 
-	//mpParticleSystem->Initialize();
+	mpParticleSystem->Initialize();
 	mpLeapRenderer->Initialize();
 
 	//mpPaintingSystem->Initialize();
@@ -307,8 +307,8 @@ void KinectApplication::Update(float dt)
 	if (InputSystem::get()->getKeyboardState()->isKeyPressed(KEY_DOWN))
 		mParticleSimulationSpeed = MathHelper::Clamp(mParticleSimulationSpeed - 0.3f * dt, 0.05f, 2.0f);
 
-	//if (mSimluateParticles)
-		//mpParticleSystem->Update(dt * mParticleSimulationSpeed);
+	if (mSimluateParticles)
+		mpParticleSystem->Update(dt * mParticleSimulationSpeed);
 
 	/*mpLineRenderer->Points.clear();
 	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(0));
@@ -495,7 +495,7 @@ void KinectApplication::Draw()
 
 		mpLeapRenderer->Render(mpRenderer, i);
 
-		mpFractalRenderer->Render(mpRenderer);
+		//mpFractalRenderer->Render(mpRenderer);
 
 		mpFontManager->bindRender(mpRenderer);
 
@@ -506,7 +506,7 @@ void KinectApplication::Draw()
 		mpText->Render(mpRenderer);
 
 		//mpLineRenderer->Render(mpRenderer);
-
+		
 		//mpParticleSystem->Render(mpRenderer);
 
 		//mpPaintingSystem->Render(mpRenderer);

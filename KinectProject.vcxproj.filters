@@ -368,9 +368,6 @@
     <ClInclude Include="src\World.h">
       <Filter>Source Files\Core\World</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoggingSystem.h">
-      <Filter>Source Files\Utils\Logging</Filter>
-    </ClInclude>
     <ClInclude Include="src\FractalRenderer.h">
       <Filter>Source Files\Graphics\Fractals</Filter>
     </ClInclude>
@@ -379,6 +376,9 @@
     </ClInclude>
     <ClInclude Include="src\OVRManager.h">
       <Filter>Source Files\Graphics\HMD</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Logger.h">
+      <Filter>Source Files\Utils\Logging</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

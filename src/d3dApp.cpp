@@ -88,7 +88,15 @@ int D3DApp::Run()
 				calculateFrameStats();
 				EventSystem::get()->update();
 				LeapManager::getInstance().Update(0.0f);
+
+				if (!mRunning)
+					break;
+
 				Update((float)mTimer.DeltaTime());	
+
+				if (!mRunning)
+					break;
+
 				Draw();
 				//mTimer.SleepForDuration(16.66f);
 			}
@@ -100,6 +108,11 @@ int D3DApp::Run()
 	}
 
 	return (int)msg.wParam;
+}
+
+void D3DApp::Exit()
+{
+	mRunning = false;
 }
 
 bool D3DApp::Initialize()

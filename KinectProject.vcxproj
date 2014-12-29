@@ -163,7 +163,7 @@
     <ClInclude Include="src\FractalRenderer.h" />
     <ClInclude Include="src\GBuffer.h" />
     <ClInclude Include="src\AssetLoader.h" />
-    <ClInclude Include="src\LoggingSystem.h" />
+    <ClInclude Include="src\Logger.h" />
     <ClInclude Include="src\OBJLoader.h" />
     <ClInclude Include="src\PaintingSystem.h" />
     <ClInclude Include="src\ParticleContactGenerators.h" />

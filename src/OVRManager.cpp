@@ -135,7 +135,7 @@ XMMATRIX OVRManager::getOffsetView(const Camera& camera, int eyeIndex, float IPD
 
 XMVECTOR OVRManager::getEyeOffset(int eyeIndex)
 {
-	return XMVectorSet(mIPD * 0.5f * (eyeIndex == 0 ? -1.0f : 1.0f), 0.0f, 0.0f, 0.0f);
+	return XMVectorSet(mIPD * 0.5f * (eyeIndex == 0 ? -1.0f : 1.0f), 0.0f, 0.02f, 0.0f);
 	//return XMVectorSet(-mEyeRenderPoses[eyeIndex].Position.x, mEyeRenderPoses[eyeIndex].Position.y, -mEyeRenderPoses[eyeIndex].Position.z, 0.0f);
 }
 
