@@ -40,7 +40,7 @@ public:
 	IDXGISwapChain* swapChain() const { return mSwapChain; }
 
 	void setTextureResource(int index, Texture*);
-	void setTextureResources(int index, Texture** texArray, unsigned count);
+	void setTextureResources(Texture** texArray, int startSlot,  unsigned count);
 	void setSampler(int index, ID3D11SamplerState* samplerState);
 	void setConstantBuffer(int index, ID3D11Buffer*);
 	void setPerFrameBuffer(CBPerFrame& buffer);
@@ -106,6 +106,7 @@ private:
 
 	ID3D11Device* md3dDevice;
 	ID3D11DeviceContext* md3dImmediateContext;
+	ID3D11Debug* md3dDebug;
 	IDXGISwapChain* mSwapChain;
 	ID3D11Texture2D* mDepthStencilBuffer;
 	ID3D11RenderTargetView* mRenderTarget;

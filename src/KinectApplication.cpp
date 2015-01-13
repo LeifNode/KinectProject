@@ -21,6 +21,8 @@
 #include "PaintingSystem.h"
 #include "FractalRenderer.h"
 
+//#include "Memory.h"
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd){
 	UNREFERENCED_PARAMETER( prevInstance );
     UNREFERENCED_PARAMETER( cmdLine );
@@ -29,14 +31,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 
-	KinectApplication* application = new KinectApplication(hInstance);
+	KinectApplication* application = LE_NEW KinectApplication(hInstance);
 
 	if (!application->Initialize())
 		return 0;
 
 	int returnVal = application->Run();
 
-	delete application;
+	SAFE_DELETE(application);
 
 	return returnVal;
 }
@@ -48,22 +50,22 @@ KinectApplication::KinectApplication(HINSTANCE hInstance)
 {
 	mMainWndCaption = L"Test App";
 
-	mpPlaneRenderer = new MeshRenderer<Vertex>();
-	//mpCubeRenderer = new MeshRenderer<Vertex>();
+	mpPlaneRenderer = LE_NEW MeshRenderer<Vertex>();
+	//mpCubeRenderer = LE_NEW MeshRenderer<Vertex>();
 	ZeroMemory(&mPerFrameData, sizeof(CBPerFrame));
 
 	mpKinectRenderer = new KinectRenderer();
 
-	mpCamera = new Camera(XMFLOAT3(0.0f, 1.6f, 0.0f));
-	//mpHydraRenderer = new HydraRenderer();
-	mpText = new TextRenderer(100);
-	//mpLineRenderer = new LineRenderer();
-	mpLeapRenderer = new LeapRenderer();
-	mpParticleSystem = new ParticleSystem();
+	mpCamera = LE_NEW Camera(XMFLOAT3(0.0f, 1.6f, 0.0f));
+	//mpHydraRenderer = LE_NEW HydraRenderer();
+	mpText = LE_NEW TextRenderer(100);
+	//mpLineRenderer = LE_NEW LineRenderer();
+	mpLeapRenderer = LE_NEW LeapRenderer();
+	mpParticleSystem = LE_NEW ParticleSystem();
 
-	mpPaintingSystem = new PaintingSystem();
+	mpPaintingSystem = LE_NEW PaintingSystem();
 
-	mpFractalRenderer = new FractalRenderer();
+	mpFractalRenderer = LE_NEW FractalRenderer();
 
 	mSimluateParticles = true;
 	mRenderSponza = true;
@@ -77,9 +79,9 @@ KinectApplication::~KinectApplication()
 	SAFE_DELETE(mpPlaneRenderer);
 
 	for (int i = 0; i < mpCubeRendererArr.size(); i++)
-		delete mpCubeRendererArr[i];
+		SAFE_DELETE(mpCubeRendererArr[i]);
 	for (auto it = mCubeMaterials.begin(); it != mCubeMaterials.end(); ++it)
-		delete it->second;
+		SAFE_DELETE(it->second);
 	//SAFE_DELETE(mpCubeRenderer);
 	SAFE_DELETE(mpCamera);
 	//SAFE_DELETE(mpHydraRenderer);
@@ -90,6 +92,7 @@ KinectApplication::~KinectApplication()
 	SAFE_DELETE(mpLeapRenderer);
 
 	SAFE_DELETE(mpPaintingSystem);
+	SAFE_DELETE(mpFractalRenderer);
 }
 
 bool KinectApplication::Initialize()
@@ -182,7 +185,7 @@ void KinectApplication::loadModels(collada::SceneNode* node, COLLADALoader* load
 	{
 		if (node->children[i]->model != NULL)
 		{
-			MeshRenderer<Vertex>* meshRenderer = new MeshRenderer<Vertex>();
+			MeshRenderer<Vertex>* meshRenderer = LE_NEW MeshRenderer<Vertex>();
 
 			meshRenderer->Initialize(node->children[i]->model->subMeshes[0]->mesh.Vertices, node->children[i]->model->subMeshes[0]->mesh.Indices, mpRenderer);
 
@@ -192,7 +195,7 @@ void KinectApplication::loadModels(collada::SceneNode* node, COLLADALoader* load
 			{
 				const collada::Effect* effect = loader->getEffect(node->children[i]->effectId);
 
-				assettypes::Material* mat = new assettypes::Material();
+				assettypes::Material* mat = LE_NEW assettypes::Material();
 
 				if (effect->diffuseTextureId != "")
 					mat->texturePaths.insert(std::make_pair(assettypes::TextureType_DIFFUSE, effect->diffuseTextureId));
@@ -307,8 +310,8 @@ void KinectApplication::Update(float dt)
 	if (InputSystem::get()->getKeyboardState()->isKeyPressed(KEY_DOWN))
 		mParticleSimulationSpeed = MathHelper::Clamp(mParticleSimulationSpeed - 0.3f * dt, 0.05f, 2.0f);
 
-	if (mSimluateParticles)
-		mpParticleSystem->Update(dt * mParticleSimulationSpeed);
+	//if (mSimluateParticles)
+		//mpParticleSystem->Update(dt * mParticleSimulationSpeed);
 
 	/*mpLineRenderer->Points.clear();
 	mpLineRenderer->Points.addPoint(mpInputSystem->getHydra()->getPointerPosition(0));

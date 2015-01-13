@@ -47,7 +47,7 @@ void TextRenderer::Initialize()
 	if (FAILED(hr))
 		std::cout << "Failed to create text renderer vertex buffer.\n";
 
-	delete [] pVertArray;
+	SAFE_DELETEARR(pVertArray);
 }
 
 void TextRenderer::updateVertexBuffer()
@@ -114,7 +114,7 @@ void TextRenderer::updateVertexBuffer()
 
 		renderer->context()->Unmap(mpVertexBuffer, 0);
 
-		delete [] pVertArray;
+		SAFE_DELETEARR(pVertArray);
 
 		mTextChanged = false;
 	}

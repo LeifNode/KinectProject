@@ -28,9 +28,9 @@ KinectRenderer::KinectRenderer()
     mColorWidth  = static_cast<LONG>(width);
     mColorHeight = static_cast<LONG>(height);
 
-	mDepthD16 = new USHORT[mDepthWidth * mDepthHeight];
-	mColorCoordinates = new LONG[mDepthWidth * mDepthHeight*2];
-	mColorRGBX = new BYTE[mColorWidth * mColorHeight * 4];//*4 bytes
+	mDepthD16 = LE_NEW USHORT[mDepthWidth * mDepthHeight];
+	mColorCoordinates = LE_NEW LONG[mDepthWidth * mDepthHeight*2];
+	mColorRGBX = LE_NEW BYTE[mColorWidth * mColorHeight * 4];//*4 bytes
 
 	mDepthReceived = false;
 	mColorReceived = false;
@@ -56,9 +56,9 @@ KinectRenderer::~KinectRenderer()
 	CloseHandle(mhNextDepthFrameEvent);
 	CloseHandle(mhNextColorFrameEvent);
 
-	delete[] mDepthD16;
-	delete[] mColorCoordinates;
-	delete[] mColorRGBX;
+	SAFE_DELETEARR(mDepthD16);
+	SAFE_DELETEARR(mColorCoordinates);
+	SAFE_DELETEARR(mColorRGBX);
 }
 
 void KinectRenderer::Initialize()

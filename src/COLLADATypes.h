@@ -49,7 +49,7 @@ namespace collada
 		~Model()
 		{
 			for (auto it = subMeshes.begin(); it != subMeshes.end(); ++it)
-				delete (*it);
+				SAFE_DELETE((*it));
 		}
 	};
 
@@ -65,7 +65,7 @@ namespace collada
 		~SceneNode()
 		{
 			for (auto it = children.begin(); it != children.end(); ++it)
-				delete (*it);
+				SAFE_DELETE((*it));
 		}
 	};
 

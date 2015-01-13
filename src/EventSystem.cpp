@@ -1,4 +1,5 @@
 #include "EventSystem.h"
+#include "Memory.h"
 
 EventSystem* EventSystem::mpInstance = NULL;
 
@@ -16,7 +17,7 @@ EventSystem* EventSystem::get()
 	if (mpInstance)
 		return mpInstance;
 	else
-		return mpInstance = new EventSystem();
+		return mpInstance = LE_NEW EventSystem();
 }
 
 bool EventSystem::addListener(const EventType& type, const EventListenerDelegate& eventDelegate)

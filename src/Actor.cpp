@@ -93,7 +93,7 @@ void Actor::deleteComponents()
 	auto end = mComponents.end();
 	for (auto it = mComponents.begin(); it != end; ++it)
 	{
-		delete it->second;
+		SAFE_DELETE(it->second);
 	}
 
 	mComponents.clear();

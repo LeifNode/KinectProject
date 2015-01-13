@@ -28,7 +28,7 @@ Font::~Font()
 		auto end = mCharacterMaps[i].end();
 		for (auto it = mCharacterMaps[i].begin(); it != end; ++it)
 		{
-			delete it->second;
+			SAFE_DELETE(it->second);
 		}
 
 		mCharacterMaps[i].clear();
@@ -136,7 +136,7 @@ bool Font::loadCharacter(int charCode, int pointSize, FONT_TYPE type)
 			renderer->context()->UpdateSubresource(mpFontTexture->getD3DTexture(), D3D11CalcSubresource(0, 0, mNumMipmaps), &box, bitmap->buffer, bitmap->pitch, 0); 
 
 		//Cache to map
-		Glyph* newGlyph = new Glyph;
+		Glyph* newGlyph = LE_NEW Glyph;
 
 		newGlyph->character = charCode;
 		newGlyph->pointSize = pointSize;

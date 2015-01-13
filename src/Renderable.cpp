@@ -15,7 +15,7 @@ void Renderable::deleteChildren()
 {
 	for (auto it = mChildren.begin(); it != mChildren.end(); ++it)
 	{
-		delete (*it);
+		SAFE_DELETE((*it));
 	}
 
 	mChildren.clear();

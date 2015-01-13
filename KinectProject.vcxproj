@@ -152,18 +152,21 @@
     <ClInclude Include="3rdParty\include\FastDelegate\FastDelegate.h" />
     <ClInclude Include="3rdParty\include\FastDelegate\FastDelegateBind.h" />
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h" />
+    <ClInclude Include="src\MallocTracker.h" />
     <ClInclude Include="src\AssetImporter.h" />
     <ClInclude Include="src\AssetProcess.h" />
     <ClInclude Include="src\BrushSplatter.h" />
     <ClInclude Include="src\ConstraintRenderer.h" />
     <ClInclude Include="src\CreateTangentsBitangentsProcess.h" />
     <ClInclude Include="src\DeferredRenderer.h" />
+    <ClInclude Include="src\EngineStatics.h" />
     <ClInclude Include="src\FlowField.h" />
     <ClInclude Include="src\FlowFieldRenderer.h" />
     <ClInclude Include="src\FractalRenderer.h" />
     <ClInclude Include="src\GBuffer.h" />
     <ClInclude Include="src\AssetLoader.h" />
     <ClInclude Include="src\Logger.h" />
+    <ClInclude Include="src\Memory.h" />
     <ClInclude Include="src\OBJLoader.h" />
     <ClInclude Include="src\PaintingSystem.h" />
     <ClInclude Include="src\ParticleContactGenerators.h" />
@@ -216,6 +219,7 @@
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\ShaderHelper.h" />
     <ClInclude Include="src\SmoothNormalsProcess.h" />
+    <ClInclude Include="src\SphereCapture.h" />
     <ClInclude Include="src\StringUtils.h" />
     <ClInclude Include="src\TextRenderer.h" />
     <ClInclude Include="src\Texture.h" />
@@ -260,8 +264,11 @@
     <ClCompile Include="src\LeapRenderer.cpp" />
     <ClCompile Include="src\LineRenderer.cpp" />
     <ClCompile Include="src\LineSegment.cpp" />
+    <ClCompile Include="src\Logger.cpp" />
+    <ClCompile Include="src\MallocTracker.cpp" />
     <ClCompile Include="src\MathHelper.cpp" />
     <ClCompile Include="src\MatrixStack.cpp" />
+    <ClCompile Include="src\Memory.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\MouseState.cpp" />
     <ClCompile Include="src\OBJLoader.cpp" />
@@ -317,6 +324,10 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Shaders\Common.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Shaders\ConstantBuffers.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -490,6 +501,10 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="Shaders\Math.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Shaders\particle.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -527,6 +542,10 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\Random.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Shaders\Shading.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>

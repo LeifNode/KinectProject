@@ -147,6 +147,12 @@
     <Filter Include="Source Files\Graphics\HMD">
       <UniqueIdentifier>{973941ee-e93d-4229-95cf-adf782b369a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Graphics\Post Processing\Pipeline">
+      <UniqueIdentifier>{a776a505-cd63-43ab-8135-cebdd5a988da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Actors">
+      <UniqueIdentifier>{a5ffeb48-558f-4555-9082-1090dae58f07}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\include\tinyxml2\tinyxml2.h">
@@ -380,6 +386,18 @@
     <ClInclude Include="src\Logger.h">
       <Filter>Source Files\Utils\Logging</Filter>
     </ClInclude>
+    <ClInclude Include="src\EngineStatics.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Memory.h">
+      <Filter>Source Files\Utils\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MallocTracker.h">
+      <Filter>Source Files\Utils\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SphereCapture.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\include\tinyxml2\tinyxml2.cpp">
@@ -565,6 +583,15 @@
     <ClCompile Include="src\OVRManager.cpp">
       <Filter>Source Files\Graphics\HMD</Filter>
     </ClCompile>
+    <ClCompile Include="src\MallocTracker.cpp">
+      <Filter>Source Files\Utils\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Logger.cpp">
+      <Filter>Source Files\Utils\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Memory.cpp">
+      <Filter>Source Files\Utils\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\color_PS.hlsl">
@@ -695,6 +722,15 @@
     </FxCompile>
     <FxCompile Include="Shaders\fractalQuad_PS.hlsl">
       <Filter>Shaders\Fractals</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Common.hlsl">
+      <Filter>Shaders\Utils</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Shading.hlsl">
+      <Filter>Shaders\Utils</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Math.hlsl">
+      <Filter>Shaders\Utils</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

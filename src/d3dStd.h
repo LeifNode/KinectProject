@@ -5,6 +5,10 @@
 #include <crtdbg.h>
 #endif
 
+#define DEBUG_MALLOC
+
+#include "Memory.h"
+
 #include <Windows.h>
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -23,8 +27,8 @@
 #include <algorithm>
 #include "..\3rdParty\include\FastDelegate\FastDelegate.h"
 #include "dxerr.h"
-#include <NuiApi.h> //Kinect API
-#include "LoggingSystem.h"
+#include <NuiApi.h> //Kinect 
+#include "Logger.h"
 
 using namespace DirectX;
 
@@ -40,9 +44,6 @@ using std::dynamic_pointer_cast;
 
 #ifndef ReleaseCOM
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
-#endif
-#ifndef SAFE_DELETE
-#define SAFE_DELETE(x) delete x; x = 0;
 #endif
 
 #if defined(DEBUG) | defined(_DEBUG)

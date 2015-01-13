@@ -7,6 +7,7 @@
 #include "LeapManager.h"
 #include "PhysicsSystem.h"
 #include "World.h"
+#include "MallocTracker.h"
 
 #pragma comment(lib, "d3d11")
 #pragma comment(lib, "d3dcompiler")
@@ -41,12 +42,12 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 	gd3dApp = this;
 	gpApplication = this;
 
-	mpRenderer = new D3DRenderer();
+	mpRenderer = LE_NEW D3DRenderer();
 	mpInputSystem = InputSystem::get();
 	LeapManager::getInstance();
-	mpTextureManager = new TextureManager();
-	mpFontManager = new FontManager();
-	mpPhysicsSystem = new PhysicsSystem();
+	mpTextureManager = LE_NEW TextureManager();
+	mpFontManager = LE_NEW FontManager();
+	mpPhysicsSystem = LE_NEW PhysicsSystem();
 
 	EventSystem::get();
 }
@@ -56,9 +57,12 @@ D3DApp::~D3DApp()
 	LineRenderer::DeInit();
 	LeapManager::getInstance().DeInit();
 	
-	delete mpTextureManager;
-	delete mpFontManager;
-	delete mpRenderer;
+	SAFE_DELETE(mpPhysicsSystem);
+	SAFE_DELETE(mpTextureManager);
+	SAFE_DELETE(mpFontManager);
+	SAFE_DELETE(mpRenderer);
+
+	MallocTracker::getInstance().dumpTrackedMemory();
 }
 
 float D3DApp::aspectRatio() const

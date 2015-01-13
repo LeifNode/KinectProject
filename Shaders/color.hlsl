@@ -1,5 +1,4 @@
-#include "ConstantBuffers.hlsl"
-#include "DeferredRendering.hlsl"
+#include "Common.hlsl"
 
 Texture2D textureDiffuse : register( t0 );
 Texture2D textureNormal  : register( t1 );

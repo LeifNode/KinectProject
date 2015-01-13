@@ -89,13 +89,13 @@ void GBuffer::OnResize(int width, int height)
 	static const DXGI_FORMAT diffuseTextureFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	static const DXGI_FORMAT normalTextureFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	static const DXGI_FORMAT specularTextureFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	static const DXGI_FORMAT emissiveTextureFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	static const DXGI_FORMAT emissiveTextureFormat = DXGI_FORMAT_R16G16B16A16_UNORM;
 
 	static const DXGI_FORMAT depthStencilRenderViewFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	static const DXGI_FORMAT diffuseRenderViewFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	static const DXGI_FORMAT normalRenderViewFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	static const DXGI_FORMAT specularRenderViewFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	static const DXGI_FORMAT emissiveRenderViewFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	static const DXGI_FORMAT emissiveRenderViewFormat = DXGI_FORMAT_R16G16B16A16_UNORM;
 
 	//Initialize textures
 	D3D11_TEXTURE2D_DESC desc;
@@ -186,7 +186,7 @@ void GBuffer::bindTextures()
 		mpDepthStencilTexture
 	};
 
-	renderer->setTextureResources(0, texArray, 5);
+	renderer->setTextureResources(texArray, 0, 5);
 }
 
 void GBuffer::bindSampler()

@@ -13,26 +13,26 @@ PhysicsSystem::~PhysicsSystem()
 {
 	for (auto it = mForceGenerators.begin(); it != mForceGenerators.end(); ++it)
 	{
-		delete (*it);
+		SAFE_DELETE((*it));
 	}
 	
 	mForceGenerators.clear();
 
 	for (auto it = mParticles.begin(); it != mParticles.end(); ++it)
 	{
-		delete (*it);
+		SAFE_DELETE((*it));
 	}
 
 	mParticles.clear();
 
 	for (auto it = mContactGenerators.begin(); it != mContactGenerators.end(); ++it)
 	{
-		delete (*it);
+		SAFE_DELETE((*it));
 	}
 
 	mContactGenerators.clear();
 
-	delete [] mpContactArr;
+	SAFE_DELETEARR(mpContactArr);
 }
 
 void PhysicsSystem::Initialize()

@@ -14,6 +14,7 @@ D3DRenderer::D3DRenderer()
 
 	md3dDevice(NULL),
 	md3dImmediateContext(NULL),
+	md3dDebug(NULL),
 	mSwapChain(NULL),
 	mDepthStencilBuffer(NULL),
 	mRenderTarget(NULL),
@@ -40,7 +41,7 @@ D3DRenderer::D3DRenderer()
 	ZeroMemory(&mScreenViewport, sizeof(D3D11_VIEWPORT));
 	ZeroMemory(&mDepthStencilStates[0], sizeof(ID3D11DepthStencilState*) * Depth_Stencil_State_Count);
 	
-	mpOVRManager = new OVRManager();
+	mpOVRManager = LE_NEW OVRManager();
 }
 
 D3DRenderer::~D3DRenderer()
@@ -52,7 +53,7 @@ D3DRenderer::~D3DRenderer()
 
 	for (auto it = mLoadedShaders.begin(); it != mLoadedShaders.end(); ++it)
 	{
-		delete it->second;
+		SAFE_DELETE(it->second);
 	}
 	mLoadedShaders.clear();
 
@@ -73,6 +74,12 @@ D3DRenderer::~D3DRenderer()
 
 	if ( md3dImmediateContext )
 		md3dImmediateContext->ClearState();
+
+	if (md3dDebug != NULL)
+	{
+		md3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		ReleaseCOM(md3dDebug);
+	}
 
 	ReleaseCOM(md3dImmediateContext);
 	ReleaseCOM(md3dDevice);
@@ -249,6 +256,10 @@ bool D3DRenderer::initialize()
 	HR(dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&dxgiFactory));
 
 	HR(dxgiFactory->CreateSwapChain(md3dDevice, &sd, &mSwapChain));
+
+#if defined(DEBUG) || defined(_DEBUG)
+	HR(md3dDevice->QueryInterface(__uuidof(ID3D11Debug), (void**)&md3dDebug));
+#endif
 	
 	//IDXGIOutput* output;
 
@@ -332,10 +343,10 @@ bool D3DRenderer::initialize()
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	md3dDevice->CreateSamplerState( &sampDesc, &mSamplerState );
 
-	mGBuffer = new GBuffer();
+	mGBuffer = LE_NEW GBuffer();
 	mGBuffer->Initialize(gpApplication->getClientWidth(), gpApplication->getClientHeight());
 
-	mDeferredRenderer = new DeferredRenderer();
+	mDeferredRenderer = LE_NEW DeferredRenderer();
 	mDeferredRenderer->Initialize();
 
 	onResize();
@@ -411,17 +422,17 @@ HRESULT D3DRenderer::compileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoi
 
 Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, Shader::ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize)
 {
-	char* name = new char[MAX_PATH];
+	char* name = LE_NEW char[MAX_PATH];
 
 	//Convert wchar* to char*
 	wcstombs(name, filePath, MAX_PATH);
 
 	std::string nameStr(name);
 
-	delete name;
+	SAFE_DELETEARR(name);
 	name = nullptr;
 
-	Shader* newShader = new Shader(nameStr);
+	Shader* newShader = LE_NEW Shader(nameStr);
 	newShader->mPrimitiveTopology = primitiveTopology;
 
 	HRESULT hr = S_OK;
@@ -552,14 +563,14 @@ Shader* D3DRenderer::loadShaderUnmanaged(WCHAR* filePath, Shader::ShaderInfo* sh
 
 Shader* D3DRenderer::loadShader(WCHAR* filePath, Shader::ShaderInfo* shaderInfo, D3D_PRIMITIVE_TOPOLOGY primitiveTopology, D3D11_INPUT_ELEMENT_DESC* vertexDescription, int vertexDescriptionSize)
 {
-	char* name = new char[MAX_PATH];
+	char* name = LE_NEW char[MAX_PATH];
 
 	//Convert wchar* to char*
 	wcstombs(name, filePath, MAX_PATH);
 
 	std::string nameStr(name);
 
-	delete name;
+	SAFE_DELETEARR(name);
 	name = nullptr;
 
 	Shader* newShader = loadShaderUnmanaged(filePath, shaderInfo, primitiveTopology, vertexDescription, vertexDescriptionSize);
@@ -588,35 +599,35 @@ void D3DRenderer::setTextureResource(int index, Texture* texture)
 	}
 }
 
-void D3DRenderer::setTextureResources(int index, Texture** texArray, unsigned count)
+void D3DRenderer::setTextureResources(Texture** texArray, int startSlot,  unsigned count)
 {
 	if (mpActiveShader)
 	{
-		ID3D11ShaderResourceView** resourceArray = new ID3D11ShaderResourceView*[count];
+		ID3D11ShaderResourceView** resourceArray = LE_NEW ID3D11ShaderResourceView*[count];
 
 		for (unsigned int i = 0; i < count; i++)
 			resourceArray[i] = texArray[i]->mpResourceView;
 
 		if (mpActiveShader->hasVertexShader())
-			md3dImmediateContext->VSSetShaderResources(index, count, resourceArray);
+			md3dImmediateContext->VSSetShaderResources(startSlot, count, resourceArray);
 		if (mpActiveShader->hasPixelShader())
-			md3dImmediateContext->PSSetShaderResources(index, count, resourceArray);
+			md3dImmediateContext->PSSetShaderResources(startSlot, count, resourceArray);
 		if (mpActiveShader->hasGeometryShader())
-			md3dImmediateContext->GSSetShaderResources(index, count, resourceArray);
+			md3dImmediateContext->GSSetShaderResources(startSlot, count, resourceArray);
 		if (mpActiveShader->hasComputeShader())
-			md3dImmediateContext->CSSetShaderResources(index, count, resourceArray);
+			md3dImmediateContext->CSSetShaderResources(startSlot, count, resourceArray);
 		if (mpActiveShader->hasHullShader())
-			md3dImmediateContext->HSSetShaderResources(index, count, resourceArray);
+			md3dImmediateContext->HSSetShaderResources(startSlot, count, resourceArray);
 		if (mpActiveShader->hasDomainShader())
-			md3dImmediateContext->DSSetShaderResources(index, count, resourceArray);
+			md3dImmediateContext->DSSetShaderResources(startSlot, count, resourceArray);
 
-		delete [] resourceArray;
+		SAFE_DELETEARR(resourceArray);
 	}
 }
 
 void D3DRenderer::unbindTextureResources()
 {
-	ID3D11ShaderResourceView** arr = new ID3D11ShaderResourceView*[8];
+	ID3D11ShaderResourceView** arr = LE_NEW ID3D11ShaderResourceView*[8];
 	for (int i = 0; i < 8 ; i++) arr[i] = NULL;
 
 	md3dImmediateContext->VSSetShaderResources(0, 8, arr);
@@ -626,7 +637,7 @@ void D3DRenderer::unbindTextureResources()
 	md3dImmediateContext->HSSetShaderResources(0, 8, arr);
 	md3dImmediateContext->DSSetShaderResources(0, 8, arr);
 
-	delete [] arr;
+	SAFE_DELETEARR(arr);
 }
 
 void D3DRenderer::setSampler(int index, ID3D11SamplerState* samplerState)
@@ -701,7 +712,7 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 	else 
 		return NULL;
 
-	Texture* newTexture = new Texture();
+	Texture* newTexture = LE_NEW Texture();
 
 
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -737,7 +748,7 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 	HRESULT result = md3dDevice->CreateTexture2D(&textureDesc, NULL, &newTexture->mpTexture);
 	if (FAILED(result))
 	{
-		delete newTexture;
+		SAFE_DELETE(newTexture);
 		return NULL;
 	}
 
@@ -751,7 +762,7 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 		result = md3dDevice->CreateShaderResourceView(newTexture->mpTexture, &shaderResourceViewDesc, &newTexture->mpResourceView);
 		if (FAILED(result))
 		{
-			delete newTexture;
+			SAFE_DELETE(newTexture);
 			return NULL;
 		}
 	}
@@ -761,7 +772,7 @@ Texture* D3DRenderer::createTexture(UINT format, int width, int height)
 
 Texture* D3DRenderer::createTexture(D3D11_TEXTURE2D_DESC* textureDescription, DXGI_FORMAT resViewFmt)
 {
-	Texture* newTexture = new Texture();
+	Texture* newTexture = LE_NEW Texture();
 	newTexture->mWidth = textureDescription->Width;
 	newTexture->mHeight = textureDescription->Height;
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
@@ -778,14 +789,14 @@ Texture* D3DRenderer::createTexture(D3D11_TEXTURE2D_DESC* textureDescription, DX
 	HRESULT result = md3dDevice->CreateTexture2D(textureDescription, NULL, &newTexture->mpTexture);
 	if (FAILED(result))
 	{
-		delete newTexture;
+		SAFE_DELETE(newTexture);
 		return NULL;
 	}
 
 	result = md3dDevice->CreateShaderResourceView(newTexture->mpTexture, &shaderResourceViewDesc, &newTexture->mpResourceView);
 	if (FAILED(result))
 	{
-		delete newTexture;
+		SAFE_DELETE(newTexture);
 		return NULL;
 	}
 
@@ -794,7 +805,7 @@ Texture* D3DRenderer::createTexture(D3D11_TEXTURE2D_DESC* textureDescription, DX
 
 RenderTarget* D3DRenderer::createRenderTarget(int width, int height, bool useDepthBuffer)
 {
-	RenderTarget* newRenderTarget = new RenderTarget();
+	RenderTarget* newRenderTarget = LE_NEW RenderTarget();
 	newRenderTarget->mpRenderTargetTexture = createTexture(Texture_RenderTarget | Texture_RGBA, width, height);
 
 	if (useDepthBuffer)
@@ -814,7 +825,7 @@ RenderTarget* D3DRenderer::createRenderTarget(int width, int height, bool useDep
 	result = md3dDevice->CreateRenderTargetView(newRenderTarget->mpRenderTargetTexture->mpTexture, &renderViewDesc, &newRenderTarget->mpRenderTargetView);
 	if (FAILED(result))
 	{
-		delete newRenderTarget;
+		SAFE_DELETE(newRenderTarget);
 		return NULL;
 	}
 
@@ -828,7 +839,7 @@ RenderTarget* D3DRenderer::createRenderTarget(int width, int height, bool useDep
 		result = md3dDevice->CreateDepthStencilView(newRenderTarget->mpDepthTexture->mpTexture, NULL, &newRenderTarget->mpDepthView);
 		if (FAILED(result))
 		{
-			delete newRenderTarget;
+			SAFE_DELETE(newRenderTarget);
 			return NULL;
 		}
 	}
@@ -912,7 +923,7 @@ void D3DRenderer::unbindShader()
 
 void D3DRenderer::resetSamplerState()
 {
-	ID3D11SamplerState** samplerArr = new ID3D11SamplerState*[8];
+	ID3D11SamplerState** samplerArr = LE_NEW ID3D11SamplerState*[8];
 
 	for (int i = 0; i < 8; i++) samplerArr[i] = mSamplerState;
 
@@ -932,7 +943,7 @@ void D3DRenderer::resetSamplerState()
 			md3dImmediateContext->DSSetSamplers(0, 8, samplerArr);
 	}
 
-	delete [] samplerArr;
+	SAFE_DELETEARR(samplerArr);
 }
 
 void D3DRenderer::resetRenderTarget()

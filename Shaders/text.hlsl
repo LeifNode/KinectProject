@@ -78,7 +78,7 @@ void GS(point GS_INPUT input[1], uint primId : SV_PrimitiveID, inout TriangleStr
 
 #ifndef RENDERER_DEFERRED
 
-float4 PS(PS_INPUT input) : SV_Target
+PS_RET_TYPE PS(PS_INPUT input) : SV_Target
 {
 	float4 color = float2(1.0f, textAtlus.Sample(textSampler, input.TexUV).r).xxxy;
 

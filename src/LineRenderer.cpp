@@ -46,7 +46,7 @@ void LineRenderer::generateIndices(UINT** ppArrayOut, UINT* pIndexCount)
 	UINT indexCount = (UINT)Points.List.size() * (mMode == LINE_DRAW_MODE_LINELIST ? 2 : 4);
 	*pIndexCount = indexCount;
 
-	UINT* indexArray = new UINT[indexCount];
+	UINT* indexArray = LE_NEW UINT[indexCount];
 
 	//Line List indexing
 	if (mMode == LINE_DRAW_MODE_LINELIST)
@@ -134,7 +134,7 @@ void LineRenderer::reloadPoints()
 
 		HR(gpApplication->getRenderer()->device()->CreateBuffer(&ibd, &iinitData, &mpIndexBuffer));
 
-		delete [] indexArr;
+		SAFE_DELETEARR(indexArr);
 	}
 }
 

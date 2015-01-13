@@ -67,8 +67,8 @@ RectangleBinPacker::Node* RectangleBinPacker::insert(Node* node, int width, int 
 	//Split remaining space along the shorter axis
 	int w = node->width - width;
 	int h = node->height - height;
-	node->left = new Node();
-	node->right = new Node();
+	node->left = LE_NEW Node();
+	node->right = LE_NEW Node();
 	if (w <= h) //Horizontal split
 	{
 		node->left->x = node->x + width;

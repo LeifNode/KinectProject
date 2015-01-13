@@ -58,7 +58,7 @@ namespace assettypes
 
 		~Face()
 		{
-			delete [] mIndices;
+			SAFE_DELETEARR(mIndices);
 		}
 
 		Face(const Face& other)
@@ -72,12 +72,12 @@ namespace assettypes
 			if (&other == this)
 				return *this;
 
-			delete [] mIndices;
+			SAFE_DELETEARR(mIndices);
 			mIndexCount = other.mIndexCount;
 
 			if (mIndexCount)
 			{
-				mIndices = new unsigned[mIndexCount];
+				mIndices = LE_NEW unsigned[mIndexCount];
 				memcpy(mIndices, other.mIndices, mIndexCount * sizeof(unsigned));
 			}
 			else
@@ -140,12 +140,12 @@ namespace assettypes
 
 		~Mesh()
 		{
-			delete [] mVertices;
-			delete [] mNormals;
-			delete [] mTangents;
-			delete [] mBitengents;
-			delete [] mTextureCoords;
-			delete [] mFaces;
+			SAFE_DELETEARR(mVertices);
+			SAFE_DELETEARR(mNormals);
+			SAFE_DELETEARR(mTangents);
+			SAFE_DELETEARR(mBitengents);
+			SAFE_DELETEARR(mTextureCoords);
+			SAFE_DELETEARR(mFaces);
 		}
 
 		bool hasPositions() const { return mVertices != NULL && mVertexCount > 0; }
@@ -185,11 +185,11 @@ namespace assettypes
 			{
 				for (unsigned int i = 0; i < mNumChildren; i++)
 				{
-					delete mpChildren[i];
+					SAFE_DELETE(mpChildren[i]);
 				}
 
-				delete [] mpChildren;
-				delete [] mpMeshes;
+				SAFE_DELETEARR(mpChildren);
+				SAFE_DELETEARR(mpMeshes);
 			}
 		}
 	};
@@ -229,13 +229,13 @@ namespace assettypes
 
 		~Scene()
 		{
-			delete mpRootNode;
+			SAFE_DELETE(mpRootNode);
 
 			for (int i = 0; i < mMeshes.size(); i++)
-				delete mMeshes[i];
+				SAFE_DELETE(mMeshes[i]);
 
 			for (int i = 0; i < mMaterials.size(); i++)
-				delete mMaterials[i];
+				SAFE_DELETE(mMaterials[i]);
 		}
 	};
 };

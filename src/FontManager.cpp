@@ -20,7 +20,7 @@ FontManager::~FontManager()
 
 	for (auto it = mFontMap.begin(); it != mFontMap.end(); ++it)
 	{
-		delete it->second;
+		SAFE_DELETE(it->second);
 	}
 }
 
@@ -101,7 +101,7 @@ Font* FontManager::loadFont(const std::string& fontKey,
 		return it->second;
 	}
 
-	Font* newFont = new Font();
+	Font* newFont = LE_NEW Font();
 	newFont->InitializeTexture(2048, 2048);
 
 	newFont->loadFont(fontPath, mftLibrary);

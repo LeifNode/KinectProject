@@ -51,7 +51,7 @@ void TextureManager::unloadAll()
 {
 	for (auto it = mTextureMap.begin(); it != mTextureMap.end(); ++it)
 	{
-		delete it->second;
+		SAFE_DELETE(it->second);
 	}
 
 	mTextureMap.clear();
@@ -63,7 +63,7 @@ void TextureManager::unloadTexture(const std::string& filePath)
 
 	if (it != mTextureMap.end())
 	{
-		delete it->second;
+		SAFE_DELETE(it->second);
 		mTextureMap.erase(it);
 	}
 }

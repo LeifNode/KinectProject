@@ -22,13 +22,13 @@ void COLLADALoader::clear()
 {
 	for (auto it = mModels.begin(); it != mModels.end(); ++it)
 	{
-		delete it->second;
+		SAFE_DELETE(it->second);
 	}
 
 	mModels.clear();
 
 	for (auto it = mEffects.begin(); it != mEffects.end(); ++it)
-		delete it->second;
+		SAFE_DELETE(it->second);
 
 	mEffects.clear();
 
@@ -36,7 +36,7 @@ void COLLADALoader::clear()
 	mImages.clear();
 	mMeshSources.clear();
 
-	delete mpRootNode;
+	SAFE_DELETE(mpRootNode);
 	mpRootNode = NULL;
 }
 
@@ -239,7 +239,7 @@ void COLLADALoader::constructModelGeometry(XMLElement* geometryElement)
 		return;
 	}
 
-	Model* newModel = new Model();
+	Model* newModel = LE_NEW Model();
 
 	mModels[geometryElement->Attribute("id")] = newModel;
 
@@ -305,7 +305,7 @@ void COLLADALoader::constructModelGeometry(XMLElement* geometryElement)
 			continue;
 		}
 
-		SubMesh* subMesh = new SubMesh();
+		SubMesh* subMesh = LE_NEW SubMesh();
 
 		if (primitiveElement->Attribute("material") != NULL)
 			subMesh->effectId = mMaterials[primitiveElement->Attribute("material")].effectId;
@@ -432,7 +432,7 @@ void COLLADALoader::constructModelGeometry(XMLElement* geometryElement)
 	//Clean up
 	for (auto it = mMeshSources.begin(); it != mMeshSources.end(); ++it)
 	{
-		delete it->second;
+		SAFE_DELETE(it->second);
 	}
 
 	mMeshSources.clear();
@@ -464,7 +464,7 @@ void COLLADALoader::loadEffects()
 	while (currentEffectElement != NULL)
 	{
 		bool specularMaterial = false;
-		Effect* currentEffect = new Effect();
+		Effect* currentEffect = LE_NEW Effect();
 
 		map<string, Surface> surfaceMap;
 		map<string, Sampler> samplerMap;
@@ -663,7 +663,7 @@ void COLLADALoader::loadImages()
 
 void COLLADALoader::loadSceneNodes()
 {
-	mpRootNode = new SceneNode();
+	mpRootNode = LE_NEW SceneNode();
 
 	XMLElement* rootScene = mSceneDocument.FirstChildElement()->FirstChildElement("library_visual_scenes");
 	XMLElement* sceneElement = NULL;
@@ -718,7 +718,7 @@ void COLLADALoader::loadNode(SceneNode* parent, XMLElement* nodeElement)
 		 childNodeElement != NULL;
 		 childNodeElement = childNodeElement->NextSiblingElement("node"))
 	{
-		SceneNode* childNode = new SceneNode();
+		SceneNode* childNode = LE_NEW SceneNode();
 		parent->children.push_back(childNode);
 
 		loadNode(childNode, childNodeElement);

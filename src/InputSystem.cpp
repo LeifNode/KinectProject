@@ -4,18 +4,19 @@
 #include "MouseState.h"
 #include "KeyboardState.h"
 #include "Events.h"
+#include "Memory.h"
 
 InputSystem* InputSystem::mpInstance = NULL;
 
 InputSystem::InputSystem()
 {
-	mpHydraManager = new HydraManager();
+	mpHydraManager = LE_NEW HydraManager();
 	mpHydraManager->Initialize();
 }
 
 InputSystem::~InputSystem()
 {
-	delete mpHydraManager;
+	SAFE_DELETE(mpHydraManager);
 }
 
 InputSystem* InputSystem::get()
@@ -23,7 +24,7 @@ InputSystem* InputSystem::get()
 	if (mpInstance)
 		return mpInstance;
 	else
-		return mpInstance = new InputSystem();
+		return mpInstance = LE_NEW InputSystem();
 }
 
 void InputSystem::Update(float dt)
